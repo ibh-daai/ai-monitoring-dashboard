@@ -1,3 +1,8 @@
 venv/
 
 .ds_store
+
+/data
+
+simulate_data.py
+test_report.ipynb
