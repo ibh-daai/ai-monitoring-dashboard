@@ -1,0 +1,32 @@
+# database details
+database:
+  # TODO
+
+setup:
+  # Boolean flags
+  regression: True
+  classification: True
+
+paths:
+  # Data paths
+  reference_data: '../data/reference_data.csv'
+  current_data: '../data/current_data.csv'
+
+columns:
+  # Key column names ("column_name" or null)
+  regression_label: null
+  regression_prediction: null
+  classification_label: 'label'
+  classification_prediction: 'prediction'
+
+validation:
+  - column: 'age'
+    type: 'int'
+    range: [0, 100]
+  # etc.
+
+  # Data types for columns
+  # TODO
+  
+thresholds:
+  # TODO - thresholds for test suites
