@@ -1,0 +1,59 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+        "outputs": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "study_id": {
+                        "type": "string"
+                    },
+                    "patient_id": {
+                        "type": "string"
+                    },
+                    "model_id": {
+                        "type": "string"
+                    },
+                    "predictions": {
+                        "type": "object",
+                        "properties": {
+                            "regression": {
+                                "type": ["number", "null"]
+                            },
+                            "classification": {
+                                "type": ["string", "number", "null"]
+                            }
+                        }
+                    },
+                    "labels": {
+                        "type": "object",
+                        "properties": {
+                            "regression": {
+                                "type": ["number", "null"]
+                            },
+                            "classification": {
+                                "type": ["string", "number", "null"]
+                            }
+                        }
+                    },
+                    "features": {
+                        "type": "object",
+                        "additionalProperties": true
+                    },
+                    "timestamp": {
+                        "type": "string",
+                        "format": "date"
+                    }
+                },
+                "required": ["id", "model_id", "predictions", "labels", "timestamp"]
+            }
+        },
+        "timestamp": {
+            "type": "string",
+            "format": "date-time"
+        }
+    },
+    "required": ["outputs", "timestamp"]
+}
