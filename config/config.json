@@ -29,13 +29,40 @@
         "timestamp": null
     },
     "validation_rules": {
-        "sex": ["M", "F"],
-        "chronological_age": [0, 400],
-        "standard_deviation": [0, 13.05],
-        "two_standard_deviations": [0, 26.1],
-        "upper_limit": [0, 300],
-        "lower_limit": [0, 300],
-        "closest_age": [0, 216]
+        "sex": {
+            "type": "enum",
+            "values": ["M", "F"]
+        },
+        "chronological_age": {
+            "type": "range",
+            "min": 0,
+            "max": 400
+        },
+        "standard_deviation": {
+            "type": "range",
+            "min": 0,
+            "max": 13.05
+        },
+        "two_standard_deviations": {
+            "type": "range",
+            "min": 0,
+            "max": 26.1
+        },
+        "upper_limit": {
+            "type": "range",
+            "min": 0,
+            "max": 300
+        },
+        "lower_limit": {
+            "type": "range",
+            "min": 0,
+            "max": 300
+        },
+        "closest_age": {
+            "type": "range",
+            "min": 0,
+            "max": 216
+        }
     },
     "tests": {
         "regression_tests": [
