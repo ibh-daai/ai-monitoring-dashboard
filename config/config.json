@@ -3,7 +3,8 @@
         "model_id": "bone_age_01",
         "model_type": {
             "regression": true,
-            "binary_classification": true
+            "binary_classification": true,
+        "provide_reference": true
         }
     },
     "columns": {
