@@ -1,0 +1,59 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+        "outputs": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "study_id": {
+                        "type": ["string", "number"]
+                    },
+                    "model_id": {
+                        "type": ["string", "number"]
+                    },
+                    "predictions": {
+                        "type": "object",
+                        "properties": {
+                            "regression_prediction": {
+                                "type": ["number", "null"],
+                                "default": null
+                                
+                            },
+                            "classification_prediction": {
+                                "type": ["string", "number", "boolean", "null"],
+                                "default": null
+                            }
+                        },
+                        "required": []
+                    },
+                    "labels": {
+                        "type": "object",
+                        "properties": {
+                            "regression_label": {
+                                "type": ["number", "null"],
+                                "default": null
+                            },
+                            "classification_label": {
+                                "type": ["string", "number", "boolean", "null"],
+                                "default": null
+                            }
+                        },
+                        "required": []
+                    },
+                    "features": {
+                        "type": "object",
+                        "additionalProperties": true
+                    },
+                    "timestamp": {
+                        "type": "string",
+                        "format": "date"
+                    }
+                },
+                "required": ["study_id", "model_id"]
+            }
+        }
+    },
+    "required": ["outputs"]
+}
