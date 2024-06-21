@@ -14,7 +14,13 @@ The configuration file is structured into five sections: `model_config`, `column
 ### model_config
 
 -   **model_id** (`string`): Unique identifier for the model.
--   **model_type** (`object`): Set either `binary_classification` and/or `regression` to `true`. This decides which metrics will be shown.
+-   **model_type** (`object`): Specifies the type of model.
+    -   **regression** (`boolean`): Set to `true` to enable regression metrics.
+    -   **binary_classification** (`boolean`): Set to `true` to enable binary classification metrics.
+-   **provide_reference** (`boolean`): Set to `true` if providing a reference dataset for comparison. If `false`, the system will split the first uploaded dataset to use as a reference.
+
+#### Notes:
+The reference dataset should be in the exact same format as the data file outlined in the config. It should be in /data/reference_data.csv. If the reference dataset is not provided, the system will use the first uploaded dataset as the reference, only if it is a large enough dataset to be statistically significant when split.
 
 #### Example
 ```json
@@ -22,7 +28,8 @@ The configuration file is structured into five sections: `model_config`, `column
     "model_id": "bone_age_01",
     "model_type": {
         "regression": true,
-        "binary_classification": true
+        "binary_classification": true,
+    "provide_reference": true
     }
 },
 ```
@@ -72,23 +79,57 @@ Defines how to map your data columns to the required schema properties. If a req
 ```
 ### validation_rules
 
-Specifies the valid ranges or acceptable values for each feature to ensure data quality and accuracy during analysis.
+Specifies the valid ranges or acceptable values for each feature to ensure data quality and accuracy during analysis. Validation rules can either be a numerical range (defined by an inclusive min and max value), or an enum (set of strings or booleans).
 
-The valid formats are \
-"feature_name": [min, max] \
-"feature_name": ["str1", "str2", "str3", ...]
+Enum example:
+-   **feature_name** (`string`): The name of the feature.
+    -   **type** (`string`): The type of validation rule. Set to `range` for numerical ranges, or `enum` for a set of acceptable values.
+    -   **values** (`list`): The list of acceptable values for an enum
+
+Range example:
+-   **feature_name** (`string`): The name of the feature.
+    -   **type** (`string`): The type of validation rule. Set to `range` for numerical ranges, or `enum` for a set of acceptable values.
+    -   **min** (`number`): The minimum value for the range.
+    -   **max** (`number`): The maximum value for the range.
 
 ### Example
 ```json
-"validation_rules": {
-    "sex": ["M", "F"],
-    "chronological_age": [0, 400],
-    "standard_deviation": [0, 13.05],
-    "two_standard_deviations": [0, 26.1],
-    "upper_limit": [0, 300],
-    "lower_limit": [0, 300],
-    "closest_age": [0, 216]
-}
+    "validation_rules": {
+        "sex": {
+            "type": "enum",
+            "values": ["M", "F"]
+        },
+        "chronological_age": {
+            "type": "range",
+            "min": 0,
+            "max": 400
+        },
+        "standard_deviation": {
+            "type": "range",
+            "min": 0,
+            "max": 13.05
+        },
+        "two_standard_deviations": {
+            "type": "range",
+            "min": 0,
+            "max": 26.1
+        },
+        "upper_limit": {
+            "type": "range",
+            "min": 0,
+            "max": 300
+        },
+        "lower_limit": {
+            "type": "range",
+            "min": 0,
+            "max": 300
+        },
+        "closest_age": {
+            "type": "range",
+            "min": 0,
+            "max": 216
+        }
+    }
 ```
 ### tests
 

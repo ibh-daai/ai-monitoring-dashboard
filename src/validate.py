@@ -20,10 +20,10 @@ def load_config(filepath):
             return json.load(file)
     except FileNotFoundError:
         logger.error(f"Config file not found: {filepath}")
-        raise
+        raise FileNotFoundError(f"Config file not found: {filepath}")
     except json.JSONDecodeError:
         logger.error("Error decoding JSON config.")
-        raise
+        raise json.JSONDecodeError("Error decoding JSON config.")
 
 
 def config_mappings(json_obj, cols={}):
