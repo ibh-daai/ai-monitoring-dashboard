@@ -3,8 +3,8 @@ ETL pipeline script. This script is responsible for loading, validating, and spl
 """
 
 import os
-from data_handler import load_data
-from validate import validate_data, load_config
+from src.data_handler import load_data
+from src.validate import validate_data, load_config
 import pandas as pd
 import logging
 

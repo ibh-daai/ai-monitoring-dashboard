@@ -1,10 +1,7 @@
 """
 File to handle data ingestion and validation
 """
-
 import pandas as pd
-from validate import validate_data
-
 
 def load_data(file_path: str, reference_path: str = None) -> pd.DataFrame:
     """
