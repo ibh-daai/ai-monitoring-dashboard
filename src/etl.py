@@ -4,7 +4,8 @@ ETL pipeline script. This script is responsible for loading, validating, and spl
 
 import os
 from src.data_handler import load_data
-from src.validate import validate_data, load_config
+from src.validate import validate_data
+from src.config_manager import get_config
 import pandas as pd
 import logging
 
@@ -60,7 +61,7 @@ def etl_pipeline(
     """
     ETL pipeline for loading, validating, and possibly splitting data.
     """
-    config = load_config("config/config.json")
+    config = get_config()
     data = main_load_and_validate(config, file_path)
 
     # Split the data into reference and current data if required

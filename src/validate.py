@@ -6,24 +6,10 @@ import pandas as pd
 import json
 import jsonschema
 import logging
+from src.config_manager import get_config
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-
-def load_config(filepath):
-    """
-    Load configuration file.
-    """
-    try:
-        with open(filepath, "r") as file:
-            return json.load(file)
-    except FileNotFoundError:
-        logger.error(f"Config file not found: {filepath}")
-        raise FileNotFoundError(f"Config file not found: {filepath}")
-    except json.JSONDecodeError:
-        logger.error("Error decoding JSON config.")
-        raise json.JSONDecodeError("Error decoding JSON config.")
 
 
 def config_mappings(json_obj, cols={}):
@@ -176,7 +162,7 @@ def validate_data(data: pd.DataFrame) -> bool:
     Main function to validate the data in a DataFrame
     """
     # load the JSON config file
-    config = load_config("config/config.json")
+    config = get_config()
 
     # extract model type from the config file
     model_type = config["model_config"]["model_type"]
@@ -227,6 +213,6 @@ def validate_data(data: pd.DataFrame) -> bool:
 
     # validate schema for each row of the DataFrame
     validate_schema(data, mapping)
-    
+
     logger.info("Data validation successful")
     return True
