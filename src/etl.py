@@ -5,7 +5,6 @@ ETL pipeline script. This script is responsible for loading, validating, and spl
 import os
 from src.data_handler import load_data
 from src.validate import validate_data
-from src.config_manager import get_config
 import pandas as pd
 import logging
 
@@ -20,21 +19,23 @@ def main_load_and_validate(config, file_path: str) -> pd.DataFrame:
     data, _ = load_data(file_path)
 
     # Validate the data
-    if not validate_data(data):
+    if not validate_data(data, config):
         logger.error(f"Data validation failed for main dataset: {file_path}")
         raise ValueError("Main data validation failed")
 
     return data
 
 
-def reference_load_and_validate(config, file_path: str, reference_path: str) -> pd.DataFrame:
+def reference_load_and_validate(
+    config, file_path: str, reference_path: str
+) -> pd.DataFrame:
     """
     Load and validate reference data from a CSV file
     """
     _, reference_data = load_data(file_path, reference_path)
 
     # Validate the reference data if provided
-    if not validate_data(reference_data):
+    if not validate_data(reference_data, config):
         logger.error("Reference data validation failed")
         raise ValueError("Reference data validation failed")
 
@@ -56,12 +57,11 @@ def split_to_reference_data(data: pd.DataFrame, reference_size=0.25) -> pd.DataF
 
 
 def etl_pipeline(
-    file_path: str, reference_path: str
+    file_path: str, reference_path: str, config
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
     ETL pipeline for loading, validating, and possibly splitting data.
     """
-    config = get_config()
     data = main_load_and_validate(config, file_path)
 
     # Split the data into reference and current data if required

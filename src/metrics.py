@@ -2,9 +2,8 @@
 File to handle metric report generation with Evidently AI. Split file into data, regression, and classification metrics. Integrate with ETL pipeline.
 """
 
-from unicodedata import numeric
 from sklearn.exceptions import UndefinedMetricWarning
-from src.config_manager import get_config
+from src.config_manager import load_config
 from src.etl import etl_pipeline
 from evidently import ColumnMapping
 from evidently.report import Report
@@ -191,13 +190,15 @@ def main():
     warnings.simplefilter(action="ignore", category=UndefinedMetricWarning)
 
     # Load the JSON config file
-    config = get_config()
+    config = load_config()
 
     # Extract model type from the config file
     model_type = config["model_config"]["model_type"]
 
     # Load the data
-    data, reference_data = etl_pipeline("data/data.csv", "data/reference_data.csv")
+    data, reference_data = etl_pipeline(
+        "data/data.csv", "data/reference_data.csv", config
+    )
 
     # Generate the metrics report
     generate_report(data, reference_data, config, model_type)

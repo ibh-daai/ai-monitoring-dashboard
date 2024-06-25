@@ -6,7 +6,6 @@ import pandas as pd
 import json
 import jsonschema
 import logging
-from src.config_manager import get_config
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -157,13 +156,10 @@ def validate_schema(data: pd.DataFrame, mapping) -> bool:
     return True
 
 
-def validate_data(data: pd.DataFrame) -> bool:
+def validate_data(data: pd.DataFrame, config) -> bool:
     """
     Main function to validate the data in a DataFrame
     """
-    # load the JSON config file
-    config = get_config()
-
     # extract model type from the config file
     model_type = config["model_config"]["model_type"]
 

@@ -5,7 +5,7 @@ Script to test the metrics code.
 import pytest
 import pandas as pd
 from src.metrics import generate_report
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 
 @pytest.fixture
@@ -39,7 +39,7 @@ def mock_config(monkeypatch):
             "diabetes": {"type": "enum", "values": [1, 0]},
         },
     }
-    monkeypatch.setattr("src.metrics.load_config", lambda x: config)
+    #monkeypatch.setattr("src.config_manager.load_config", lambda x: config)
     return config
 
 
@@ -84,7 +84,8 @@ def test_generate_report(mock_config, mock_data, mock_reference_data):
         "src.metrics.regression_report"
     ) as mock_regression_report:
 
-        generate_report(mock_data, mock_reference_data, mock_config)
+        model_type = mock_config["model_config"]["model_type"]
+        generate_report(mock_data, mock_reference_data, mock_config, model_type)
 
         # Check that data report and classification report are called
         mock_data_report.assert_called_once()
