@@ -2,7 +2,6 @@ import pytest
 import pandas as pd
 from src.validate import validate_data
 
-
 @pytest.fixture
 def correct_data():
     return pd.DataFrame(
@@ -47,8 +46,8 @@ def including_regression():
 
 # Mocking configuration load using pytest fixture
 @pytest.fixture
-def mock_config(monkeypatch):
-    config = {
+def mock_config():
+    return {
         "model_config": {
             "model_type": {"regression": False, "binary_classification": True}
         },
@@ -84,13 +83,11 @@ def mock_config(monkeypatch):
             "alcohol": {"type": "enum", "values": [True, False]},
         },
     }
-    monkeypatch.setattr("src.validate.load_config", lambda x: config)
-
 
 # Tests using the fixtures
 def test_validate_data_correct(correct_data, mock_config):
-    assert validate_data(correct_data) == True
+    assert validate_data(correct_data, mock_config) == True
 
 
 def test_validate_data_including_regression(including_regression, mock_config):
-    assert validate_data(including_regression) == True
+    assert validate_data(including_regression, mock_config) == True

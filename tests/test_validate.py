@@ -4,6 +4,46 @@ from src.validate import validate_data
 import numpy as np
 
 
+# Mocking configuration load using pytest fixture
+@pytest.fixture
+def mock_config():
+    return {
+        "model_config": {
+            "model_type": {"regression": True, "binary_classification": True}
+        },
+        "columns": {
+            "study_id": "StudyID",
+            "model_id": "ModelID",
+            "predictions": {
+                "regression_prediction": "regression_output",
+                "classification_prediction": "classification",
+            },
+            "labels": {
+                "regression_label": "label",
+                "classification_label": "classification_label",
+            },
+            "features": [
+                "sex",
+                "age",
+                "ethnicity",
+                "height",
+                "weight",
+                "smoker",
+                "alcohol",
+            ],
+            "timestamp": None,
+        },
+        "validation_rules": {
+            "sex": {"type": "enum", "values": ["M", "F"]},
+            "age": {"type": "range", "min": 0, "max": 120},
+            "ethnicity": {"type": "enum", "values": ["White", "Black", "Asian"]},
+            "height": {"type": "range", "min": 50, "max": 250},
+            "weight": {"type": "range", "min": 2, "max": 500},
+            "smoker": {"type": "enum", "values": [True, False]},
+            "alcohol": {"type": "enum", "values": [True, False]},
+        },
+    }
+
 @pytest.fixture
 def correct_data():
     return pd.DataFrame(
@@ -117,72 +157,31 @@ def missing_regression_output():
         }
     )
 
-# Mocking configuration load using pytest fixture
-@pytest.fixture
-def mock_config(monkeypatch):
-    config = {
-        "model_config": {
-            "model_type": {"regression": True, "binary_classification": True}
-        },
-        "columns": {
-            "study_id": "StudyID",
-            "model_id": "ModelID",
-            "predictions": {
-                "regression_prediction": "regression_output",
-                "classification_prediction": "classification",
-            },
-            "labels": {
-                "regression_label": "label",
-                "classification_label": "classification_label",
-            },
-            "features": [
-                "sex",
-                "age",
-                "ethnicity",
-                "height",
-                "weight",
-                "smoker",
-                "alcohol",
-            ],
-            "timestamp": None,
-        },
-        "validation_rules": {
-            "sex": {"type": "enum", "values": ["M", "F"]},
-            "age": {"type": "range", "min": 0, "max": 120},
-            "ethnicity": {"type": "enum", "values": ["White", "Black", "Asian"]},
-            "height": {"type": "range", "min": 50, "max": 250},
-            "weight": {"type": "range", "min": 2, "max": 500},
-            "smoker": {"type": "enum", "values": [True, False]},
-            "alcohol": {"type": "enum", "values": [True, False]},
-        },
-    }
-    monkeypatch.setattr("src.validate.load_config", lambda x: config)
-
 
 # Tests using the fixtures
 def test_validate_correct_data(correct_data, mock_config):
-    assert validate_data(correct_data) == True
+    assert validate_data(correct_data, mock_config) == True
 
 
 def test_validate_wrong_types(data_with_wrong_types, mock_config):
     with pytest.raises(ValueError):
-        validate_data(data_with_wrong_types)
+        validate_data(data_with_wrong_types, mock_config)
 
 
 def test_validate_empty_data(empty_data, mock_config):
     with pytest.raises(ValueError):
-        validate_data(empty_data)
+        validate_data(empty_data, mock_config)
 
 
 def test_validate_large_data(large_data, mock_config):
-    assert validate_data(large_data) == True
+    assert validate_data(large_data, mock_config) == True
 
 
 def test_validate_corrupted_data(corrupted_data, mock_config):
     with pytest.raises(ValueError):
-        validate_data(corrupted_data)
+        validate_data(corrupted_data, mock_config)
 
 
 def test_validate_missing_regression_output(missing_regression_output, mock_config):
     with pytest.raises(ValueError):
-        validate_data(missing_regression_output)
+        validate_data(missing_regression_output, mock_config)
