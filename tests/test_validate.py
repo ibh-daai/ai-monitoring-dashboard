@@ -14,6 +14,9 @@ def mock_config():
         "columns": {
             "study_id": "StudyID",
             "model_id": "ModelID",
+            "sex": "sex",
+            "hospital": "hospital",
+            "age": "age",
             "predictions": {
                 "regression_prediction": "regression_output",
                 "classification_prediction": "classification",
@@ -23,8 +26,6 @@ def mock_config():
                 "classification_label": "classification_label",
             },
             "features": [
-                "sex",
-                "age",
                 "ethnicity",
                 "height",
                 "weight",
@@ -35,6 +36,7 @@ def mock_config():
         },
         "validation_rules": {
             "sex": {"type": "enum", "values": ["M", "F"]},
+            "hospital": {"type": "enum", "values": ["hospital1", "hospital2"]},
             "age": {"type": "range", "min": 0, "max": 120},
             "ethnicity": {"type": "enum", "values": ["White", "Black", "Asian"]},
             "height": {"type": "range", "min": 50, "max": 250},
@@ -44,18 +46,20 @@ def mock_config():
         },
     }
 
+
 @pytest.fixture
 def correct_data():
     return pd.DataFrame(
         {
             "StudyID": ["001", "002", "003"],
             "ModelID": ["Model1", "Model1", "Model1"],
+            "sex": ["M", "F", "M"],
+            "hospital": ["hospital1", "hospital2", "hospital1"],
+            "age": [9, 11, 34],
             "regression_output": [17.1, 20.5, 30],
             "classification": [1, 0, 0],
             "label": [10, 20, 30],
             "classification_label": [1, 0, 1],
-            "sex": ["M", "F", "M"],
-            "age": [9, 11, 34],
             "ethnicity": ["White", "Black", "Asian"],
             "height": [180, 160, 200],
             "weight": [80, 70, 75],
@@ -71,12 +75,13 @@ def data_with_wrong_types():
         {
             "StudyID": ["001", "002", "003"],
             "ModelID": ["Model1", "Model1", "Model1"],
+            "sex": ["M", "F", "M"],
+            "hospital": ["hospital1", "hospital2", "hospital1"],
+            "age": [9, 11, 34],
             "regression_output": ["ten", "twenty", "thirty"],  # Expected numeric
             "classification": [1, 0, 0],
             "label": [10, 20, 30],
             "classification_label": [1, 0, 1],
-            "sex": ["M", "F", "M"],
-            "age": [9, 11, 34],
             "ethnicity": ["White", "Black", "Asian"],
             "height": [180, 160, 170],
             "weight": [80, 70, 75],
@@ -98,12 +103,13 @@ def large_data():
         {
             "StudyID": ["ID" + str(i) for i in range(num_entries)],
             "ModelID": ["Model1"] * num_entries,
+            "sex": ["M", "F"] * (num_entries // 2),
+            "age": [i % 100 for i in range(num_entries)],
+            "hospital": ["hospital1", "hospital2"] * (num_entries // 2),
             "regression_output": [i % 100 for i in range(num_entries)],
             "classification": [i % 2 for i in range(num_entries)],
             "label": [i % 100 for i in range(num_entries)],
             "classification_label": [i % 2 for i in range(num_entries)],
-            "sex": ["M", "F"] * (num_entries // 2),
-            "age": [i % 100 for i in range(num_entries)],
             "ethnicity": ["White", "Black", "Asian"] * (num_entries // 3) + ["White"],
             "height": [180, 160, 170] * (num_entries // 3) + [180],
             "weight": [80, 70, 75] * (num_entries // 3) + [80],
@@ -119,6 +125,9 @@ def corrupted_data():
         {
             "StudyID": ["001", "002", "003"],
             "ModelID": ["Model1", "Model1", "Model1"],
+            "sex": ["M", "F", "M"],
+            "hospital": ["hospital1", "hospital2", "hospital1"],
+            "age": [9, 11, 34],
             "regression_output": [
                 10,
                 20,
@@ -127,8 +136,6 @@ def corrupted_data():
             "classification": [1, 0, 0],
             "label": [10, 20, 30],
             "classification_label": [1, 0, 1],
-            "sex": ["M", "F", "M"],
-            "age": [9, 11, 34],
             "ethnicity": ["White", "Black", "Asian"],
             "height": [180, 160, 170],
             "weight": [80, 70, 75],
@@ -137,18 +144,20 @@ def corrupted_data():
         }
     )
 
+
 @pytest.fixture
 def missing_regression_output():
     return pd.DataFrame(
         {
             "StudyID": ["001", "002", "003"],
             "ModelID": ["Model1", "Model1", "Model1"],
+            "sex": ["M", "F", "M"],
+            "hospital": ["hospital1", "hospital2", "hospital1"],
+            "age": [9, 11, 34],
             # missing regression_output
             "classification": [1, 0, 0],
             "label": [10, 20, 30],
             "classification_label": [1, 0, 1],
-            "sex": ["M", "F", "M"],
-            "age": [9, 11, 34],
             "ethnicity": ["White", "Black", "Asian"],
             "height": [180, 160, 200],
             "weight": [80, 70, 75],

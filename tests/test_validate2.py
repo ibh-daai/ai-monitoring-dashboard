@@ -2,18 +2,20 @@ import pytest
 import pandas as pd
 from src.validate import validate_data
 
+
 @pytest.fixture
 def correct_data():
     return pd.DataFrame(
         {
             "StudyID": ["001", "002", "003"],
             "ModelID": ["Model1", "Model1", "Model1"],
+            "sex": ["M", "F", "M"],
+            "hospital": ["hospital1", "hospital2", "hospital1"],
+            "age": [9, 11, 34],
             # "regression_output": [17.1, 20.5, 30],
             "classification": [1, 0, 0],
             # "label": [10, 20, 30],
             "classification_label": [1, 0, 1],
-            "sex": ["M", "F", "M"],
-            "age": [9, 11, 34],
             "ethnicity": ["White", "Black", "Asian"],
             "height": [180, 160, 200],
             "weight": [80, 70, 75],
@@ -29,12 +31,13 @@ def including_regression():
         {
             "StudyID": ["001", "002", "003"],
             "ModelID": ["Model1", "Model1", "Model1"],
+            "sex": ["M", "F", "M"],
+            "age": [9, 11, 34],
+            "hospital": ["hospital1", "hospital2", "hospital1"],
             "regression_output": [17.1, 20.5, 30],
             "classification": [1, 0, 0],
             "label": [10, 20, 30],
             "classification_label": [1, 0, 1],
-            "sex": ["M", "F", "M"],
-            "age": [9, 11, 34],
             "ethnicity": ["White", "Black", "Asian"],
             "height": [180, 160, 200],
             "weight": [80, 70, 75],
@@ -54,6 +57,9 @@ def mock_config():
         "columns": {
             "study_id": "StudyID",
             "model_id": "ModelID",
+            "sex": "sex",
+            "hospital": "hospital",
+            "age": "age",
             "predictions": {
                 "regression_prediction": None,
                 "classification_prediction": "classification",
@@ -63,8 +69,6 @@ def mock_config():
                 "classification_label": "classification_label",
             },
             "features": [
-                "sex",
-                "age",
                 "ethnicity",
                 "height",
                 "weight",
@@ -75,6 +79,7 @@ def mock_config():
         },
         "validation_rules": {
             "sex": {"type": "enum", "values": ["M", "F"]},
+            "hospital": {"type": "enum", "values": ["hospital1", "hospital2"]},
             "age": {"type": "range", "min": 0, "max": 120},
             "ethnicity": {"type": "enum", "values": ["White", "Black", "Asian"]},
             "height": {"type": "range", "min": 50, "max": 250},
@@ -83,6 +88,7 @@ def mock_config():
             "alcohol": {"type": "enum", "values": [True, False]},
         },
     }
+
 
 # Tests using the fixtures
 def test_validate_data_correct(correct_data, mock_config):

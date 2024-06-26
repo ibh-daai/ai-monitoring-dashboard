@@ -17,6 +17,9 @@ def mock_config(monkeypatch):
         "columns": {
             "study_id": "StudyID",
             "model_id": "ModelID",
+            "sex": "sex",
+            "hospital": "hospital",
+            "age": "age",
             "predictions": {
                 "regression_prediction": None,
                 "classification_prediction": "class",
@@ -25,11 +28,12 @@ def mock_config(monkeypatch):
                 "regression_label": None,
                 "classification_label": "class_true",
             },
-            "features": ["sex", "age", "bmi", "exercise_frequency", "diabetes"],
+            "features": ["bmi", "exercise_frequency", "diabetes"],
             "timestamp": "date",
         },
         "validation_rules": {
             "sex": {"type": "enum", "values": ["M", "F"]},
+            "hospital": {"type": "enum", "values": ["hospital1", "hospital2"]},
             "age": {"type": "range", "min": 0, "max": 120},
             "bmi": {"type": "range", "min": 0, "max": 50},
             "exercise_frequency": {
@@ -39,7 +43,7 @@ def mock_config(monkeypatch):
             "diabetes": {"type": "enum", "values": [1, 0]},
         },
     }
-    #monkeypatch.setattr("src.config_manager.load_config", lambda x: config)
+    # monkeypatch.setattr("src.config_manager.load_config", lambda x: config)
     return config
 
 
@@ -49,10 +53,11 @@ def mock_data():
         {
             "StudyID": [1, 2, 3, 4],
             "ModelID": [1, 2, 3, 4],
+            "sex": ["M", "F", "M", "F"],
+            "hospital": ["hospital1", "hospital2", "hospital1", "hospital2"],
+            "age": [25, 30, 35, 40],
             "class": [1, 0, 1, 0],
             "class_true": [1, 0, 1, 0],
-            "sex": ["M", "F", "M", "F"],
-            "age": [25, 30, 35, 40],
             "bmi": [20, 25, 30, 35],
             "exercise_frequency": ["daily", "monthly", "weekly", "never"],
             "diabetes": [1, 0, 1, 1],
@@ -66,10 +71,11 @@ def mock_reference_data():
         {
             "StudyID": [1, 2, 3, 4],
             "ModelID": [1, 2, 3, 4],
+            "sex": ["M", "F", "M", "F"],
+            "hospital": ["hospital1", "hospital2", "hospital1", "hospital2"],
+            "age": [25, 30, 35, 40],
             "class": [1, 0, 1, 1],
             "class_true": [1, 0, 1, 0],
-            "sex": ["M", "M", "M", "F"],
-            "age": [25, 30, 38, 20],
             "bmi": [20, 28, 40, 32],
             "exercise_frequency": ["daily", "monthly", "never", "weekly"],
             "diabetes": [0, 0, 1, 0],

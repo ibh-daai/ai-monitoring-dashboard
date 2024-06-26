@@ -23,6 +23,10 @@ from evidently.metrics import (
     ClassificationClassBalance,
 )
 import warnings
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 # split the features into numerical and categorical based on the validation rules
@@ -43,37 +47,34 @@ def split_features(validation_rules):
 
 
 def setup_column_mapping(config, report_type):
-    mapping = ColumnMapping()
+    """
+    Configure column mapping for different types of reports based on the configuration.
+    """
     features = split_features(config["validation_rules"])
     numerical_features, categorical_features = features
-    mapping.numerical = numerical_features
-    mapping.categorical = categorical_features
+
+    mapping = ColumnMapping()
     mapping.id = config["columns"]["study_id"]
     mapping.datetime = config["columns"]["timestamp"]
-    if report_type == "data":
-        model_type = config["model_config"]["model_type"]
-        predictions = config["columns"]["predictions"]
-        labels = config["columns"]["labels"]
+    mapping.numerical = numerical_features
+    mapping.categorical = categorical_features
 
-        if model_type["regression"]:
-            mapping.prediction = predictions["regression_prediction"]
-            mapping.target = labels["regression_label"]
-            if model_type["binary_classification"]:
-                categorical_features += [
-                    predictions["classification_prediction"],
-                    labels["classification_label"],
-                ]
-        else:
-            mapping.prediction = predictions["classification_prediction"]
-            mapping.target = labels["classification_label"]
+    predictions = config["columns"]["predictions"]
+    labels = config["columns"]["labels"]
+
+    if report_type == "data":
+        mapping.target = labels["regression_label"]
+        mapping.prediction = predictions["regression_prediction"]
+        if config["model_config"]["model_type"]["binary_classification"]:
+            categorical_features.append(predictions["classification_prediction"])
+            categorical_features.append(labels["classification_label"])
     elif report_type == "regression":
-        mapping.target = config["columns"]["labels"]["regression_label"]
-        mapping.prediction = config["columns"]["predictions"]["regression_prediction"]
+        mapping.target = labels["regression_label"]
+        mapping.prediction = predictions["regression_prediction"]
     elif report_type == "classification":
-        mapping.target = config["columns"]["labels"]["classification_label"]
-        mapping.prediction = config["columns"]["predictions"][
-            "classification_prediction"
-        ]
+        mapping.target = labels["classification_label"]
+        mapping.prediction = predictions["classification_prediction"]
+
     return mapping
 
 
@@ -82,7 +83,6 @@ def data_report(data, reference_data, config):
     Generate data quality metrics report.
     """
     data_mapping = setup_column_mapping(config, "data")
-
     """
     Data Quality Report:
     - Dataset Summary Metric: Summary statistics for the dataset
@@ -110,7 +110,6 @@ def regression_report(data, reference_data, config):
     Generate regression metrics report.
     """
     regression_mapping = setup_column_mapping(config, "regression")
-
     """
     Regression Report:
         - Regression Quality Metric: Regression quality metrics (RMSE, ME, MAE, MAPE, Max AE)
@@ -143,7 +142,6 @@ def classification_report(data, reference_data, config):
     Generate classification metrics report.
     """
     classification_mapping = setup_column_mapping(config, "classification")
-
     """
     Classification Report:
         - Classification Quality Metric: Classification quality metrics (Accuracy, F1, Precision, Recall)

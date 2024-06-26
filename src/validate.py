@@ -69,6 +69,9 @@ def construct_nested_json(row, mapping):
     output = {
         "study_id": row[mapping["study_id"]],
         "model_id": row[mapping["model_id"]],
+        "sex": row[mapping["sex"]],
+        "hospital": row[mapping["hospital"]],
+        "age": row[mapping["age"]],
         "predictions": {},
         "labels": {},
         "features": {key: row[key] for key in mapping["features"] if key in row},

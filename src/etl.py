@@ -34,8 +34,12 @@ def reference_load_and_validate(
     """
     _, reference_data = load_data(file_path, reference_path)
 
-    # Validate the reference data if provided
-    if not validate_data(reference_data, config):
+    # Check if reference data is provided
+    if reference_data.empty:
+        logger.warning("Reference data file is empty or not provided.")
+        return None
+    # Validate the reference data
+    elif not validate_data(reference_data, config):
         logger.error("Reference data validation failed")
         raise ValueError("Reference data validation failed")
 

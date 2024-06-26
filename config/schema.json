@@ -13,6 +13,18 @@
                     "model_id": {
                         "type": ["string", "number"]
                     },
+                    "sex": {
+                        "type": ["string", "null"],
+                        "default": null
+                    },
+                    "hospital": {
+                        "type": ["string", "null"],
+                        "default": null
+                    },
+                    "age": {
+                        "type": ["number", "null"],
+                        "default": null
+                    },
                     "predictions": {
                         "type": "object",
                         "properties": {

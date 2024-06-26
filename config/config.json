@@ -10,6 +10,9 @@
     "columns": {
         "study_id": "StudyID",
         "model_id": "ModelID",
+        "sex": "sex",
+        "hospital": "hospital",
+        "age": "chronological_age",
         "predictions": {
             "regression_prediction": "predicted_age",
             "classification_prediction": "classification"
@@ -19,8 +22,6 @@
             "classification_label": "classification_label"
         },
         "features": [
-            "sex",
-            "chronological_age",
             "standard_deviation",
             "two_standard_deviations",
             "upper_limit",
@@ -33,6 +34,10 @@
         "sex": {
             "type": "enum",
             "values": ["M", "F"]
+        },
+        "hospital": {
+            "type": "enum",
+            "values": ["Credit Valley Hospital", "Mississauga Hospital", "Queensway Hospital"]
         },
         "chronological_age": {
             "type": "range",
