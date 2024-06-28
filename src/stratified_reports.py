@@ -14,8 +14,8 @@ Reports (9 total):
 """
 
 import pandas as pd
-from config_manager import load_config
-from metrics import generate_report
+from src.config_manager import load_config
+from src.metrics import generate_report
 
 
 """
