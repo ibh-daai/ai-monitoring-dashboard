@@ -3,8 +3,8 @@ File to handle metric report generation with Evidently AI. Split file into data,
 """
 
 from sklearn.exceptions import UndefinedMetricWarning
-from src.config_manager import load_config
-from src.etl import etl_pipeline
+from config_manager import load_config
+from etl import etl_pipeline
 from evidently import ColumnMapping
 from evidently.report import Report
 from evidently.metrics import (
@@ -24,9 +24,21 @@ from evidently.metrics import (
 )
 import warnings
 import logging
+import os
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+
+def ensure_directory(directory):
+    """
+    Check if the directory exists and create it if it doesn't.
+    """
+    base_dir = "reports/"
+    full_path = os.path.join(base_dir, directory)
+    print(f"Directory {full_path} created.")
+    if not os.path.exists(full_path):
+        os.makedirs(full_path)
 
 
 # split the features into numerical and categorical based on the validation rules
@@ -74,14 +86,18 @@ def setup_column_mapping(config, report_type):
     elif report_type == "classification":
         mapping.target = labels["classification_label"]
         mapping.prediction = predictions["classification_prediction"]
+    else:
+        logger.error("Incorrect report type")
+        raise ValueError("Incorrect report type")
 
     return mapping
 
 
-def data_report(data, reference_data, config):
+def data_report(data, reference_data, config, folder_path="reports"):
     """
     Generate data quality metrics report.
     """
+    ensure_directory(folder_path)
     data_mapping = setup_column_mapping(config, "data")
     """
     Data Quality Report:
@@ -102,13 +118,14 @@ def data_report(data, reference_data, config):
     data_quality_report.run(
         reference_data=reference_data, current_data=data, column_mapping=data_mapping
     )
-    data_quality_report.save_html("reports/data_quality_report.html")
+    data_quality_report.save_html(f"reports/{folder_path}/data_quality_report.html")
 
 
-def regression_report(data, reference_data, config):
+def regression_report(data, reference_data, config, folder_path="reports"):
     """
     Generate regression metrics report.
     """
+    ensure_directory(folder_path)
     regression_mapping = setup_column_mapping(config, "regression")
     """
     Regression Report:
@@ -134,13 +151,14 @@ def regression_report(data, reference_data, config):
         current_data=data,
         column_mapping=regression_mapping,
     )
-    regression_report.save_html("reports/regression_report.html")
+    regression_report.save_html(f"reports/{folder_path}/regression_report.html")
 
 
-def classification_report(data, reference_data, config):
+def classification_report(data, reference_data, config, folder_path="reports"):
     """
     Generate classification metrics report.
     """
+    ensure_directory(folder_path)
     classification_mapping = setup_column_mapping(config, "classification")
     """
     Classification Report:
@@ -160,23 +178,23 @@ def classification_report(data, reference_data, config):
         current_data=data,
         column_mapping=classification_mapping,
     )
-    classification_report.save_html("reports/classification_report.html")
+    classification_report.save_html(f"reports/{folder_path}/classification_report.html")
 
 
-def generate_report(data, reference_data, config, model_type):
+def generate_report(data, reference_data, config, model_type, folder_path="reports"):
     """
     Generate the metrics report based on the model type.
     """
     # Generate the data quality metrics report
-    data_report(data, reference_data, config)
+    data_report(data, reference_data, config, folder_path)
 
     # Generate the regression metrics report
     if model_type["regression"]:
-        regression_report(data, reference_data, config)
+        regression_report(data, reference_data, config, folder_path)
 
     # Generate the classification metrics report
     if model_type["binary_classification"]:
-        classification_report(data, reference_data, config)
+        classification_report(data, reference_data, config, folder_path)
 
 
 def main():

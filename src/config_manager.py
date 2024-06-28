@@ -5,7 +5,7 @@ File to load the JSON config file globally so it doesn't have to be loaded in ev
 import json
 
 
-def load_config(filepath="config/config.json"):
+def load_config(filepath="config/config.json"): 
     """
     Load the JSON config file
     """
