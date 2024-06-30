@@ -123,7 +123,7 @@ def data_report(
     data_quality_report.run(
         reference_data=reference_data, current_data=data, column_mapping=data_mapping
     )
-    data_quality_report.save_html(f"reports/{folder_path}/data_quality_report.html")
+    data_quality_report.save(f"reports/{folder_path}/data_quality_report.json")
 
 
 def regression_report(
@@ -161,7 +161,7 @@ def regression_report(
         current_data=data,
         column_mapping=regression_mapping,
     )
-    regression_report.save_html(f"reports/{folder_path}/regression_report.html")
+    regression_report.save(f"reports/{folder_path}/regression_report.json")
 
 
 def classification_report(
@@ -193,7 +193,7 @@ def classification_report(
         current_data=data,
         column_mapping=classification_mapping,
     )
-    classification_report.save_html(f"reports/{folder_path}/classification_report.html")
+    classification_report.save(f"reports/{folder_path}/classification_report.json")
 
 
 def generate_report(
