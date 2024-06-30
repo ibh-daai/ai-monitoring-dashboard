@@ -4,9 +4,11 @@ from src.validate import validate_data
 import numpy as np
 
 
-# Mocking configuration load using pytest fixture
 @pytest.fixture
 def mock_config():
+    """
+    Fixture to mock the configuration file
+    """
     return {
         "model_config": {
             "model_type": {"regression": True, "binary_classification": True}
@@ -49,6 +51,9 @@ def mock_config():
 
 @pytest.fixture
 def correct_data():
+    """
+    Fixture to generate correct data for testing
+    """
     return pd.DataFrame(
         {
             "StudyID": ["001", "002", "003"],
@@ -71,6 +76,9 @@ def correct_data():
 
 @pytest.fixture
 def data_with_wrong_types():
+    """
+    Fixture to generate data with wrong types for testing
+    """
     return pd.DataFrame(
         {
             "StudyID": ["001", "002", "003"],
@@ -93,11 +101,17 @@ def data_with_wrong_types():
 
 @pytest.fixture
 def empty_data():
+    """
+    Fixture to generate empty data for testing
+    """
     return pd.DataFrame()
 
 
 @pytest.fixture
 def large_data():
+    """
+    Fixture to generate larger data for testing
+    """
     num_entries = 1000
     return pd.DataFrame(
         {
@@ -121,6 +135,9 @@ def large_data():
 
 @pytest.fixture
 def corrupted_data():
+    """
+    Fixture to generate corrupted data for testing
+    """
     return pd.DataFrame(
         {
             "StudyID": ["001", "002", "003"],
@@ -147,6 +164,9 @@ def corrupted_data():
 
 @pytest.fixture
 def missing_regression_output():
+    """
+    Fixture to generate data with missing regression output for testing
+    """
     return pd.DataFrame(
         {
             "StudyID": ["001", "002", "003"],

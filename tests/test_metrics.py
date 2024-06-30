@@ -9,7 +9,10 @@ from unittest.mock import patch
 
 
 @pytest.fixture
-def mock_config(monkeypatch):
+def mock_config():
+    """
+    Fixture to mock the configuration file
+    """
     config = {
         "model_config": {
             "model_type": {"regression": False, "binary_classification": True}
@@ -43,12 +46,14 @@ def mock_config(monkeypatch):
             "diabetes": {"type": "enum", "values": [1, 0]},
         },
     }
-    # monkeypatch.setattr("src.config_manager.load_config", lambda x: config)
     return config
 
 
 @pytest.fixture
 def mock_data():
+    """
+    Fixture to generate mock data for testing
+    """
     return pd.DataFrame(
         {
             "StudyID": [1, 2, 3, 4],
@@ -67,6 +72,9 @@ def mock_data():
 
 @pytest.fixture
 def mock_reference_data():
+    """
+    Fixture to generate mock reference data for testing
+    """
     return pd.DataFrame(
         {
             "StudyID": [1, 2, 3, 4],

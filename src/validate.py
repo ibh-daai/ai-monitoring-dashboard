@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def config_mappings(json_obj, cols={}):
+def config_mappings(json_obj: dict, cols: dict = {}) -> dict:
     """
     Extract column mappings from the JSON config file.
     """
@@ -25,7 +25,7 @@ def config_mappings(json_obj, cols={}):
     return cols
 
 
-def extract_columns(mapping, columns, config):
+def extract_columns(mapping: dict, columns: set, config: dict) -> set:
     """
     Extract column names from the mapping based on model configuration.
     """
@@ -62,7 +62,7 @@ def extract_columns(mapping, columns, config):
     return columns
 
 
-def construct_nested_json(row, mapping):
+def construct_nested_json(row: pd.Series, mapping: dict) -> dict:
     """
     Construct JSON structure needed to validate a row of data against the JSON schema.
     """
@@ -96,7 +96,7 @@ def construct_nested_json(row, mapping):
     return {"outputs": [output]}
 
 
-def validate_feature(data, feature, rules):
+def validate_feature(data: pd.DataFrame, feature: str, rules: dict) -> bool:
     """
     Validate a feature in the DataFrame against the rules specified in the JSON config file.
     """
@@ -130,7 +130,7 @@ def validate_feature(data, feature, rules):
     return True
 
 
-def validate_row(row, mapping, schema):
+def validate_row(row: pd.Series, mapping: dict, schema: dict) -> bool:
     """
     Validate a row of data against the JSON schema.
     """
@@ -143,7 +143,7 @@ def validate_row(row, mapping, schema):
         return False
 
 
-def validate_schema(data: pd.DataFrame, mapping) -> bool:
+def validate_schema(data: pd.DataFrame, mapping: dict) -> bool:
     """
     Validate the data in a dataframe against the JSON schema
     """
@@ -159,7 +159,7 @@ def validate_schema(data: pd.DataFrame, mapping) -> bool:
     return True
 
 
-def validate_data(data: pd.DataFrame, config) -> bool:
+def validate_data(data: pd.DataFrame, config: dict) -> bool:
     """
     Main function to validate the data in a DataFrame
     """

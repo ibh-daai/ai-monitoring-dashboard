@@ -2,6 +2,7 @@
 File to handle metric report generation with Evidently AI. Split file into data, regression, and classification metrics. Integrate with ETL pipeline.
 """
 
+import os
 from sklearn.exceptions import UndefinedMetricWarning
 from src.config_manager import load_config
 from src.etl import etl_pipeline
@@ -24,13 +25,13 @@ from evidently.metrics import (
 )
 import warnings
 import logging
-import os
+import pandas as pd
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def ensure_directory(directory):
+def ensure_directory(directory: str) -> None:
     """
     Check if the directory exists and create it if it doesn't.
     """
@@ -41,8 +42,7 @@ def ensure_directory(directory):
         os.makedirs(full_path)
 
 
-# split the features into numerical and categorical based on the validation rules
-def split_features(validation_rules):
+def split_features(validation_rules: dict) -> tuple[list, list]:
     """
     Split the features into numerical and categorical based on the validation rules.
     """
@@ -58,7 +58,7 @@ def split_features(validation_rules):
     return numerical_features, categorical_features
 
 
-def setup_column_mapping(config, report_type):
+def setup_column_mapping(config: dict, report_type: str) -> ColumnMapping:
     """
     Configure column mapping for different types of reports based on the configuration.
     """
@@ -93,7 +93,12 @@ def setup_column_mapping(config, report_type):
     return mapping
 
 
-def data_report(data, reference_data, config, folder_path="reports"):
+def data_report(
+    data: pd.DataFrame,
+    reference_data: pd.DataFrame,
+    config: dict,
+    folder_path: str = "reports",
+) -> None:
     """
     Generate data quality metrics report.
     """
@@ -121,7 +126,12 @@ def data_report(data, reference_data, config, folder_path="reports"):
     data_quality_report.save_html(f"reports/{folder_path}/data_quality_report.html")
 
 
-def regression_report(data, reference_data, config, folder_path="reports"):
+def regression_report(
+    data: pd.DataFrame,
+    reference_data: pd.DataFrame,
+    config: dict,
+    folder_path: str = "reports",
+) -> None:
     """
     Generate regression metrics report.
     """
@@ -154,7 +164,12 @@ def regression_report(data, reference_data, config, folder_path="reports"):
     regression_report.save_html(f"reports/{folder_path}/regression_report.html")
 
 
-def classification_report(data, reference_data, config, folder_path="reports"):
+def classification_report(
+    data: pd.DataFrame,
+    reference_data: pd.DataFrame,
+    config: dict,
+    folder_path: str = "reports",
+) -> None:
     """
     Generate classification metrics report.
     """
@@ -181,7 +196,13 @@ def classification_report(data, reference_data, config, folder_path="reports"):
     classification_report.save_html(f"reports/{folder_path}/classification_report.html")
 
 
-def generate_report(data, reference_data, config, model_type, folder_path="reports"):
+def generate_report(
+    data: pd.DataFrame,
+    reference_data: pd.DataFrame,
+    config: dict,
+    model_type: dict,
+    folder_path: str = "reports",
+) -> None:
     """
     Generate the metrics report based on the model type.
     """

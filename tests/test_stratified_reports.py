@@ -5,6 +5,9 @@ from src.stratified_reports import split_data
 
 @pytest.fixture
 def mock_config():
+    """
+    Fixture to mock the configuration file
+    """
     return {
         "model_config": {
             "model_type": {"regression": True, "binary_classification": True}
@@ -47,6 +50,9 @@ def mock_config():
 
 @pytest.fixture
 def correct_data():
+    """
+    Fixture to generate correct data for testing
+    """
     return pd.DataFrame(
         {
             "StudyID": ["001", "002", "003"],
@@ -88,7 +94,6 @@ def test_split_data_by_hospital(correct_data, mock_config):
 def test_split_data_by_age_tertiles(correct_data, mock_config):
     results = split_data(correct_data, mock_config)
     # These checks assume tertiles are split at the 33rd and 66th percentiles of ages in correct_data
-    # which are 9, 11, and 34. Thus, tertiles would split at around 11 and 22.
     assert all(
         results["age1"]["age"] <= 11
     )  # The first tertile should have the youngest age group
@@ -113,7 +118,7 @@ def test_split_data_completeness(correct_data, mock_config):
         ],
         ignore_index=True,
     )
-    # Deduplicate because the same row will appear in multiple reports if it fits their criteria
+    # Remove duplicates because the same row will appear in multiple reports if it fits their criteria
     combined_df = combined_df.drop_duplicates()
     assert len(combined_df) == len(
         correct_data
