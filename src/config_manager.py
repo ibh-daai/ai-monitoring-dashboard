@@ -1,10 +1,10 @@
 """
-File to load the JSON config file globally so it doesn't have to be loaded in every module.
+File to load the JSON config file.
 """
 
 import json
 
-def load_config(filepath="config/config.json"): 
+def load_config(filepath: str = "config/config.json") -> dict:
     """
     Load the JSON config file
     """

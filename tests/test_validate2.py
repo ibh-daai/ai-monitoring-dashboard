@@ -4,52 +4,10 @@ from src.validate import validate_data
 
 
 @pytest.fixture
-def correct_data():
-    return pd.DataFrame(
-        {
-            "StudyID": ["001", "002", "003"],
-            "ModelID": ["Model1", "Model1", "Model1"],
-            "sex": ["M", "F", "M"],
-            "hospital": ["hospital1", "hospital2", "hospital1"],
-            "age": [9, 11, 34],
-            # "regression_output": [17.1, 20.5, 30],
-            "classification": [1, 0, 0],
-            # "label": [10, 20, 30],
-            "classification_label": [1, 0, 1],
-            "ethnicity": ["White", "Black", "Asian"],
-            "height": [180, 160, 200],
-            "weight": [80, 70, 75],
-            "smoker": [True, False, False],
-            "alcohol": [False, True, True],
-        }
-    )
-
-
-@pytest.fixture
-def including_regression():
-    return pd.DataFrame(
-        {
-            "StudyID": ["001", "002", "003"],
-            "ModelID": ["Model1", "Model1", "Model1"],
-            "sex": ["M", "F", "M"],
-            "age": [9, 11, 34],
-            "hospital": ["hospital1", "hospital2", "hospital1"],
-            "regression_output": [17.1, 20.5, 30],
-            "classification": [1, 0, 0],
-            "label": [10, 20, 30],
-            "classification_label": [1, 0, 1],
-            "ethnicity": ["White", "Black", "Asian"],
-            "height": [180, 160, 200],
-            "weight": [80, 70, 75],
-            "smoker": [True, False, False],
-            "alcohol": [False, True, True],
-        }
-    )
-
-
-# Mocking configuration load using pytest fixture
-@pytest.fixture
 def mock_config():
+    """
+    Fixture to mock the configuration file
+    """
     return {
         "model_config": {
             "model_type": {"regression": False, "binary_classification": True}
@@ -90,10 +48,54 @@ def mock_config():
     }
 
 
-# Tests using the fixtures
-def test_validate_data_correct(correct_data, mock_config):
-    assert validate_data(correct_data, mock_config) == True
+@pytest.fixture
+def correct_data():
+    """
+    Fixture to generate correct data for testing
+    """
+    return pd.DataFrame(
+        {
+            "StudyID": ["001", "002", "003"],
+            "ModelID": ["Model1", "Model1", "Model1"],
+            "sex": ["M", "F", "M"],
+            "hospital": ["hospital1", "hospital2", "hospital1"],
+            "age": [9, 11, 34],
+            # "regression_output": [17.1, 20.5, 30],
+            "classification": [1, 0, 0],
+            # "label": [10, 20, 30],
+            "classification_label": [1, 0, 1],
+            "ethnicity": ["White", "Black", "Asian"],
+            "height": [180, 160, 200],
+            "weight": [80, 70, 75],
+            "smoker": [True, False, False],
+            "alcohol": [False, True, True],
+        }
+    )
 
+
+@pytest.fixture
+def including_regression():
+    """
+    Fixture to generate data including regression output
+    """
+    return pd.DataFrame(
+        {
+            "StudyID": ["001", "002", "003"],
+            "ModelID": ["Model1", "Model1", "Model1"],
+            "sex": ["M", "F", "M"],
+            "age": [9, 11, 34],
+            "hospital": ["hospital1", "hospital2", "hospital1"],
+            "regression_output": [17.1, 20.5, 30],
+            "classification": [1, 0, 0],
+            "label": [10, 20, 30],
+            "classification_label": [1, 0, 1],
+            "ethnicity": ["White", "Black", "Asian"],
+            "height": [180, 160, 200],
+            "weight": [80, 70, 75],
+            "smoker": [True, False, False],
+            "alcohol": [False, True, True],
+        }
+    )
 
 def test_validate_data_including_regression(including_regression, mock_config):
     assert validate_data(including_regression, mock_config) == True

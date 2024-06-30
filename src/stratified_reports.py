@@ -27,7 +27,7 @@ plan:
 """
 
 
-def split_data(data: pd.DataFrame, config) -> dict:
+def split_data(data: pd.DataFrame, config: dict) -> dict:
     """
     Split the data into 9 dataframes for stratified reports
     """
@@ -56,7 +56,7 @@ def split_data(data: pd.DataFrame, config) -> dict:
 
     # Split the data by hospital
     unique_hospitals = data[config["columns"]["hospital"]].unique()
-    for index, hospital in enumerate(unique_hospitals):
+    for hospital in unique_hospitals:
         split_data[hospital] = data[
             data[config["columns"]["hospital"]] == hospital
         ]
@@ -64,7 +64,9 @@ def split_data(data: pd.DataFrame, config) -> dict:
     return split_data
 
 
-def generate_reports(data, reference_data, config, model_type):
+def generate_reports(
+    data: pd.DataFrame, reference_data: pd.DataFrame, config: dict, model_type: dict
+) -> None:
     """
     Generate the reports for each stratified dataset
     """
@@ -90,8 +92,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-"""
-TODO
-- write a test for the code
-"""

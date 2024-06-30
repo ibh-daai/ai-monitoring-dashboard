@@ -12,7 +12,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def main_load_and_validate(config, file_path: str) -> pd.DataFrame:
+def main_load_and_validate(config: dict, file_path: str) -> pd.DataFrame:
     """
     Load and validate data from a CSV file
     """
@@ -27,7 +27,7 @@ def main_load_and_validate(config, file_path: str) -> pd.DataFrame:
 
 
 def reference_load_and_validate(
-    config, file_path: str, reference_path: str
+    config: dict, file_path: str, reference_path: str
 ) -> pd.DataFrame:
     """
     Load and validate reference data from a CSV file
@@ -39,16 +39,19 @@ def reference_load_and_validate(
         logger.warning("Reference data file is empty or not provided.")
         return None
     # Validate the reference data
-    elif not validate_data(reference_data, config):
+    if not validate_data(reference_data, config):
         logger.error("Reference data validation failed")
         raise ValueError("Reference data validation failed")
 
     return reference_data
 
 
-def split_to_reference_data(data: pd.DataFrame, reference_size=0.25) -> pd.DataFrame:
+def split_to_reference_data(
+    data: pd.DataFrame, reference_size: float = 0.25
+) -> pd.DataFrame:
     """
-    Split the data into reference and current data using the sliding window method if required.
+    Split the data into reference and current data.
+    TODO consider removing function, and taking first data ingestion as reference data.
     """
     if len(data) <= 50:
         logger.error("Data length is less than the threshold for splitting. (50)")
@@ -61,7 +64,7 @@ def split_to_reference_data(data: pd.DataFrame, reference_size=0.25) -> pd.DataF
 
 
 def etl_pipeline(
-    file_path: str, reference_path: str, config
+    file_path: str, reference_path: str, config: dict
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
     ETL pipeline for loading, validating, and possibly splitting data.
