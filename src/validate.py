@@ -1,5 +1,5 @@
 """
-Validate the data in a Datafram to ensure it meets the requirements specified in the JSON config file and the JSON schema.
+Validate the data in a Dataframe to ensure it meets the requirements specified in the JSON config file and the JSON schema.
 """
 
 import pandas as pd

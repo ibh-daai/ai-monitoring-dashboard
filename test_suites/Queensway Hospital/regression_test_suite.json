@@ -1,0 +1,929 @@
+{
+  "id": "35129aa0-ffac-4bc5-9685-0f7cba1f0555",
+  "name": null,
+  "timestamp": "2024-07-02T14:09:07.827181",
+  "metadata": {},
+  "tags": [],
+  "suite": {
+    "metrics": [
+      {
+        "type": "evidently.metrics.regression_performance.regression_quality.RegressionQualityMetric",
+        "options": {
+          "color": null,
+          "render": null,
+          "custom": {},
+          "data_definition": null
+        }
+      },
+      {
+        "type": "evidently.metrics.regression_performance.regression_dummy_metric.RegressionDummyMetric",
+        "options": {
+          "color": null,
+          "render": null,
+          "custom": {},
+          "data_definition": null
+        }
+      }
+    ],
+    "metric_results": [
+      {
+        "type": "evidently.metrics.regression_performance.regression_quality.RegressionQualityMetricResults",
+        "columns": {
+          "type": "evidently.metric_results.DatasetColumns",
+          "utility_columns": {
+            "type": "evidently.metric_results.DatasetUtilityColumns",
+            "date": null,
+            "id": "StudyID",
+            "target": "label",
+            "prediction": "predicted_age"
+          },
+          "target_type": "num",
+          "num_feature_names": [
+            "chronological_age",
+            "closest_age",
+            "lower_limit",
+            "standard_deviation",
+            "two_standard_deviations",
+            "upper_limit"
+          ],
+          "cat_feature_names": [
+            "ModelID",
+            "classification",
+            "classification_label",
+            "hospital",
+            "sex"
+          ],
+          "text_feature_names": [],
+          "datetime_feature_names": [],
+          "target_names": null,
+          "task": "regression"
+        },
+        "current": {
+          "type": "evidently.metrics.regression_performance.regression_quality.MoreRegressionMetrics",
+          "r2_score": 0.955469817295879,
+          "rmse": 10.376254944182254,
+          "mean_error": 4.777777777777778,
+          "mean_abs_error": 7.984126984126984,
+          "mean_abs_perc_error": 7.116935945231118,
+          "abs_error_max": 26.0,
+          "underperformance": {
+            "majority": {
+              "mean_error": 3.9245283018867925,
+              "std_error": 6.655966255357132
+            },
+            "underestimation": {
+              "mean_error": -10.75,
+              "std_error": 4.9916597106239795
+            },
+            "overestimation": {
+              "mean_error": 22.666666666666668,
+              "std_error": 2.943920288775949
+            }
+          },
+          "error_std": 9.284820154675023,
+          "abs_error_std": 6.680477246550539,
+          "abs_perc_error_std": 0.07379311355262409
+        },
+        "reference": {
+          "type": "evidently.metrics.regression_performance.regression_quality.MoreRegressionMetrics",
+          "r2_score": 0.9358205551307335,
+          "rmse": 12.028950584897796,
+          "mean_error": 3.5652173913043477,
+          "mean_abs_error": 9.130434782608695,
+          "mean_abs_perc_error": 9.206642768072548,
+          "abs_error_max": 28.0,
+          "underperformance": {
+            "majority": {
+              "mean_error": 3.736842105263158,
+              "std_error": 6.870566087490397
+            },
+            "underestimation": {
+              "mean_error": -20.5,
+              "std_error": 3.5355339059327378
+            },
+            "overestimation": {
+              "mean_error": 26.0,
+              "std_error": 2.8284271247461903
+            }
+          },
+          "error_std": 11.746667175131853,
+          "abs_error_std": 8.007407637625226,
+          "abs_perc_error_std": 0.12410312124936689
+        },
+        "rmse_default": 49.17149303085422,
+        "me_default_sigma": 9.284820154675023,
+        "me_hist_for_plot": {
+          "type": "evidently.metric_results.Histogram",
+          "current": {
+            "type": "evidently.metric_results.HistogramData",
+            "x": [
+              -23.0,
+              -16.625,
+              -10.25,
+              -3.875,
+              2.5,
+              8.875,
+              15.25,
+              21.625
+            ],
+            "count": [
+              1,
+              0,
+              12,
+              16,
+              13,
+              12,
+              6,
+              3
+            ],
+            "name": null
+          },
+          "reference": {
+            "type": "evidently.metric_results.HistogramData",
+            "x": [
+              -23.0,
+              -16.625,
+              -10.25,
+              -3.875,
+              2.5,
+              8.875,
+              15.25,
+              21.625
+            ],
+            "count": [
+              2,
+              0,
+              4,
+              6,
+              3,
+              5,
+              1,
+              2
+            ],
+            "name": null
+          },
+          "current_log": null,
+          "reference_log": null
+        },
+        "mean_abs_error_default": 39.142857142857146,
+        "mean_abs_perc_error_default": 47.64578384980368,
+        "abs_error_max_default": 118.0,
+        "error_normality": {
+          "order_statistic_medians_x": [
+            -2.29237412634992,
+            -1.9340658956034735,
+            -1.7242196825296012,
+            -1.5707903340854212,
+            -1.4473657115851757,
+            -1.3427353324536417,
+            -1.2510373378322757,
+            -1.168800494413051,
+            -1.0937897811580786,
+            -1.0244763142251079,
+            -0.9597649654573972,
+            -0.8988422645760403,
+            -0.841085834799297,
+            -0.786007632126469,
+            -0.7332168470751064,
+            -0.6823947929225673,
+            -0.6332773935857644,
+            -0.5856426529780518,
+            -0.5393014843625044,
+            -0.4940908627974033,
+            -0.449868618726131,
+            -0.40650941291830905,
+            -0.3639015757604001,
+            -0.32194458785922864,
+            -0.28054704205573144,
+            -0.2396249701465874,
+            -0.19910044764090074,
+            -0.15890041102632907,
+            -0.11895563705543563,
+            -0.07919984430837292,
+            -0.03956888495137935,
+            0.0,
+            0.03956888495137921,
+            0.07919984430837264,
+            0.11895563705543563,
+            0.15890041102632893,
+            0.19910044764090043,
+            0.23962497014658726,
+            0.2805470420557312,
+            0.32194458785922864,
+            0.3639015757604,
+            0.4065094129183088,
+            0.449868618726131,
+            0.4940908627974031,
+            0.539301484362504,
+            0.5856426529780517,
+            0.6332773935857641,
+            0.6823947929225671,
+            0.7332168470751059,
+            0.7860076321264685,
+            0.8410858347992968,
+            0.8988422645760399,
+            0.9597649654573972,
+            1.0244763142251074,
+            1.093789781158078,
+            1.1688004944130506,
+            1.2510373378322754,
+            1.3427353324536409,
+            1.447365711585175,
+            1.5707903340854201,
+            1.7242196825296006,
+            1.9340658956034726,
+            2.29237412634992
+          ],
+          "order_statistic_medians_y": [
+            -18.0,
+            -10.0,
+            -8.0,
+            -7.0,
+            -6.0,
+            -5.0,
+            -5.0,
+            -5.0,
+            -5.0,
+            -4.0,
+            -4.0,
+            -4.0,
+            -4.0,
+            -3.0,
+            -3.0,
+            -3.0,
+            -2.0,
+            -2.0,
+            -1.0,
+            -1.0,
+            -1.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            2.0,
+            2.0,
+            2.0,
+            3.0,
+            3.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            6.0,
+            7.0,
+            7.0,
+            7.0,
+            7.0,
+            8.0,
+            8.0,
+            9.0,
+            9.0,
+            10.0,
+            11.0,
+            11.0,
+            11.0,
+            11.0,
+            11.0,
+            12.0,
+            12.0,
+            13.0,
+            14.0,
+            16.0,
+            17.0,
+            19.0,
+            20.0,
+            20.0,
+            20.0,
+            25.0,
+            25.0,
+            26.0
+          ],
+          "slope": 9.367378950181736,
+          "intercept": 4.7777777777777795,
+          "r": 0.9870803440716049
+        },
+        "hist_for_plot": {
+          "type": "evidently.metric_results.Histogram",
+          "current": {
+            "type": "evidently.metric_results.HistogramData",
+            "x": [
+              "(160.8, 179.2]",
+              "(179.2, 197.6]",
+              "(142.4, 160.8]",
+              "(105.6, 124.0]",
+              "(31.816, 50.4]",
+              "(197.6, 216.0]",
+              "(68.8, 87.2]",
+              "(124.0, 142.4]",
+              "(87.2, 105.6]",
+              "(50.4, 68.8]"
+            ],
+            "count": [
+              11,
+              11,
+              11,
+              8,
+              8,
+              4,
+              4,
+              3,
+              2,
+              1
+            ],
+            "name": null
+          },
+          "reference": {
+            "type": "evidently.metric_results.HistogramData",
+            "x": [
+              "(160.8, 179.2]",
+              "(142.4, 160.8]",
+              "(124.0, 142.4]",
+              "(179.2, 197.6]",
+              "(87.2, 105.6]",
+              "(50.4, 68.8]",
+              "(31.816, 50.4]",
+              "(105.6, 124.0]",
+              "(197.6, 216.0]",
+              "(68.8, 87.2]"
+            ],
+            "count": [
+              5,
+              4,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              1,
+              1
+            ],
+            "name": null
+          },
+          "current_log": null,
+          "reference_log": null
+        },
+        "vals_for_plots": {
+          "type": "evidently.metrics.regression_performance.objects.RegressionMetricsScatter",
+          "r2_score": {
+            "type": "evidently.metrics.regression_performance.objects.RegressionMetricScatter",
+            "current": {
+              "type": "evidently.metrics.regression_performance.objects.IntervalSeries",
+              "bins": [
+                31.816,
+                50.4,
+                68.8,
+                87.2,
+                105.6,
+                124.0,
+                142.4,
+                160.8,
+                179.2,
+                197.6,
+                216.0
+              ],
+              "values": [
+                -0.5588235294117647,
+                NaN,
+                0.08496732026143794,
+                0.0,
+                -2.218355640535373,
+                -28.875,
+                0.41726618705035967,
+                -16.555632823365787,
+                -3.8209876543209873,
+                -0.8055555555555556
+              ]
+            },
+            "reference": {
+              "type": "evidently.metrics.regression_performance.objects.IntervalSeries",
+              "bins": [
+                31.816,
+                50.4,
+                68.8,
+                87.2,
+                105.6,
+                124.0,
+                142.4,
+                160.8,
+                179.2,
+                197.6,
+                216.0
+              ],
+              "values": [
+                0.0,
+                -2.611111111111111,
+                NaN,
+                0.0,
+                -10.6,
+                -19.3125,
+                -7.777777777777779,
+                -14.902777777777777,
+                0.0,
+                NaN
+              ]
+            }
+          },
+          "rmse": {
+            "type": "evidently.metrics.regression_performance.objects.RegressionMetricScatter",
+            "current": {
+              "type": "evidently.metrics.regression_performance.objects.IntervalSeries",
+              "bins": [
+                31.816,
+                50.4,
+                68.8,
+                87.2,
+                105.6,
+                124.0,
+                142.4,
+                160.8,
+                179.2,
+                197.6,
+                216.0
+              ],
+              "values": [
+                8.916277250063503,
+                1.0,
+                5.916079783099616,
+                14.983324063771697,
+                11.467344941179714,
+                15.459624833740307,
+                3.8376128944009875,
+                14.444250192944029,
+                10.162318990896088,
+                6.98212002188447
+              ]
+            },
+            "reference": {
+              "type": "evidently.metrics.regression_performance.objects.IntervalSeries",
+              "bins": [
+                31.816,
+                50.4,
+                68.8,
+                87.2,
+                105.6,
+                124.0,
+                142.4,
+                160.8,
+                179.2,
+                197.6,
+                216.0
+              ],
+              "values": [
+                20.796634343085422,
+                5.70087712549569,
+                2.0,
+                10.124228365658293,
+                17.029386365926403,
+                18.027756377319946,
+                8.888194417315589,
+                9.57078889120432,
+                8.631338250816034,
+                6.0
+              ]
+            }
+          },
+          "mean_abs_error": {
+            "type": "evidently.metrics.regression_performance.objects.RegressionMetricScatter",
+            "current": {
+              "type": "evidently.metrics.regression_performance.objects.IntervalSeries",
+              "bins": [
+                31.816,
+                50.4,
+                68.8,
+                87.2,
+                105.6,
+                124.0,
+                142.4,
+                160.8,
+                179.2,
+                197.6,
+                216.0
+              ],
+              "values": [
+                7.25,
+                1.0,
+                4.5,
+                13.5,
+                9.75,
+                11.666666666666666,
+                3.272727272727273,
+                11.181818181818182,
+                9.272727272727273,
+                6.25
+              ]
+            },
+            "reference": {
+              "type": "evidently.metrics.regression_performance.objects.IntervalSeries",
+              "bins": [
+                31.816,
+                50.4,
+                68.8,
+                87.2,
+                105.6,
+                124.0,
+                142.4,
+                160.8,
+                179.2,
+                197.6,
+                216.0
+              ],
+              "values": [
+                18.5,
+                4.5,
+                2.0,
+                8.5,
+                13.0,
+                17.0,
+                6.0,
+                7.6,
+                8.5,
+                6.0
+              ]
+            }
+          },
+          "mean_abs_perc_error": {
+            "type": "evidently.metrics.regression_performance.objects.RegressionMetricScatter",
+            "current": {
+              "type": "evidently.metrics.regression_performance.objects.IntervalSeries",
+              "bins": [
+                31.816,
+                50.4,
+                68.8,
+                87.2,
+                105.6,
+                124.0,
+                142.4,
+                160.8,
+                179.2,
+                197.6,
+                216.0
+              ],
+              "values": [
+                0.16709325396825397,
+                0.016666666666666666,
+                0.057915982484948,
+                0.14361702127659576,
+                0.08521370288157191,
+                0.08794466403162055,
+                0.0214609439777225,
+                0.06793173278680525,
+                0.05097853535353536,
+                0.030433006535947715
+              ]
+            },
+            "reference": {
+              "type": "evidently.metrics.regression_performance.objects.IntervalSeries",
+              "bins": [
+                31.816,
+                50.4,
+                68.8,
+                87.2,
+                105.6,
+                124.0,
+                142.4,
+                160.8,
+                179.2,
+                197.6,
+                216.0
+              ],
+              "values": [
+                0.3854166666666667,
+                0.0824074074074074,
+                0.024390243902439025,
+                0.09042553191489361,
+                0.1090909090909091,
+                0.1264069264069264,
+                0.03961538461538461,
+                0.04499178981937602,
+                0.04722222222222222,
+                0.027777777777777776
+              ]
+            }
+          }
+        },
+        "error_bias": {
+          "chronological_age": {
+            "feature_type": "num",
+            "current_majority": 137.68253968253967,
+            "current_under": 110.5,
+            "current_over": 131.5,
+            "current_range": 11.731843575418994,
+            "ref_majority": 139.52173913043478,
+            "ref_under": 154.0,
+            "ref_over": 101.0,
+            "ref_range": 36.80555555555556
+          },
+          "closest_age": {
+            "feature_type": "num",
+            "current_majority": 136.95238095238096,
+            "current_under": 106.5,
+            "current_over": 132.0,
+            "current_range": 14.655172413793103,
+            "ref_majority": 137.7391304347826,
+            "ref_under": 150.0,
+            "ref_over": 96.0,
+            "ref_range": 37.5
+          },
+          "lower_limit": {
+            "feature_type": "num",
+            "current_majority": 114.4920634920635,
+            "current_under": 91.5,
+            "current_over": 107.83333333333333,
+            "current_range": 10.272536687631025,
+            "ref_majority": 115.95652173913044,
+            "ref_under": 131.5,
+            "ref_over": 81.5,
+            "ref_range": 38.46153846153846
+          },
+          "standard_deviation": {
+            "feature_type": "num",
+            "current_majority": 10.168412698412697,
+            "current_under": 9.4275,
+            "current_over": 10.645000000000001,
+            "current_range": 14.273153575615487,
+            "ref_majority": 10.549999999999999,
+            "ref_under": 10.405000000000001,
+            "ref_over": 9.825,
+            "ref_range": 10.104529616724768
+          },
+          "two_standard_deviations": {
+            "feature_type": "num",
+            "current_majority": 20.336825396825393,
+            "current_under": 18.855,
+            "current_over": 21.290000000000003,
+            "current_range": 14.273153575615487,
+            "ref_majority": 21.099999999999998,
+            "ref_under": 20.810000000000002,
+            "ref_over": 19.65,
+            "ref_range": 10.104529616724768
+          },
+          "upper_limit": {
+            "feature_type": "num",
+            "current_majority": 160.87301587301587,
+            "current_under": 129.5,
+            "current_over": 155.16666666666666,
+            "current_range": 12.897822445561134,
+            "ref_majority": 163.08695652173913,
+            "ref_under": 176.5,
+            "ref_over": 120.5,
+            "ref_range": 35.44303797468354
+          },
+          "ModelID": {
+            "feature_type": "cat",
+            "current_majority": "bone_age_01",
+            "current_under": "bone_age_01",
+            "current_over": "bone_age_01",
+            "current_range": 0.0,
+            "ref_majority": "bone_age_01",
+            "ref_under": "bone_age_01",
+            "ref_over": "bone_age_01",
+            "ref_range": 0.0
+          },
+          "classification": {
+            "feature_type": "cat",
+            "current_majority": false,
+            "current_under": false,
+            "current_over": true,
+            "current_range": 1.0,
+            "ref_majority": false,
+            "ref_under": true,
+            "ref_over": false,
+            "ref_range": 1.0
+          },
+          "classification_label": {
+            "feature_type": "cat",
+            "current_majority": false,
+            "current_under": true,
+            "current_over": false,
+            "current_range": 1.0,
+            "ref_majority": false,
+            "ref_under": false,
+            "ref_over": true,
+            "ref_range": 1.0
+          },
+          "hospital": {
+            "feature_type": "cat",
+            "current_majority": "Queensway Hospital",
+            "current_under": "Queensway Hospital",
+            "current_over": "Queensway Hospital",
+            "current_range": 0.0,
+            "ref_majority": "Queensway Hospital",
+            "ref_under": "Queensway Hospital",
+            "ref_over": "Queensway Hospital",
+            "ref_range": 0.0
+          },
+          "sex": {
+            "feature_type": "cat",
+            "current_majority": "M",
+            "current_under": "M",
+            "current_over": "F",
+            "current_range": 1.0,
+            "ref_majority": "M",
+            "ref_under": "M",
+            "ref_over": "M",
+            "ref_range": 0.0
+          }
+        }
+      },
+      {
+        "type": "evidently.metrics.regression_performance.regression_dummy_metric.RegressionDummyMetricResults",
+        "rmse_default": 49.17149303085422,
+        "mean_abs_error_default": 39.142857142857146,
+        "mean_abs_perc_error_default": 47.64578384980368,
+        "abs_error_max_default": 118.0,
+        "mean_abs_error_by_ref": 39.142857142857146,
+        "mean_abs_error": 7.984126984126984,
+        "mean_abs_perc_error_by_ref": 48.18184066465071,
+        "mean_abs_perc_error": 7.116935945231118,
+        "rmse_by_ref": 49.381751547543566,
+        "rmse": 10.376254944182254,
+        "abs_error_max_by_ref": 118.0,
+        "abs_error_max": 26.0
+      }
+    ],
+    "tests": [
+      {
+        "type": "evidently.tests.regression_performance_tests.TestValueMAE",
+        "is_critical": true
+      },
+      {
+        "type": "evidently.tests.regression_performance_tests.TestValueMAPE",
+        "is_critical": true
+      }
+    ],
+    "test_results": [
+      {
+        "type": "evidently.tests.base_test.TestResult",
+        "name": "Mean Absolute Error (MAE)",
+        "description": "The MAE is 7.98. The test threshold is eq=9.13 \u00b1 0.913",
+        "status": "FAIL",
+        "group": "regression",
+        "parameters": {
+          "type": "evidently.tests.base_test.CheckValueParameters",
+          "condition": {
+            "eq": {
+              "value": 9.130434782608695,
+              "relative": 0.1,
+              "absolute": 1e-12
+            }
+          },
+          "value": 7.984126984126984
+        }
+      },
+      {
+        "type": "evidently.tests.base_test.TestResult",
+        "name": "Mean Absolute Percentage Error (MAPE)",
+        "description": "The MAPE is 7.12. The test threshold is eq=9.21 \u00b1 0.921.",
+        "status": "FAIL",
+        "group": "regression",
+        "parameters": {
+          "type": "evidently.tests.base_test.CheckValueParameters",
+          "condition": {
+            "eq": {
+              "value": 9.206642768072548,
+              "relative": 0.1,
+              "absolute": 1e-12
+            }
+          },
+          "value": 7.116935945231118
+        }
+      }
+    ],
+    "options": {
+      "color": null,
+      "render": null,
+      "custom": {},
+      "data_definition": null
+    },
+    "data_definition": {
+      "columns": {
+        "StudyID": {
+          "column_name": "StudyID",
+          "column_type": "num"
+        },
+        "label": {
+          "column_name": "label",
+          "column_type": "num"
+        },
+        "predicted_age": {
+          "column_name": "predicted_age",
+          "column_type": "num"
+        },
+        "standard_deviation": {
+          "column_name": "standard_deviation",
+          "column_type": "num"
+        },
+        "chronological_age": {
+          "column_name": "chronological_age",
+          "column_type": "num"
+        },
+        "two_standard_deviations": {
+          "column_name": "two_standard_deviations",
+          "column_type": "num"
+        },
+        "lower_limit": {
+          "column_name": "lower_limit",
+          "column_type": "num"
+        },
+        "upper_limit": {
+          "column_name": "upper_limit",
+          "column_type": "num"
+        },
+        "closest_age": {
+          "column_name": "closest_age",
+          "column_type": "num"
+        },
+        "classification_label": {
+          "column_name": "classification_label",
+          "column_type": "cat"
+        },
+        "ModelID": {
+          "column_name": "ModelID",
+          "column_type": "cat"
+        },
+        "sex": {
+          "column_name": "sex",
+          "column_type": "cat"
+        },
+        "classification": {
+          "column_name": "classification",
+          "column_type": "cat"
+        },
+        "hospital": {
+          "column_name": "hospital",
+          "column_type": "cat"
+        }
+      },
+      "target": {
+        "column_name": "label",
+        "column_type": "num"
+      },
+      "prediction_columns": {
+        "predicted_values": {
+          "column_name": "predicted_age",
+          "column_type": "num"
+        },
+        "prediction_probas": null
+      },
+      "id_column": {
+        "column_name": "StudyID",
+        "column_type": "num"
+      },
+      "datetime_column": null,
+      "embeddings": null,
+      "user_id": null,
+      "item_id": null,
+      "task": "regression",
+      "classification_labels": [
+        132,
+        138,
+        140,
+        144,
+        149,
+        150,
+        156,
+        32,
+        161,
+        162,
+        36,
+        168,
+        42,
+        171,
+        174,
+        48,
+        50,
+        180,
+        54,
+        60,
+        192,
+        72,
+        204,
+        82,
+        84,
+        87,
+        216,
+        94,
+        106,
+        108,
+        110,
+        119,
+        120
+      ],
+      "reference_present": true,
+      "recommendations_type": "score"
+    }
+  },
+  "metrics_ids": [],
+  "test_ids": [
+    0,
+    1
+  ],
+  "options": {
+    "color": null,
+    "render": null,
+    "custom": {},
+    "data_definition": null
+  }
+}

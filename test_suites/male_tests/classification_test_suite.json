@@ -1,0 +1,427 @@
+{
+  "id": "192134c6-f4b5-40f7-969c-35e0543a74b4",
+  "name": null,
+  "timestamp": "2024-07-02T14:09:03.842777",
+  "metadata": {},
+  "tags": [],
+  "suite": {
+    "metrics": [
+      {
+        "probas_threshold": null,
+        "k": null,
+        "type": "evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrix",
+        "options": {
+          "color": null,
+          "render": null,
+          "custom": {},
+          "data_definition": null
+        }
+      },
+      {
+        "type": "evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric",
+        "options": {
+          "color": null,
+          "render": null,
+          "custom": {},
+          "data_definition": null
+        },
+        "probas_threshold": null,
+        "k": null
+      },
+      {
+        "type": "evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetric",
+        "options": {
+          "color": null,
+          "render": null,
+          "custom": {},
+          "data_definition": null
+        },
+        "probas_threshold": null,
+        "k": null
+      }
+    ],
+    "metric_results": [
+      {
+        "type": "evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrixResult",
+        "current_matrix": {
+          "type": "evidently.metric_results.ConfusionMatrix",
+          "labels": [
+            0,
+            1
+          ],
+          "values": [
+            [
+              57,
+              10
+            ],
+            [
+              5,
+              22
+            ]
+          ]
+        },
+        "reference_matrix": {
+          "type": "evidently.metric_results.ConfusionMatrix",
+          "labels": [
+            0,
+            1
+          ],
+          "values": [
+            [
+              19,
+              4
+            ],
+            [
+              2,
+              6
+            ]
+          ]
+        },
+        "target_names": null
+      },
+      {
+        "type": "evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetricResult",
+        "current": {
+          "type": "evidently.metric_results.DatasetClassificationQuality",
+          "accuracy": 0.8404255319148937,
+          "precision": 0.6875,
+          "recall": 0.8148148148148148,
+          "f1": 0.7457627118644068,
+          "roc_auc": null,
+          "log_loss": null,
+          "tpr": 0.8148148148148148,
+          "tnr": 0.8507462686567164,
+          "fpr": 0.14925373134328357,
+          "fnr": 0.18518518518518517,
+          "rate_plots_data": null,
+          "plot_data": null
+        },
+        "reference": {
+          "type": "evidently.metric_results.DatasetClassificationQuality",
+          "accuracy": 0.8064516129032258,
+          "precision": 0.6,
+          "recall": 0.75,
+          "f1": 0.6666666666666666,
+          "roc_auc": null,
+          "log_loss": null,
+          "tpr": 0.75,
+          "tnr": 0.8260869565217391,
+          "fpr": 0.17391304347826086,
+          "fnr": 0.25,
+          "rate_plots_data": null,
+          "plot_data": null
+        },
+        "target_name": "classification_label"
+      },
+      {
+        "type": "evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetricResults",
+        "dummy": {
+          "type": "evidently.metric_results.DatasetClassificationQuality",
+          "accuracy": 0.6063829787234043,
+          "precision": 0.2727272727272727,
+          "recall": 0.2222222222222222,
+          "f1": 0.24489795918367346,
+          "roc_auc": null,
+          "log_loss": null,
+          "tpr": 0.2222222222222222,
+          "tnr": 0.7611940298507462,
+          "fpr": 0.23880597014925373,
+          "fnr": 0.7777777777777778,
+          "rate_plots_data": null,
+          "plot_data": null
+        },
+        "by_reference_dummy": {
+          "type": "evidently.metric_results.DatasetClassificationQuality",
+          "accuracy": 0.6170212765957447,
+          "precision": 0.30434782608695654,
+          "recall": 0.25925925925925924,
+          "f1": 0.28,
+          "roc_auc": null,
+          "log_loss": null,
+          "tpr": 0.25925925925925924,
+          "tnr": 0.7611940298507462,
+          "fpr": 0.23880597014925373,
+          "fnr": 0.7407407407407407,
+          "rate_plots_data": null,
+          "plot_data": null
+        },
+        "model_quality": {
+          "type": "evidently.metric_results.DatasetClassificationQuality",
+          "accuracy": 0.8404255319148937,
+          "precision": 0.6875,
+          "recall": 0.8148148148148148,
+          "f1": 0.7457627118644068,
+          "roc_auc": null,
+          "log_loss": null,
+          "tpr": 0.8148148148148148,
+          "tnr": 0.8507462686567164,
+          "fpr": 0.14925373134328357,
+          "fnr": 0.18518518518518517,
+          "rate_plots_data": null,
+          "plot_data": null
+        },
+        "metrics_matrix": {
+          "0": {
+            "type": "evidently.metrics.classification_performance.objects.ClassMetric",
+            "precision": 0.7083333333333334,
+            "recall": 0.7611940298507462,
+            "f1": 0.7338129496402878,
+            "support": 67.0
+          },
+          "1": {
+            "type": "evidently.metrics.classification_performance.objects.ClassMetric",
+            "precision": 0.2727272727272727,
+            "recall": 0.2222222222222222,
+            "f1": 0.24489795918367346,
+            "support": 27.0
+          }
+        }
+      }
+    ],
+    "tests": [
+      {
+        "type": "evidently.tests.classification_performance_tests.TestAccuracyScore",
+        "is_critical": true
+      },
+      {
+        "type": "evidently.tests.classification_performance_tests.TestPrecisionScore",
+        "is_critical": true
+      },
+      {
+        "type": "evidently.tests.classification_performance_tests.TestRecallScore",
+        "is_critical": true
+      },
+      {
+        "type": "evidently.tests.classification_performance_tests.TestF1Score",
+        "is_critical": true
+      },
+      {
+        "type": "evidently.tests.classification_performance_tests.TestTNR",
+        "is_critical": true
+      },
+      {
+        "type": "evidently.tests.classification_performance_tests.TestFPR",
+        "is_critical": true
+      }
+    ],
+    "test_results": [
+      {
+        "type": "evidently.tests.base_test.TestResult",
+        "name": "Accuracy Score",
+        "description": "The Accuracy Score is 0.84. The test threshold is eq=0.806 \u00b1 0.161",
+        "status": "SUCCESS",
+        "group": "classification",
+        "parameters": {
+          "type": "evidently.tests.base_test.CheckValueParameters",
+          "condition": {
+            "eq": {
+              "value": 0.8064516129032258,
+              "relative": 0.2,
+              "absolute": 1e-12
+            }
+          },
+          "value": 0.8404255319148937
+        }
+      },
+      {
+        "type": "evidently.tests.base_test.TestResult",
+        "name": "Precision Score",
+        "description": "The Precision Score is 0.688. The test threshold is eq=0.6 \u00b1 0.12",
+        "status": "SUCCESS",
+        "group": "classification",
+        "parameters": {
+          "type": "evidently.tests.base_test.CheckValueParameters",
+          "condition": {
+            "eq": {
+              "value": 0.6,
+              "relative": 0.2,
+              "absolute": 1e-12
+            }
+          },
+          "value": 0.6875
+        }
+      },
+      {
+        "type": "evidently.tests.base_test.TestResult",
+        "name": "Recall Score",
+        "description": "The Recall Score is 0.815. The test threshold is eq=0.75 \u00b1 0.15",
+        "status": "SUCCESS",
+        "group": "classification",
+        "parameters": {
+          "type": "evidently.tests.base_test.CheckValueParameters",
+          "condition": {
+            "eq": {
+              "value": 0.75,
+              "relative": 0.2,
+              "absolute": 1e-12
+            }
+          },
+          "value": 0.8148148148148148
+        }
+      },
+      {
+        "type": "evidently.tests.base_test.TestResult",
+        "name": "F1 Score",
+        "description": "The F1 Score is 0.746. The test threshold is eq=0.667 \u00b1 0.133",
+        "status": "SUCCESS",
+        "group": "classification",
+        "parameters": {
+          "type": "evidently.tests.base_test.CheckValueParameters",
+          "condition": {
+            "eq": {
+              "value": 0.6666666666666666,
+              "relative": 0.2,
+              "absolute": 1e-12
+            }
+          },
+          "value": 0.7457627118644068
+        }
+      },
+      {
+        "type": "evidently.tests.base_test.TestResult",
+        "name": "True Negative Rate",
+        "description": "The True Negative Rate is 0.851. The test threshold is eq=0.826 \u00b1 0.165",
+        "status": "SUCCESS",
+        "group": "classification",
+        "parameters": {
+          "type": "evidently.tests.base_test.CheckValueParameters",
+          "condition": {
+            "eq": {
+              "value": 0.8260869565217391,
+              "relative": 0.2,
+              "absolute": 1e-12
+            }
+          },
+          "value": 0.8507462686567164
+        }
+      },
+      {
+        "type": "evidently.tests.base_test.TestResult",
+        "name": "False Positive Rate",
+        "description": "The False Positive Rate is 0.149. The test threshold is eq=0.174 \u00b1 0.0348",
+        "status": "SUCCESS",
+        "group": "classification",
+        "parameters": {
+          "type": "evidently.tests.base_test.CheckValueParameters",
+          "condition": {
+            "eq": {
+              "value": 0.17391304347826086,
+              "relative": 0.2,
+              "absolute": 1e-12
+            }
+          },
+          "value": 0.14925373134328357
+        }
+      }
+    ],
+    "options": {
+      "color": null,
+      "render": null,
+      "custom": {},
+      "data_definition": null
+    },
+    "data_definition": {
+      "columns": {
+        "StudyID": {
+          "column_name": "StudyID",
+          "column_type": "num"
+        },
+        "classification_label": {
+          "column_name": "classification_label",
+          "column_type": "cat"
+        },
+        "classification": {
+          "column_name": "classification",
+          "column_type": "num"
+        },
+        "standard_deviation": {
+          "column_name": "standard_deviation",
+          "column_type": "num"
+        },
+        "chronological_age": {
+          "column_name": "chronological_age",
+          "column_type": "num"
+        },
+        "two_standard_deviations": {
+          "column_name": "two_standard_deviations",
+          "column_type": "num"
+        },
+        "lower_limit": {
+          "column_name": "lower_limit",
+          "column_type": "num"
+        },
+        "upper_limit": {
+          "column_name": "upper_limit",
+          "column_type": "num"
+        },
+        "label": {
+          "column_name": "label",
+          "column_type": "num"
+        },
+        "predicted_age": {
+          "column_name": "predicted_age",
+          "column_type": "num"
+        },
+        "closest_age": {
+          "column_name": "closest_age",
+          "column_type": "num"
+        },
+        "ModelID": {
+          "column_name": "ModelID",
+          "column_type": "cat"
+        },
+        "sex": {
+          "column_name": "sex",
+          "column_type": "cat"
+        },
+        "hospital": {
+          "column_name": "hospital",
+          "column_type": "cat"
+        }
+      },
+      "target": {
+        "column_name": "classification_label",
+        "column_type": "cat"
+      },
+      "prediction_columns": {
+        "predicted_values": null,
+        "prediction_probas": [
+          {
+            "column_name": "classification",
+            "column_type": "num"
+          }
+        ]
+      },
+      "id_column": {
+        "column_name": "StudyID",
+        "column_type": "num"
+      },
+      "datetime_column": null,
+      "embeddings": null,
+      "user_id": null,
+      "item_id": null,
+      "task": "classification",
+      "classification_labels": [
+        0,
+        1
+      ],
+      "reference_present": true,
+      "recommendations_type": "score"
+    }
+  },
+  "metrics_ids": [],
+  "test_ids": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "options": {
+    "color": null,
+    "render": null,
+    "custom": {},
+    "data_definition": null
+  }
+}

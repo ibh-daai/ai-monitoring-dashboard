@@ -1,6 +1,6 @@
 import pytest
 import pandas as pd
-from src.stratified_reports import split_data
+from src.stratified_main import split_data
 
 
 @pytest.fixture
