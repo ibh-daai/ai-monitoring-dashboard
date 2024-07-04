@@ -37,7 +37,7 @@ def ensure_directory(directory: str) -> None:
     """
     base_dir = "reports/"
     full_path = os.path.join(base_dir, directory)
-    print(f"Directory {full_path} created.")
+    logger.info(f"Directory {full_path} created.")
     if not os.path.exists(full_path):
         os.makedirs(full_path)
 

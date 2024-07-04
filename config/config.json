@@ -138,11 +138,6 @@
                 "name": "fnr",
                 "description": "Compares with fnr/type 2 error of the reference data. Alerts with a difference of 20%.",
                 "enable": false
-            },
-            {
-                "name": "roc_auc",
-                "description": "Compares with ROC AUC of the reference data. Alerts with a difference of 20% or < 0.5.",
-                "enable": false
             }
         ]
     },
