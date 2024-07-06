@@ -3,6 +3,7 @@ File to handle metric report generation with Evidently AI. Split file into data,
 """
 
 import os
+from cycler import V
 from sklearn.exceptions import UndefinedMetricWarning
 from src.config_manager import load_config
 from src.etl import etl_pipeline
@@ -35,11 +36,13 @@ def ensure_directory(directory: str) -> None:
     """
     Check if the directory exists and create it if it doesn't.
     """
-    base_dir = "reports/"
+    base_dir = "outputs/reports/"
     full_path = os.path.join(base_dir, directory)
-    logger.info(f"Directory {full_path} created.")
     if not os.path.exists(full_path):
         os.makedirs(full_path)
+        logger.info(f"Directory {full_path} created.")
+    else:
+        logger.info(f"Directory {full_path} already exists.")
 
 
 def split_features(validation_rules: dict) -> tuple[list, list]:
@@ -65,45 +68,53 @@ def setup_column_mapping(config: dict, report_type: str) -> ColumnMapping:
     features = split_features(config["validation_rules"])
     numerical_features, categorical_features = features
 
-    mapping = ColumnMapping()
-    mapping.id = config["columns"]["study_id"]
-    mapping.datetime = config["columns"]["timestamp"]
-    mapping.numerical = numerical_features
-    mapping.categorical = categorical_features
+    try:
+        mapping = ColumnMapping()
+        mapping.id = config["columns"]["study_id"]
+        mapping.datetime = config["columns"]["timestamp"]
+        mapping.numerical = numerical_features
+        mapping.categorical = categorical_features
 
-    predictions = config["columns"]["predictions"]
-    labels = config["columns"]["labels"]
+        predictions = config["columns"]["predictions"]
+        labels = config["columns"]["labels"]
 
-    if report_type == "data":
-        mapping.target = labels["regression_label"]
-        mapping.prediction = predictions["regression_prediction"]
-        if config["model_config"]["model_type"]["binary_classification"]:
-            categorical_features.append(predictions["classification_prediction"])
-            categorical_features.append(labels["classification_label"])
-    elif report_type == "regression":
-        mapping.target = labels["regression_label"]
-        mapping.prediction = predictions["regression_prediction"]
-    elif report_type == "classification":
-        mapping.target = labels["classification_label"]
-        mapping.prediction = predictions["classification_prediction"]
-    else:
-        logger.error("Incorrect report type")
-        raise ValueError("Incorrect report type")
+        if report_type == "data":
+            mapping.target = labels["regression_label"]
+            mapping.prediction = predictions["regression_prediction"]
+            if config["model_config"]["model_type"]["binary_classification"]:
+                categorical_features.append(predictions["classification_prediction"])
+                categorical_features.append(labels["classification_label"])
+        elif report_type == "regression":
+            mapping.target = labels["regression_label"]
+            mapping.prediction = predictions["regression_prediction"]
+        elif report_type == "classification":
+            mapping.target = labels["classification_label"]
+            mapping.prediction = predictions["classification_prediction"]
+        else:
+            logger.error("Incorrect report type")
+            raise ValueError("Incorrect report type")
 
-    return mapping
+        return mapping
+    except KeyError as e:
+        logger.error(f"KeyError: {e}")
+        raise ValueError(f"Missing config key: {e}. Please fix the config.") from e
 
 
 def data_report(
     data: pd.DataFrame,
     reference_data: pd.DataFrame,
     config: dict,
-    folder_path: str = "reports",
+    folder_path: str = "outputs/reports",
 ) -> None:
     """
     Generate data quality metrics report.
     """
     ensure_directory(folder_path)
-    data_mapping = setup_column_mapping(config, "data")
+    try:
+        data_mapping = setup_column_mapping(config, "data")
+    except Exception as e:
+        logger.error(f"Error setting up column mapping: {e}")
+        raise
     """
     Data Quality Report:
     - Dataset Summary Metric: Summary statistics for the dataset
@@ -123,20 +134,24 @@ def data_report(
     data_quality_report.run(
         reference_data=reference_data, current_data=data, column_mapping=data_mapping
     )
-    data_quality_report.save(f"reports/{folder_path}/data_quality_report.json")
+    data_quality_report.save(f"outputs/reports/{folder_path}/data_quality_report.json")
 
 
 def regression_report(
     data: pd.DataFrame,
     reference_data: pd.DataFrame,
     config: dict,
-    folder_path: str = "reports",
+    folder_path: str = "outputs/reports",
 ) -> None:
     """
     Generate regression metrics report.
     """
     ensure_directory(folder_path)
-    regression_mapping = setup_column_mapping(config, "regression")
+    try:
+        regression_mapping = setup_column_mapping(config, "regression")
+    except Exception as e:
+        logger.error(f"Error setting up column mapping: {e}")
+        raise
     """
     Regression Report:
         - Regression Quality Metric: Regression quality metrics (RMSE, ME, MAE, MAPE, Max AE)
@@ -161,7 +176,7 @@ def regression_report(
         current_data=data,
         column_mapping=regression_mapping,
     )
-    regression_report.save(f"reports/{folder_path}/regression_report.json")
+    regression_report.save(f"outputs/reports/{folder_path}/regression_report.json")
 
 
 def classification_report(
@@ -174,7 +189,11 @@ def classification_report(
     Generate classification metrics report.
     """
     ensure_directory(folder_path)
-    classification_mapping = setup_column_mapping(config, "classification")
+    try:
+        classification_mapping = setup_column_mapping(config, "classification")
+    except Exception as e:
+        logger.error(f"Error setting up column mapping: {e}")
+        raise
     """
     Classification Report:
         - Classification Quality Metric: Classification quality metrics (Accuracy, F1, Precision, Recall)
@@ -193,7 +212,7 @@ def classification_report(
         current_data=data,
         column_mapping=classification_mapping,
     )
-    classification_report.save(f"reports/{folder_path}/classification_report.json")
+    classification_report.save(f"outputs/reports/{folder_path}/classification_report.json")
 
 
 def generate_report(
@@ -206,16 +225,24 @@ def generate_report(
     """
     Generate the metrics report based on the model type.
     """
-    # Generate the data quality metrics report
-    data_report(data, reference_data, config, folder_path)
+    try:
+        # Generate the data quality report
+        data_report(data, reference_data, config, folder_path)
+    except Exception as e:
+        logger.error(f"Failed to generate data quality report: {e}")
 
-    # Generate the regression metrics report
+    # Generate the regression and classification reports based on the model type
     if model_type["regression"]:
-        regression_report(data, reference_data, config, folder_path)
+        try:
+            regression_report(data, reference_data, config, folder_path)
+        except Exception as e:
+            logger.error(f"Failed to generate regression report: {e}")
 
-    # Generate the classification metrics report
     if model_type["binary_classification"]:
-        classification_report(data, reference_data, config, folder_path)
+        try:
+            classification_report(data, reference_data, config, folder_path)
+        except Exception as e:
+            logger.error(f"Failed to generate classification report: {e}")
 
 
 def main():

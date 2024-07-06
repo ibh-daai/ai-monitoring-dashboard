@@ -25,19 +25,27 @@ def ensure_directory(directory: str) -> None:
     """
     Check if the directory exists and create it if it doesn't.
     """
-    base_dir = "test_suites/"
+    base_dir = "outputs/test_suites/"
     full_path = os.path.join(base_dir, directory)
-    logger.info(f"Directory {full_path} created.")
     if not os.path.exists(full_path):
         os.makedirs(full_path)
+        logger.info(f"Directory {full_path} created.")
+    else:
+        logger.info(f"Directory {full_path} already exists.")
 
 
 def load_json(file_path: str) -> dict:
+    """
+    Load a JSON file.
+    """
     with open(file_path, "r") as file:
         return json.load(file)
 
 
 def import_function(module_name: str, function_name: str):
+    """
+    Import a function from a module.
+    """
     module = importlib.import_module(module_name)
     return getattr(module, function_name)
 
@@ -47,7 +55,9 @@ def get_tests(
     tests_mapping: dict,
     test_type: str,
 ) -> list:
-    print(test_type)
+    """
+    Get the tests from the configuration file, and use the mapping to get the test functions.
+    """
     test_configs = config["tests"][test_type]
     tests = []
     for test_config in test_configs:
@@ -66,16 +76,25 @@ def get_tests(
 
 
 def get_data_tests(config: dict, tests_mapping: dict) -> list:
+    """
+    Get the data tests from the config file.
+    """
     return get_tests(config, tests_mapping, "data_quality_tests") + get_tests(
         config, tests_mapping, "data_drift_tests"
     )
 
 
 def get_regression_tests(config: dict, tests_mapping: dict) -> list:
+    """
+    Get the regression tests from the config file.
+    """
     return get_tests(config, tests_mapping, "regression_tests")
 
 
 def get_classification_tests(config: dict, tests_mapping: dict) -> list:
+    """
+    Get the classification tests from the config file.
+    """
     return get_tests(config, tests_mapping, "classification_tests")
 
 
@@ -90,14 +109,24 @@ def data_tests(
     Generate data test results.
     """
     ensure_directory(folder_path)
-    data_mapping = setup_column_mapping(config, "data")
-    test_functions = get_data_tests(config, tests_mapping)
+    try:
+        data_mapping = setup_column_mapping(config, "data")
+    except Exception as e:
+        logger.error(f"Error setting up column mapping: {e}")
+        return
+    try:
+        test_functions = get_data_tests(config, tests_mapping)
 
-    data_test_suite = TestSuite(tests=test_functions)
-    data_test_suite.run(
-        reference_data=reference_data, current_data=data, column_mapping=data_mapping
-    )
-    data_test_suite.save(f"test_suites/{folder_path}/data_test_suite.json")
+        data_test_suite = TestSuite(tests=test_functions)
+        data_test_suite.run(
+            reference_data=reference_data,
+            current_data=data,
+            column_mapping=data_mapping,
+        )
+        data_test_suite.save(f"outputs/test_suites/{folder_path}/data_test_suite.json")
+    except Exception as e:
+        logger.error(f"Error running data tests: {e}")
+        return
 
 
 def regression_tests(
@@ -111,16 +140,26 @@ def regression_tests(
     Generate regression test results.
     """
     ensure_directory(folder_path)
-    regression_mapping = setup_column_mapping(config, "regression")
-    test_functions = get_regression_tests(config, tests_mapping)
+    try:
+        regression_mapping = setup_column_mapping(config, "regression")
+    except Exception as e:
+        logger.error(f"Error setting up column mapping: {e}")
+        return
 
-    regression_test_suite = TestSuite(tests=test_functions)
-    regression_test_suite.run(
-        reference_data=reference_data,
-        current_data=data,
-        column_mapping=regression_mapping,
-    )
-    regression_test_suite.save(f"test_suites/{folder_path}/regression_test_suite.json")
+    try:
+        test_functions = get_regression_tests(config, tests_mapping)
+
+        regression_test_suite = TestSuite(tests=test_functions)
+        regression_test_suite.run(
+            reference_data=reference_data,
+            current_data=data,
+            column_mapping=regression_mapping,
+        )
+        regression_test_suite.save(
+            f"outputs/test_suites/{folder_path}/regression_test_suite.json"
+        )
+    except Exception as e:
+        logger.error(f"Error running regression tests: {e}")
 
 
 def classification_tests(
@@ -134,18 +173,27 @@ def classification_tests(
     Generate classification test results.
     """
     ensure_directory(folder_path)
-    classification_mapping = setup_column_mapping(config, "classification")
-    test_functions = get_classification_tests(config, tests_mapping)
+    try:
+        classification_mapping = setup_column_mapping(config, "classification")
+    except Exception as e:
+        logger.error(f"Error setting up column mapping: {e}")
+        return
 
-    classification_test_suite = TestSuite(tests=test_functions)
-    classification_test_suite.run(
-        reference_data=reference_data,
-        current_data=data,
-        column_mapping=classification_mapping,
-    )
-    classification_test_suite.save(
-        f"test_suites/{folder_path}/classification_test_suite.json"
-    )
+    try:
+        test_functions = get_classification_tests(config, tests_mapping)
+
+        classification_test_suite = TestSuite(tests=test_functions)
+        classification_test_suite.run(
+            reference_data=reference_data,
+            current_data=data,
+            column_mapping=classification_mapping,
+        )
+        classification_test_suite.save(
+            f"outputs/test_suites/{folder_path}/classification_test_suite.json"
+        )
+    except Exception as e:
+        logger.error(f"Error running classification tests: {e}")
+        return
 
 
 def generate_tests(
@@ -158,19 +206,33 @@ def generate_tests(
     """
     Generate the test suite based on the model type.
     """
-    with open("src/tests_map.json", "r") as f:
-        tests_mapping = json.load(f)
+    try:
+        with open("src/tests_map.json", "r") as f:
+            tests_mapping = json.load(f)
+    except Exception as e:
+        logger.error(f"Error loading tests mapping: {e}")
+        return
 
     # Generate the data tests
-    data_tests(data, reference_data, config, tests_mapping, folder_path)
+    try:
+        data_tests(data, reference_data, config, tests_mapping, folder_path)
+    except Exception as e:
+        logger.error(f"Error running data tests: {e}")
 
     # Generate the regression tests
     if model_type["regression"]:
-        regression_tests(data, reference_data, config, tests_mapping, folder_path)
+        try:
+            regression_tests(data, reference_data, config, tests_mapping, folder_path)
+        except Exception as e:
+            logger.error(f"Error running regression tests: {e}")
 
     # Generate the classification tests
     if model_type["binary_classification"]:
-        classification_tests(data, reference_data, config, tests_mapping, folder_path)
+        try:
+            classification_tests(data, reference_data, config, tests_mapping, folder_path)
+        except Exception as e:
+            logger.error(f"Error running classification tests: {e}")
+        return
 
 
 def main():
