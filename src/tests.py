@@ -2,7 +2,6 @@
 File to handle test suite generation with Evidently AI. Split file into data, regression, and classification tests. Integrate with ETL pipeline.
 """
 
-from cgi import test
 import pandas as pd
 import warnings
 import json

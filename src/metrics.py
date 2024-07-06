@@ -3,7 +3,6 @@ File to handle metric report generation with Evidently AI. Split file into data,
 """
 
 import os
-from cycler import V
 from sklearn.exceptions import UndefinedMetricWarning
 from src.config_manager import load_config
 from src.etl import etl_pipeline
