@@ -1,0 +1,44 @@
+{
+  "data_quality": {
+    "num_rows": "TestNumberOfRows",
+    "num_cols": "TestNumberOfColumns",
+    "num_empty_rows": "TestNumberOfEmptyRows",
+    "num_empty_cols": "TestNumberOfEmptyColumns",
+    "num_duplicated_rows": "TestNumberOfDuplicatedRows",
+    "num_duplicated_cols": "TestNumberOfDuplicatedColumns",
+    "col_types": "TestColumnsType",
+    "col_regex": "TestColumnRegExp",
+    "num_missing_values": "TestNumberOfMissingValues",
+    "share_missing_values": "TestShareOfMissingValues",
+    "num_cols_with_missing_values": "TestNumberOfColumnsWithMissingValues",
+    "num_rows_with_missing_values": "TestNumberOfRowsWithMissingValues",
+    "test_col_range": "TestValueRange",
+    "test_col_list": "TestValueList"
+  },
+  "data_drift": {
+    "num_drifted_cols": "TestNumberOfDriftedColumns",
+    "share_drifted_cols": "TestShareOfDriftedColumns",
+    "test_drift": "TestColumnDrift"
+  },
+  "regression": {
+    "mae": "TestValueMAE",
+    "rmse": "TestValueRMSE",
+    "me": "TestValueMeanError",
+    "mape": "TestValueMAPE",
+    "abs_max_error": "TestValueAbsMaxError",
+    "r2": "TestValueR2Score"
+  },
+  "classification": {
+    "accuracy": "TestAccuracyScore",
+    "precision": "TestPrecisionScore",
+    "recall": "TestRecallScore",
+    "f1": "TestF1Score",
+    "precision_by_class": "TestPrecisionByClass",
+    "recall_by_class": "TestRecallByClass",
+    "f1_by_class": "TestF1ByClass",
+    "tpr": "TestTPR",
+    "tnr": "TestTNR",
+    "fpr": "TestFPR",
+    "fnr": "TestFNR"
+  }
+}

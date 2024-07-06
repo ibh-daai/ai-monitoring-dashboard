@@ -45,17 +45,16 @@ def extract_columns(mapping: dict, columns: set, config: dict) -> set:
                 "binary_classification", False
             ):
                 continue
-
             columns.add(value)
         else:
             # Cases where the model_type is set to True, but is columns are set to None in the configuration.
             if key.startswith("regression") and model_type.get("regression", False):
                 logger.error(f"Regression column '{key}' is None, update config.")
-                raise ValueError(f"Regression column '{key}' is None, update config.")
+                raise ValueError(f"Regression column '{key}' is None, update config and/or data.")
             if key.startswith("classification") and model_type.get(
                 "binary_classification", False
             ):
-                logger.error(f"Classification column '{key}' is None, update config.")
+                logger.error(f"Classification column '{key}' is None, update config and/or data.")
                 raise ValueError(
                     f"Classification column '{key}' is None, update config."
                 )
@@ -101,7 +100,7 @@ def validate_feature(data: pd.DataFrame, feature: str, rules: dict) -> bool:
     Validate a feature in the DataFrame against the rules specified in the JSON config file.
     """
     if feature not in data.columns:
-        logger.error(f"Feature '{feature}' in validation rules not in DataFrame.")
+        logger.warning(f"Feature '{feature}' in validation rules not in DataFrame, cannot be validated.")
         return False
 
     column_data = data[feature].dropna()
@@ -110,7 +109,7 @@ def validate_feature(data: pd.DataFrame, feature: str, rules: dict) -> bool:
     # Feature validation for strings and boolean values
     if rule_type == "enum":
         if not column_data.isin(rules["values"]).all():
-            logger.error(
+            logger.warning(
                 f"Value error for '{feature}': values not in {rules['values']}"
             )
             return False
@@ -118,12 +117,12 @@ def validate_feature(data: pd.DataFrame, feature: str, rules: dict) -> bool:
     # Feature validation for numerical values (int, float)
     elif rule_type == "range":
         if not column_data.between(rules["min"], rules["max"]).all():
-            logger.error(
+            logger.warning(
                 f"Value error for '{feature}': values out of range [{rules['min']}, {rules['max']}]"
             )
             return False
     else:
-        logger.error(
+        logger.warning(
             f"Unsupported rule type for '{feature}': {rule_type}. Please edit the JSON config file."
         )
         return False
@@ -139,7 +138,7 @@ def validate_row(row: pd.Series, mapping: dict, schema: dict) -> bool:
         jsonschema.validate(instance, schema)
         return True
     except jsonschema.exceptions.ValidationError as err:
-        logger.error(f"Validation error on row {row.to_dict()}: {err}")
+        logger.warning(f"Validation error on row {row.to_dict()}: {err}")
         return False
 
 
@@ -168,8 +167,7 @@ def validate_data(data: pd.DataFrame, config: dict) -> bool:
 
     # if the DataFrame is empty, raise an error
     if data.empty:
-        logger.error("DataFrame is empty.")
-        raise ValueError("DataFrame is empty")
+        logger.warning("DataFrame is empty.")
 
     # call helper functions to extract mappings and columns
     mapping = config_mappings(config["columns"])
@@ -196,18 +194,10 @@ def validate_data(data: pd.DataFrame, config: dict) -> bool:
             logger.error("Classification columns are not properly configured.")
             raise ValueError("Classification columns are not properly configured.")
 
-    # check for duplicates
-    if data.duplicated().any():
-        raise ValueError("Data contains duplicates")
-
-    # check for missing values
-    if data.isnull().values.any():
-        raise ValueError("Data contains missing values")
-
     # validate features
     for feature, rules in validation_rules.items():
         if not validate_feature(data, feature, rules):
-            logger.error(f"Validation failed for feature '{feature}'")
+            logger.warning(f"Validation failed for feature '{feature}'")
             return False
 
     # validate schema for each row of the DataFrame
