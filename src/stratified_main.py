@@ -3,6 +3,8 @@ File to split both reference and current data into stratified reports and tests 
 """
 
 import pandas as pd
+import warnings
+from sklearn.exceptions import UndefinedMetricWarning
 from src.config_manager import load_config
 from src.metrics import generate_report
 from src.tests import generate_tests
@@ -88,11 +90,13 @@ def generate_stratified_tests(
 
 
 def main():
+    warnings.simplefilter(action="ignore", category=FutureWarning)
+    warnings.simplefilter(action="ignore", category=UndefinedMetricWarning)
     # load config and test split function
     config = load_config()
     data = pd.read_csv("data/data.csv")
     reference_data = pd.read_csv("data/reference_data.csv")
-    
+
     generate_stratified_reports(
         data, reference_data, config, config["model_config"]["model_type"]
     )

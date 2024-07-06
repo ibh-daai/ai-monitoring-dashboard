@@ -112,28 +112,162 @@ Specifies rules for validating the data to ensure accuracy and consistency.
 ```
 ### Tests
 
-Enables specific tests for regression and classification, each defined by its name and a boolean to enable or disable.
+Enables specific tests for regression and classification. To add tests, include the name of the test in its corresponding category, as seen below and in the example to follow. For more information on any test, please check [Evidently AI](https://docs.evidentlyai.com/reference/all-tests). The tests to choose from are:
+#### Data Quality Tests
+-   **num_rows**: Checks the number of rows in the dataset against the reference data.
+-   **num_cols**: Checks the number of columns in the dataset against the reference data.
+-   **num_empty_rows**: Checks the number of empty rows in the dataset against the reference data.
+-   **num_empty_cols**: Checks the number of empty columns in the dataset against the reference data.
+-   **num_duplicated_rows**: Checks the number of duplicated rows in the dataset against the reference data.
+-   **num_duplicated_cos**: Checks the number of duplicated columns in the dataset against the reference data.
+-   **col_types**: Checks the column types in the dataset against the reference data.
+-   **col_regex**: Tests the number of values in a column that do not match a defined regular expression, against reference data.
+parameters:
+    -  **column_name**: Name of the column to be tested.
+    -  **regex**: Regular expression to be tested against.
+-   **num_missing_values**: Checks the number of missing values in the dataset against the reference data.
+parameters:
+    -  **missing_values**: (optional) List of missing values to be checked against.
+-   **share_missing_values**: Checks the share of missing values in the dataset against the reference data.
+parameters:
+    -  **missing_values**: (optional) List of missing values to be checked against.
+-   **num_cols_with_missing_values**: Checks the number of columns with missing values in the dataset against the reference data.
+parameters:
+    -  **missing_values**: (optional) List of missing values to be checked against.
+-   **num_rows_with_missing_values**: Checks the number of rows with missing values in the dataset against the reference data.
+parameters:
+    -  **missing_values**: (optional) List of missing values to be checked against.
+-   **test_col_range**: Checks the range of values in a numerical column.
+parameters:
+    -  **column_name**: Name of the column to be tested.
+    -  **left**: Minimum value for the column.
+    -  **right**: Maximum value for the column.
+-   **test_col_list**: Checks the values in a categorical column against a set of acceptable values.
+parameters:
+    -  **column_name**: Name of the column to be tested.
+    -  **values**: (optional) List of acceptable values for the column.
 
+#### Data Drift Tests
+-   **num_drifted_cols**: Checks the number of columns that have drifted from the reference data.
+parameters:
+    -  **columns**: (optional) List of columns to be checked for drift.
+    -  Check documentation for more parameters.
+-   **share_drifted_cols**: Checks the share of columns that have drifted from the reference data.
+parameters:
+    -  **columns**: (optional) List of columns to be checked for drift.
+    -  Check documentation for more parameters.
+-   **test_drift**: Checks the drift of a column from the reference data.
+parameters:
+    -  **column_name**: Name of the column to be tested.
+    -  Check documentation for more parameters.
+
+#### Regression Tests
+-   **mae**: Computes the Mean Absolute Error (MAE) and compares it to the reference
+-   **rmse**: Computes the Root Mean Squared Error (RMSE) and compares it to the reference
+-   **me**: Computes the Mean Error (ME) and compares it to the reference
+-   **mape**: Computes the Mean Absolute Percentage Error (MAPE) and compares it to the reference
+-   **abs_max_error**: Computes the Absolute Maximum Error and compares it to the reference
+-   **r2**: Computes the R2 score and compares it to the reference
+
+#### Classification Tests
+-   **accuracy**: Computes the accuracy and compares it to the reference
+-   **precision**: Computes the precision/ppv and compares it to the reference
+-   **recall**: Computes the recall/sensitivity/tpr and compares it to the reference
+-   **f1**: Computes the F1 score and compares it to the reference
+-   **precision_by_class**: Computes the precision by class and compares it to the reference
+parameters:
+    -  **label**: Name of the class to be tested.
+-   **recall_by_class**: Computes the recall by class and compares it to the reference
+parameters:
+    -  **label**: Name of the class to be tested.
+-   **f1_by_class**: Computes the F1 score by class and compares it to the reference
+parameters:
+    -  **label**: Name of the class to be tested.
+-   **tpr**: Computes the True Positive Rate (TPR) and compares it to the reference
+-   **tnr**: Computes the True Negative Rate (TNR)/specificity and compares it to the reference
+-   **fpr**: Computes the False Positive Rate (FPR)/type 1 error and compares it to the reference
+-   **fnr**: Computes the False Negative Rate (FNR)/type 2 error and compares it to the reference
+
+To add a test, include the name of the test in its corresponding category, and add any optional and/or required parameters to a `params` object. The `params` is optional and should only be included if the test requires additional parameters. Within the `params` object, include the required parameters for the test with the key being the parameter name and the value being the parameter value.
 #### Example
 ```json
-{
-  "tests": {
-    "regression_tests": [
-      {
-        "name": "mae",
-        "description": "Compares with MAE of the reference data. Alerts with a difference of 10%.",
-        "enable": true
-      }
-    ],
-    "classification_tests": [
-      {
-        "name": "accuracy",
-        "description": "Compares with accuracy of the reference data. Alerts with a difference of 20%.",
-        "enable": true
-      }
-    ]
-  }
-}
+"tests": {
+    "data_quality_tests": [
+      {
+        "name": "num_cols"
+      },
+      {
+        "name": "num_empty_rows"
+      },
+      {
+        "name": "num_duplicated_rows"
+      },
+      {
+        "name": "num_duplicated_cols"
+      },
+      {
+        "name": "col_types"
+      },
+      {
+        "name": "num_missing_values"
+      },
+      {
+        "name": "test_col_range",
+        "params": {
+          "column_name": "closest_age",
+          "left": 0,
+          "right": 216
+        }
+      },
+      {
+        "name": "test_col_list",
+        "params": {
+          "column_name": "hospital",
+          "values": [
+            "Credit Valley Hospital",
+            "Mississauga Hospital",
+            "Queensway Hospital"
+          ]
+        }
+      }
+    ],
+    "data_drift_tests": [
+      {
+        "name": "num_drifted_cols"
+      },
+      {
+        "name": "share_drifted_cols"
+      }
+    ],
+    "regression_tests": [
+      {
+        "name": "mae"
+      }
+    ],
+    "classification_tests": [
+      {
+        "name": "accuracy"
+      },
+      {
+        "name": "precision"
+      },
+      {
+        "name": "recall"
+      },
+      {
+        "name": "f1"
+      },
+      {
+        "name": "tnr"
+      },
+      {
+        "name": "fpr"
+      },
+      {
+        "name": "fnr"
+      }
+    ]
+  },
 ```
 ### Alerts (`alerts`)
 

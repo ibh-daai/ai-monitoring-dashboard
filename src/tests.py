@@ -2,41 +2,15 @@
 File to handle test suite generation with Evidently AI. Split file into data, regression, and classification tests. Integrate with ETL pipeline.
 """
 
+from cgi import test
 import pandas as pd
 import warnings
+import json
+import importlib
 import os
 import logging
 from sklearn.exceptions import UndefinedMetricWarning
 from evidently.test_suite import TestSuite
-from evidently.tests import (
-    # Data tests
-    TestNumberOfColumns,
-    TestNumberOfEmptyRows,
-    TestNumberOfDuplicatedRows,
-    TestNumberOfMissingValues,
-    # Column tests
-    TestColumnAllUniqueValues,
-    TestColumnValueMin,
-    TestColumnValueMax,
-    # Drift tests
-    TestNumberOfDriftedColumns,
-    TestShareOfDriftedColumns,
-    # Regression tests
-    TestValueMAE,
-    TestValueRMSE,
-    TestValueMeanError,
-    TestValueMAPE,
-    TestValueAbsMaxError,
-    TestValueR2Score,
-    # Classification tests
-    TestAccuracyScore,
-    TestPrecisionScore,
-    TestRecallScore,
-    TestF1Score,
-    TestTNR,
-    TestFPR,
-    TestFNR,
-)
 
 from src.config_manager import load_config
 from src.etl import etl_pipeline
@@ -58,71 +32,58 @@ def ensure_directory(directory: str) -> None:
         os.makedirs(full_path)
 
 
-def regression_test_mapping() -> dict:
-    """
-    Generate the regression test mapping.
-    """
-    return {
-        "mae": TestValueMAE(),
-        "rmse": TestValueRMSE(),
-        "mean_error": TestValueMeanError(),
-        "mape": TestValueMAPE(),
-        "absolute_max_error": TestValueAbsMaxError(),
-        "r2": TestValueR2Score(),
-    }
+def load_json(file_path: str) -> dict:
+    with open(file_path, "r") as file:
+        return json.load(file)
 
 
-def get_regression_tests(config: dict) -> list:
-    """
-    Get the regression tests.
-    """
-    mapping = regression_test_mapping()
+def import_function(module_name: str, function_name: str):
+    module = importlib.import_module(module_name)
+    return getattr(module, function_name)
 
-    # Add enabled tests from config to the list
+
+def get_tests(
+    config: dict,
+    tests_mapping: dict,
+    test_type: str,
+) -> list:
+    print(test_type)
+    test_configs = config["tests"][test_type]
     tests = []
-    for test_config in config["tests"]["regression_tests"]:
-        if test_config["enable"]:
-            test_name = test_config["name"]
-            tests.append(mapping[test_name])
-
+    for test_config in test_configs:
+        test_name = test_config["name"]
+        params = test_config.get("params", {})
+        try:
+            test_function = tests_mapping[test_type.replace("_tests", "")][test_name]
+            module_name = "evidently.tests"
+            test_class = import_function(module_name, test_function)
+            tests.append(test_class(**params) if params else test_class())
+        except KeyError as e:
+            logger.error(f"KeyError: {e}")
+        except Exception as e:
+            logger.error(f"Error instantiating test {test_name}: {e}")
     return tests
 
 
-def classification_test_mapping() -> dict:
-    """
-    Generate the classification test mapping.
-    """
-    return {
-        "accuracy": TestAccuracyScore(),
-        "precision": TestPrecisionScore(),
-        "recall": TestRecallScore(),
-        "f1": TestF1Score(),
-        "specificity": TestTNR(),
-        "fpr": TestFPR(),
-        "fnr": TestFNR(),
-    }
+def get_data_tests(config: dict, tests_mapping: dict) -> list:
+    return get_tests(config, tests_mapping, "data_quality_tests") + get_tests(
+        config, tests_mapping, "data_drift_tests"
+    )
 
 
-def get_classification_tests(config: dict) -> list:
-    """
-    Get the classification tests.
-    """
-    mapping = classification_test_mapping()
+def get_regression_tests(config: dict, tests_mapping: dict) -> list:
+    return get_tests(config, tests_mapping, "regression_tests")
 
-    # Add enabled tests from config to the list
-    tests = []
-    for test_config in config["tests"]["classification_tests"]:
-        if test_config["enable"]:
-            test_name = test_config["name"]
-            tests.append(mapping[test_name])
 
-    return tests
+def get_classification_tests(config: dict, tests_mapping: dict) -> list:
+    return get_tests(config, tests_mapping, "classification_tests")
 
 
 def data_tests(
     data: pd.DataFrame,
     reference_data: pd.DataFrame,
     config: dict,
+    tests_mapping: dict,
     folder_path: str = "test_results",
 ) -> None:
     """
@@ -130,17 +91,9 @@ def data_tests(
     """
     ensure_directory(folder_path)
     data_mapping = setup_column_mapping(config, "data")
-    data_test_suite = TestSuite(
-        tests=[
-            TestNumberOfColumns(),
-            TestNumberOfEmptyRows(),
-            TestNumberOfDuplicatedRows(),
-            TestNumberOfMissingValues(),
-            # consider column min/max here
-            TestNumberOfDriftedColumns(),
-            TestShareOfDriftedColumns(),
-        ]
-    )
+    test_functions = get_data_tests(config, tests_mapping)
+
+    data_test_suite = TestSuite(tests=test_functions)
     data_test_suite.run(
         reference_data=reference_data, current_data=data, column_mapping=data_mapping
     )
@@ -151,6 +104,7 @@ def regression_tests(
     data: pd.DataFrame,
     reference_data: pd.DataFrame,
     config: dict,
+    tests_mapping: dict,
     folder_path: str = "test_results",
 ) -> None:
     """
@@ -158,7 +112,9 @@ def regression_tests(
     """
     ensure_directory(folder_path)
     regression_mapping = setup_column_mapping(config, "regression")
-    regression_test_suite = TestSuite(tests=get_regression_tests(config))
+    test_functions = get_regression_tests(config, tests_mapping)
+
+    regression_test_suite = TestSuite(tests=test_functions)
     regression_test_suite.run(
         reference_data=reference_data,
         current_data=data,
@@ -171,6 +127,7 @@ def classification_tests(
     data: pd.DataFrame,
     reference_data: pd.DataFrame,
     config: dict,
+    tests_mapping: dict,
     folder_path: str = "test_results",
 ) -> None:
     """
@@ -178,7 +135,9 @@ def classification_tests(
     """
     ensure_directory(folder_path)
     classification_mapping = setup_column_mapping(config, "classification")
-    classification_test_suite = TestSuite(tests=get_classification_tests(config))
+    test_functions = get_classification_tests(config, tests_mapping)
+
+    classification_test_suite = TestSuite(tests=test_functions)
     classification_test_suite.run(
         reference_data=reference_data,
         current_data=data,
@@ -199,16 +158,19 @@ def generate_tests(
     """
     Generate the test suite based on the model type.
     """
+    with open("src/tests_map.json", "r") as f:
+        tests_mapping = json.load(f)
+
     # Generate the data tests
-    data_tests(data, reference_data, config, folder_path)
+    data_tests(data, reference_data, config, tests_mapping, folder_path)
 
     # Generate the regression tests
     if model_type["regression"]:
-        regression_tests(data, reference_data, config, folder_path)
+        regression_tests(data, reference_data, config, tests_mapping, folder_path)
 
     # Generate the classification tests
     if model_type["binary_classification"]:
-        classification_tests(data, reference_data, config, folder_path)
+        classification_tests(data, reference_data, config, tests_mapping, folder_path)
 
 
 def main():
