@@ -1,71 +1,80 @@
 {
-    "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "type": "object",
-    "properties": {
-        "outputs": {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "study_id": {
-                        "type": ["string", "number"]
-                    },
-                    "model_id": {
-                        "type": ["string", "number"]
-                    },
-                    "sex": {
-                        "type": ["string", "null"],
-                        "default": null
-                    },
-                    "hospital": {
-                        "type": ["string", "null"],
-                        "default": null
-                    },
-                    "age": {
-                        "type": ["number", "null"],
-                        "default": null
-                    },
-                    "predictions": {
-                        "type": "object",
-                        "properties": {
-                            "regression_prediction": {
-                                "type": ["number", "null"],
-                                "default": null
-                                
-                            },
-                            "classification_prediction": {
-                                "type": ["string", "number", "boolean", "null"],
-                                "default": null
-                            }
-                        },
-                        "required": []
-                    },
-                    "labels": {
-                        "type": "object",
-                        "properties": {
-                            "regression_label": {
-                                "type": ["number", "null"],
-                                "default": null
-                            },
-                            "classification_label": {
-                                "type": ["string", "number", "boolean", "null"],
-                                "default": null
-                            }
-                        },
-                        "required": []
-                    },
-                    "features": {
-                        "type": "object",
-                        "additionalProperties": true
-                    },
-                    "timestamp": {
-                        "type": "string",
-                        "format": "date"
-                    }
-                },
-                "required": ["study_id", "model_id"]
-            }
-        }
-    },
-    "required": ["outputs"]
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "outputs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "study_id": {
+            "type": ["string", "number"]
+          },
+          "model_id": {
+            "type": ["string", "number"]
+          },
+          "sex": {
+            "type": ["string", "null"],
+            "default": null
+          },
+          "hospital": {
+            "type": ["string", "null"],
+            "default": null
+          },
+          "age": {
+            "type": ["number", "null"],
+            "default": null
+          },
+          "instrument_type": {
+            "type": ["string", "null"],
+            "default": null
+          },
+          "predictions": {
+            "type": "object",
+            "properties": {
+              "regression_prediction": {
+                "type": ["number", "null"],
+                "default": null
+              },
+              "classification_prediction": {
+                "type": ["string", "number", "boolean", "null"],
+                "default": null
+              }
+            },
+            "required": []
+          },
+          "labels": {
+            "type": "object",
+            "properties": {
+              "regression_label": {
+                "type": ["number", "null"],
+                "default": null
+              },
+              "classification_label": {
+                "type": ["string", "number", "boolean", "null"],
+                "default": null
+              }
+            },
+            "required": []
+          },
+          "features": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        "required": [
+          "study_id",
+          "model_id",
+          "hospital",
+          "age",
+          "instrument_type"
+        ]
+      }
+    }
+  },
+  "required": ["outputs"]
 }

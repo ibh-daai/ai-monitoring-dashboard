@@ -18,6 +18,7 @@ def mock_config():
             "sex": "sex",
             "hospital": "hospital",
             "age": "age",
+            "instrument_type": "instrument_type",
             "predictions": {
                 "regression_prediction": None,
                 "classification_prediction": "classification",
@@ -39,6 +40,7 @@ def mock_config():
             "sex": {"type": "enum", "values": ["M", "F"]},
             "hospital": {"type": "enum", "values": ["hospital1", "hospital2"]},
             "age": {"type": "range", "min": 0, "max": 120},
+            "instrument_type": {"type": "enum", "values": ["type1", "type2"]},
             "ethnicity": {"type": "enum", "values": ["White", "Black", "Asian"]},
             "height": {"type": "range", "min": 50, "max": 250},
             "weight": {"type": "range", "min": 2, "max": 500},
@@ -60,6 +62,7 @@ def correct_data():
             "sex": ["M", "F", "M"],
             "hospital": ["hospital1", "hospital2", "hospital1"],
             "age": [9, 11, 34],
+            "instrument_type": ["type1", "type2", "type1"],
             # "regression_output": [17.1, 20.5, 30],
             "classification": [1, 0, 0],
             # "label": [10, 20, 30],
@@ -84,6 +87,7 @@ def including_regression():
             "ModelID": ["Model1", "Model1", "Model1"],
             "sex": ["M", "F", "M"],
             "age": [9, 11, 34],
+            "instrument_type": ["type1", "type2", "type1"],
             "hospital": ["hospital1", "hospital2", "hospital1"],
             "regression_output": [17.1, 20.5, 30],
             "classification": [1, 0, 0],
@@ -96,6 +100,7 @@ def including_regression():
             "alcohol": [False, True, True],
         }
     )
+
 
 def test_validate_data_including_regression(including_regression, mock_config):
     assert validate_data(including_regression, mock_config) == True

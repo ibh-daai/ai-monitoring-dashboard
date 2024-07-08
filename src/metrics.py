@@ -39,9 +39,6 @@ def ensure_directory(directory: str) -> None:
     full_path = os.path.join(base_dir, directory)
     if not os.path.exists(full_path):
         os.makedirs(full_path)
-        logger.info(f"Directory {full_path} created.")
-    else:
-        logger.info(f"Directory {full_path} already exists.")
 
 
 def split_features(validation_rules: dict) -> tuple[list, list]:

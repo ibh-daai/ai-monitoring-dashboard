@@ -13,6 +13,7 @@
     "sex": "sex",
     "hospital": "hospital",
     "age": "chronological_age",
+    "instrument_type": "machine_type",
     "predictions": {
       "regression_prediction": "predicted_age",
       "classification_prediction": "classification"
@@ -47,6 +48,10 @@
       "type": "range",
       "min": 0,
       "max": 400
+    },
+    "machine_type": {
+      "type": "enum",
+      "values": ["machine1", "machine2"]
     },
     "standard_deviation": {
       "type": "range",
