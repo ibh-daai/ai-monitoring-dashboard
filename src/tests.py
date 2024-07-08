@@ -28,9 +28,6 @@ def ensure_directory(directory: str) -> None:
     full_path = os.path.join(base_dir, directory)
     if not os.path.exists(full_path):
         os.makedirs(full_path)
-        logger.info(f"Directory {full_path} created.")
-    else:
-        logger.info(f"Directory {full_path} already exists.")
 
 
 def load_json(file_path: str) -> dict:

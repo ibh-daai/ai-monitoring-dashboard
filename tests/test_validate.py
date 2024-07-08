@@ -19,6 +19,7 @@ def mock_config():
             "sex": "sex",
             "hospital": "hospital",
             "age": "age",
+            "instrument_type": "type",
             "predictions": {
                 "regression_prediction": "regression_output",
                 "classification_prediction": "classification",
@@ -61,6 +62,7 @@ def correct_data():
             "sex": ["M", "F", "M"],
             "hospital": ["hospital1", "hospital2", "hospital1"],
             "age": [9, 11, 34],
+            "type": ["type1", "type2", "type1"],
             "regression_output": [17.1, 20.5, 30],
             "classification": [1, 0, 0],
             "label": [10, 20, 30],
@@ -86,6 +88,7 @@ def data_with_wrong_types():
             "sex": ["M", "F", "M"],
             "hospital": ["hospital1", "hospital2", "hospital1"],
             "age": [9, 11, 34],
+            "type": ["type1", "type2", "type1"],
             "regression_output": ["ten", "twenty", "thirty"],  # Expected numeric
             "classification": [1, 0, 0],
             "label": [10, 20, 30],
@@ -112,6 +115,7 @@ def large_data():
             "sex": ["M", "F"] * (num_entries // 2),
             "age": [i % 100 for i in range(num_entries)],
             "hospital": ["hospital1", "hospital2"] * (num_entries // 2),
+            "type": ["type1", "type2"] * (num_entries // 2),
             "regression_output": [i % 100 for i in range(num_entries)],
             "classification": [i % 2 for i in range(num_entries)],
             "label": [i % 100 for i in range(num_entries)],
@@ -137,6 +141,7 @@ def corrupted_data():
             "sex": ["M", "F", "M"],
             "hospital": ["hospital1", "hospital2", "hospital1"],
             "age": [9, 11, 34],
+            "type": ["type1", "type2", "type1"],
             "regression_output": [
                 10,
                 20,
@@ -166,6 +171,7 @@ def missing_regression_output():
             "sex": ["M", "F", "M"],
             "hospital": ["hospital1", "hospital2", "hospital1"],
             "age": [9, 11, 34],
+            "type": ["type1", "type2", "type1"],
             # missing regression_output
             "classification": [1, 0, 0],
             "label": [10, 20, 30],

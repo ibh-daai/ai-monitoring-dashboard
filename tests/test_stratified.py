@@ -18,6 +18,7 @@ def mock_config():
             "sex": "sex",
             "hospital": "hospital",
             "age": "age",
+            "instrument_type": "instrument_type",
             "predictions": {
                 "regression_prediction": "regression_output",
                 "classification_prediction": "classification",
@@ -39,6 +40,7 @@ def mock_config():
             "sex": {"type": "enum", "values": ["M", "F"]},
             "hospital": {"type": "enum", "values": ["hospital1", "hospital2"]},
             "age": {"type": "range", "min": 0, "max": 120},
+            "instrument_type": {"type": "enum", "values": ["type1", "type2"]},
             "ethnicity": {"type": "enum", "values": ["White", "Black", "Asian"]},
             "height": {"type": "range", "min": 50, "max": 250},
             "weight": {"type": "range", "min": 2, "max": 500},
@@ -60,6 +62,7 @@ def correct_data():
             "sex": ["M", "F", "M"],
             "hospital": ["hospital1", "hospital2", "hospital1"],
             "age": [9, 11, 34],
+            "instrument_type": ["type1", "type2", "type1"],
             "regression_output": [17.1, 20.5, 30],
             "classification": [1, 0, 0],
             "label": [10, 20, 30],
@@ -85,22 +88,30 @@ def test_split_data_by_sex(correct_data, mock_config):
 
 def test_split_data_by_hospital(correct_data, mock_config):
     results = split_data(correct_data, mock_config)
-    assert all(results["hospital1"]["hospital"] == "hospital1")
-    assert all(results["hospital2"]["hospital"] == "hospital2")
-    assert len(results["hospital1"]) == 2  # Two records for hospital1
-    assert len(results["hospital2"]) == 1  # One record for hospital2
+    assert all(results["hospital1_report"]["hospital"] == "hospital1")
+    assert all(results["hospital2_report"]["hospital"] == "hospital2")
+    assert len(results["hospital1_report"]) == 2  # Two records for hospital1
+    assert len(results["hospital2_report"]) == 1  # One record for hospital2
+
+
+def test_split_data_by_instrument_type(correct_data, mock_config):
+    results = split_data(correct_data, mock_config)
+    assert all(results["type1_report"]["instrument_type"] == "type1")
+    assert all(results["type2_report"]["instrument_type"] == "type2")
+    assert len(results["type1_report"]) == 2  # Two records for instrument type 1
+    assert len(results["type2_report"]) == 1  # One record for instrument type 2
 
 
 def test_split_data_by_age_tertiles(correct_data, mock_config):
     results = split_data(correct_data, mock_config)
     # These checks assume tertiles are split at the 33rd and 66th percentiles of ages in correct_data
     assert all(
-        results["age1"]["age"] <= 11
+        results["age1_report"]["age"] <= 11
     )  # The first tertile should have the youngest age group
     assert all(
-        (results["age2"]["age"] >= 11) & (results["age2"]["age"] <= 22)
+        (results["age2_report"]["age"] >= 11) & (results["age2_report"]["age"] <= 22)
     )  # Second tertile
-    assert all(results["age3"]["age"] >= 22)  # Third tertile
+    assert all(results["age3_report"]["age"] >= 22)  # Third tertile
 
 
 def test_split_data_completeness(correct_data, mock_config):
@@ -110,16 +121,14 @@ def test_split_data_completeness(correct_data, mock_config):
         [
             results["male_report"],
             results["female_report"],
-            results["hospital1"],
-            results["hospital2"],
-            results["age1"],
-            results["age2"],
-            results["age3"],
+            results["hospital1_report"],
+            results["hospital2_report"],
+            results["age1_report"],
+            results["age2_report"],
+            results["age3_report"],
         ],
         ignore_index=True,
     )
     # Remove duplicates because the same row will appear in multiple reports if it fits their criteria
     combined_df = combined_df.drop_duplicates()
-    assert len(combined_df) == len(
-        correct_data
-    ) 
+    assert len(combined_df) == len(correct_data)

@@ -23,6 +23,7 @@ def mock_config():
             "sex": "sex",
             "hospital": "hospital",
             "age": "age",
+            "instrument_type": "instrument_type",
             "predictions": {
                 "regression_prediction": None,
                 "classification_prediction": "class",
@@ -38,6 +39,7 @@ def mock_config():
             "sex": {"type": "enum", "values": ["M", "F"]},
             "hospital": {"type": "enum", "values": ["hospital1", "hospital2"]},
             "age": {"type": "range", "min": 0, "max": 120},
+            "instrument_type": {"type": "enum", "values": ["type1", "type2"]},
             "bmi": {"type": "range", "min": 0, "max": 50},
             "exercise_frequency": {
                 "type": "enum",
@@ -61,6 +63,7 @@ def mock_data():
             "sex": ["M", "F", "M", "F"],
             "hospital": ["hospital1", "hospital2", "hospital1", "hospital2"],
             "age": [25, 30, 35, 40],
+            "instrument_type": ["type1", "type2", "type1", "type2"],
             "class": [1, 0, 1, 0],
             "class_true": [1, 0, 1, 0],
             "bmi": [20, 25, 30, 35],
@@ -82,6 +85,7 @@ def mock_reference_data():
             "sex": ["M", "F", "M", "F"],
             "hospital": ["hospital1", "hospital2", "hospital1", "hospital2"],
             "age": [25, 30, 35, 40],
+            "instrument_type": ["type1", "type2", "type1", "type2"],
             "class": [1, 0, 1, 1],
             "class_true": [1, 0, 1, 0],
             "bmi": [20, 28, 40, 32],

@@ -46,6 +46,7 @@ Defines the mapping of data columns to required schema properties.
 -   **sex** (`string`): Patient's sex.
 -   **hospital** (`string`): Hospital where the data was collected.
 -   **age** (`string`): Patient's age.
+-   **instrument_type** (`string`): Type of instrument used to make the prediction.
 -   **predictions** (`object`):
     -   **regression_prediction** (`string`): Column for predicted regression values.
     -   **classification_prediction** (`string`): Column for predicted classification values.
@@ -64,6 +65,7 @@ Defines the mapping of data columns to required schema properties.
     "sex": "sex",
     "hospital": "hospital",
     "age": "chronological_age",
+    "instrument_type": "machine_type",
     "predictions": {
       "regression_prediction": "predicted_age",
       "classification_prediction": "classification"

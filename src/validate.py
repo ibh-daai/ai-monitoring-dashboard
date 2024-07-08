@@ -50,11 +50,15 @@ def extract_columns(mapping: dict, columns: set, config: dict) -> set:
             # Cases where the model_type is set to True, but is columns are set to None in the configuration.
             if key.startswith("regression") and model_type.get("regression", False):
                 logger.error(f"Regression column '{key}' is None, update config.")
-                raise ValueError(f"Regression column '{key}' is None, update config and/or data.")
+                raise ValueError(
+                    f"Regression column '{key}' is None, update config and/or data."
+                )
             if key.startswith("classification") and model_type.get(
                 "binary_classification", False
             ):
-                logger.error(f"Classification column '{key}' is None, update config and/or data.")
+                logger.error(
+                    f"Classification column '{key}' is None, update config and/or data."
+                )
                 raise ValueError(
                     f"Classification column '{key}' is None, update config."
                 )
@@ -71,6 +75,7 @@ def construct_nested_json(row: pd.Series, mapping: dict) -> dict:
         "sex": row[mapping["sex"]],
         "hospital": row[mapping["hospital"]],
         "age": row[mapping["age"]],
+        "instrument_type": row[mapping["instrument_type"]],
         "predictions": {},
         "labels": {},
         "features": {key: row[key] for key in mapping["features"] if key in row},
@@ -100,7 +105,9 @@ def validate_feature(data: pd.DataFrame, feature: str, rules: dict) -> bool:
     Validate a feature in the DataFrame against the rules specified in the JSON config file.
     """
     if feature not in data.columns:
-        logger.warning(f"Feature '{feature}' in validation rules not in DataFrame, cannot be validated.")
+        logger.warning(
+            f"Feature '{feature}' in validation rules not in DataFrame, cannot be validated."
+        )
         return False
 
     column_data = data[feature].dropna()
