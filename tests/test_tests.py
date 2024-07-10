@@ -19,7 +19,6 @@ def mock_config():
             "sex": "gender",
             "hospital": "clinic",
             "age": "age",
-            "instrument_type": "machine",
             "predictions": {
                 "regression_prediction": None,
                 "classification_prediction": "diagnosis",
@@ -89,7 +88,6 @@ def mock_data():
             "gender": ["M", "F", "M", "F", "M"],
             "clinic": ["clinic1", "clinic2", "clinic1", "clinic2", "clinic1"],
             "age": [20, 25, 30, 35, 40],
-            "machine": ["type1", "type2", "type1", "type2", "type1"],
             "diagnosis": [1, 0, 1, 0, 1],
             "diagnosis_true": [1, 0, 1, 0, 1],
             "weight": [70, 60, 80, 55, 90],
@@ -111,7 +109,6 @@ def mock_reference_data():
             "gender": ["M", "F", "M", "F", "M"],
             "clinic": ["clinic1", "clinic2", "clinic1", "clinic2", "clinic1"],
             "age": [21, 26, 31, 36, 41],
-            "machine": ["type1", "type2", "type1", "type2", "type1"],
             "diagnosis": [1, 0, 1, 1, 0],
             "diagnosis_true": [1, 0, 1, 0, 1],
             "weight": [71, 61, 81, 56, 91],
