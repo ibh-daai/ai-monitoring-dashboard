@@ -87,7 +87,7 @@ Defines the mapping of data columns to required schema properties.
 ```
 ### Validation Rules (`validation_rules`)
 
-Specifies rules for validating the data to ensure accuracy and consistency.
+Specifies rules for validating the data to ensure accuracy and consistency. The enum vs range is used to split columns into categorical and numerical columns. The validation rules are used to ensure that the data is within the expected range or values, as defined in the configuration. Will not throw an error if the data is outside the range, but will be flagged as an alert.
 
 -   Enum and Range are used to define acceptable parameters for each feature.
 -   **type** (`string`): 'enum' for a set of acceptable strings, 'range' for numerical boundaries.
@@ -114,7 +114,7 @@ Specifies rules for validating the data to ensure accuracy and consistency.
 ```
 ### Tests
 
-Enables specific tests for regression and classification. To add tests, include the name of the test in its corresponding category, as seen below and in the example to follow. For more information on any test, please check [Evidently AI](https://docs.evidentlyai.com/reference/all-tests). The tests to choose from are:
+Enables specific tests for regression and classification. To add tests, include the name of the test in its corresponding category, as seen below and in the example to follow. For more information on any test, please check [Evidently AI](https://docs.evidentlyai.com/reference/all-tests). ***Note:*** *When doing a column specific test, use the exact name of the column in your Dataframe, NOT the generic config name* The tests to choose from are:
 #### Data Quality Tests
 -   **num_rows**: Checks the number of rows in the dataset against the reference data.
 -   **num_cols**: Checks the number of columns in the dataset against the reference data.
@@ -139,12 +139,12 @@ parameters:
 -   **num_rows_with_missing_values**: Checks the number of rows with missing values in the dataset against the reference data.
 parameters:
     -  **missing_values**: (optional) List of missing values to be checked against.
--   **test_col_range**: Checks the range of values in a numerical column.
+-   **test_col_range**: Checks the range of values in a numerical column. ***Use this test to ensure that the values within a numerical column are within a defined range***
 parameters:
     -  **column_name**: Name of the column to be tested.
     -  **left**: Minimum value for the column.
     -  **right**: Maximum value for the column.
--   **test_col_list**: Checks the values in a categorical column against a set of acceptable values.
+-   **test_col_list**: Checks the values in a categorical column against a set of acceptable values. ***Use this test to ensure that the values within a categorical column are within a defined set of values***
 parameters:
     -  **column_name**: Name of the column to be tested.
     -  **values**: (optional) List of acceptable values for the column.

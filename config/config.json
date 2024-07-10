@@ -100,11 +100,10 @@
         "name": "num_missing_values"
       },
       {
-        "name": "test_col_range",
+        "name": "test_col_list",
         "params": {
-          "column_name": "closest_age",
-          "left": 0,
-          "right": 216
+          "column_name": "sex",
+          "values": ["M", "F"]
         }
       },
       {
@@ -116,6 +115,61 @@
             "Mississauga Hospital",
             "Queensway Hospital"
           ]
+        }
+      },
+      {
+        "name": "test_col_range",
+        "params": {
+          "column_name": "chronological_age",
+          "left": 0,
+          "right": 400
+        }
+      },
+      {
+        "name": "test_col_list",
+        "params": {
+          "column_name": "machine_type",
+          "values": ["machine1", "machine2"]
+        }
+      },
+      {
+        "name": "test_col_range",
+        "params": {
+          "column_name": "standard_deviation",
+          "left": 0,
+          "right": 13.05
+        }
+      },
+      {
+        "name": "test_col_range",
+        "params": {
+          "column_name": "two_standard_deviations",
+          "left": 0,
+          "right": 26.1
+        }
+      },
+      {
+        "name": "test_col_range",
+        "params": {
+          "column_name": "upper_limit",
+          "left": 0,
+          "right": 300
+        }
+      },
+      {
+        "name": "test_col_range",
+        "params": {
+          "column_name": "lower_limit",
+          "left": 0,
+          "right": 300
+        }
+      },
+      {
+        "name": "test_col_range",
+        "params": {
+          "column_name": "closest_age",
+          "left": 0,
+          "right": 216
         }
       }
     ],
