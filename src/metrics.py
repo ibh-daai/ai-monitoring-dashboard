@@ -3,9 +3,6 @@ File to handle metric report generation with Evidently AI. Split file into data,
 """
 
 import os
-from sklearn.exceptions import UndefinedMetricWarning
-from src.config_manager import load_config
-from src.etl import etl_pipeline
 from evidently import ColumnMapping
 from evidently.report import Report
 from evidently.metrics import (
@@ -23,7 +20,6 @@ from evidently.metrics import (
     ClassificationConfusionMatrix,
     ClassificationClassBalance,
 )
-import warnings
 import logging
 import pandas as pd
 
@@ -35,10 +31,8 @@ def ensure_directory(directory: str) -> None:
     """
     Check if the directory exists and create it if it doesn't.
     """
-    base_dir = "outputs/reports/"
-    full_path = os.path.join(base_dir, directory)
-    if not os.path.exists(full_path):
-        os.makedirs(full_path)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
 
 
 def split_features(validation_rules: dict) -> tuple[list, list]:
@@ -100,12 +94,13 @@ def data_report(
     data: pd.DataFrame,
     reference_data: pd.DataFrame,
     config: dict,
-    folder_path: str = "outputs/reports",
+    folder_path: str,
+    timestamp: str,
 ) -> None:
     """
     Generate data quality metrics report.
     """
-    ensure_directory(folder_path)
+    ensure_directory(f"snapshots/{timestamp}/{folder_path}")
     try:
         data_mapping = setup_column_mapping(config, "data")
     except Exception as e:
@@ -130,19 +125,22 @@ def data_report(
     data_quality_report.run(
         reference_data=reference_data, current_data=data, column_mapping=data_mapping
     )
-    data_quality_report.save(f"outputs/reports/{folder_path}/data_quality_report.json")
+    data_quality_report.save(
+        f"snapshots/{timestamp}/{folder_path}/data_quality_report.json"
+    )
 
 
 def regression_report(
     data: pd.DataFrame,
     reference_data: pd.DataFrame,
     config: dict,
-    folder_path: str = "outputs/reports",
+    folder_path: str,
+    timestamp: str,
 ) -> None:
     """
     Generate regression metrics report.
     """
-    ensure_directory(folder_path)
+    ensure_directory(f"snapshots/{timestamp}/{folder_path}")
     try:
         regression_mapping = setup_column_mapping(config, "regression")
     except Exception as e:
@@ -172,19 +170,22 @@ def regression_report(
         current_data=data,
         column_mapping=regression_mapping,
     )
-    regression_report.save(f"outputs/reports/{folder_path}/regression_report.json")
+    regression_report.save(
+        f"snapshots/{timestamp}/{folder_path}/regression_report.json"
+    )
 
 
 def classification_report(
     data: pd.DataFrame,
     reference_data: pd.DataFrame,
     config: dict,
-    folder_path: str = "reports",
+    folder_path: str,
+    timestamp: str,
 ) -> None:
     """
     Generate classification metrics report.
     """
-    ensure_directory(folder_path)
+    ensure_directory(f"snapshots/{timestamp}/{folder_path}")
     try:
         classification_mapping = setup_column_mapping(config, "classification")
     except Exception as e:
@@ -208,7 +209,9 @@ def classification_report(
         current_data=data,
         column_mapping=classification_mapping,
     )
-    classification_report.save(f"outputs/reports/{folder_path}/classification_report.json")
+    classification_report.save(
+        f"snapshots/{timestamp}/{folder_path}/classification_report.json"
+    )
 
 
 def generate_report(
@@ -216,53 +219,27 @@ def generate_report(
     reference_data: pd.DataFrame,
     config: dict,
     model_type: dict,
-    folder_path: str = "reports",
+    folder_path: str,
+    timestamp: str,
 ) -> None:
     """
     Generate the metrics report based on the model type.
     """
     try:
         # Generate the data quality report
-        data_report(data, reference_data, config, folder_path)
+        data_report(data, reference_data, config, folder_path, timestamp)
     except Exception as e:
         logger.error(f"Failed to generate data quality report: {e}")
 
     # Generate the regression and classification reports based on the model type
     if model_type["regression"]:
         try:
-            regression_report(data, reference_data, config, folder_path)
+            regression_report(data, reference_data, config, folder_path, timestamp)
         except Exception as e:
             logger.error(f"Failed to generate regression report: {e}")
 
     if model_type["binary_classification"]:
         try:
-            classification_report(data, reference_data, config, folder_path)
+            classification_report(data, reference_data, config, folder_path, timestamp)
         except Exception as e:
             logger.error(f"Failed to generate classification report: {e}")
-
-
-def main():
-    """
-    Main function to generate metrics report.
-    """
-    # Ignore warnings to clear output (for now)
-    warnings.simplefilter(action="ignore", category=FutureWarning)
-    warnings.simplefilter(action="ignore", category=UndefinedMetricWarning)
-
-    # Load the JSON config file
-    config = load_config()
-
-    # Extract model type from the config file
-    model_type = config["model_config"]["model_type"]
-
-    # Load the data
-    data, reference_data = etl_pipeline(
-        "data/data.csv", "data/reference_data.csv", config
-    )
-
-    # Generate the metrics report
-    generate_report(data, reference_data, config, model_type)
-
-
-if __name__ == "__main__":
-    main()

@@ -8,4 +8,5 @@ simulate_data.py
 test_report.ipynb
 
 __pycache__/
-/outputs
+/snapshots
+/workspace
