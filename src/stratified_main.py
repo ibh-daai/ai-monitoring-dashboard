@@ -10,6 +10,7 @@ from sklearn.exceptions import UndefinedMetricWarning
 from src.config_manager import load_config
 from src.metrics import generate_report
 from src.tests import generate_tests
+from datetime import datetime
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -102,7 +103,11 @@ def split_data(data: pd.DataFrame, config: dict, operation: str = "report") -> d
 
 
 def generate_stratified_reports(
-    data: pd.DataFrame, reference_data: pd.DataFrame, config: dict, model_type: dict
+    data: pd.DataFrame,
+    reference_data: pd.DataFrame,
+    config: dict,
+    model_type: dict,
+    timestamp: str,
 ) -> None:
     """
     Generate the reports for each stratified dataset
@@ -117,7 +122,8 @@ def generate_stratified_reports(
                 reference_data,
                 config,
                 model_type,
-                folder_path=key,
+                folder_path=f"/reports/{key}",
+                timestamp=timestamp,
             )
     except Exception as e:
         logger.error(f"Error generating reports: {e}")
@@ -129,6 +135,7 @@ def generate_stratified_tests(
     reference_data: pd.DataFrame,
     config: dict,
     model_type: dict,
+    timestamp: str,
 ) -> None:
     """
     Generate the test suite for each stratified dataset
@@ -143,7 +150,8 @@ def generate_stratified_tests(
                 reference_data,
                 config,
                 model_type,
-                folder_path=key,
+                folder_path=f"/tests/{key}",
+                timestamp=timestamp,
             )
     except Exception as e:
         logger.error(f"Error generating tests: {e}")
@@ -170,16 +178,26 @@ def main():
         logger.error(f"Failed to load data: {e}")
         return
 
+    timestamp = datetime.now().strftime("%Y_%m_%d_%H_%M")
+
     try:
         generate_stratified_reports(
-            data, reference_data, config, config["model_config"]["model_type"]
+            data,
+            reference_data,
+            config,
+            config["model_config"]["model_type"],
+            timestamp,
         )
     except Exception as e:
         logger.error(f"Failed to generate stratified reports: {e}")
 
     try:
         generate_stratified_tests(
-            data, reference_data, config, config["model_config"]["model_type"]
+            data,
+            reference_data,
+            config,
+            config["model_config"]["model_type"],
+            timestamp,
         )
     except Exception as e:
         logger.error(f"Failed to generate stratified tests: {e}")

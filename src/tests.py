@@ -3,16 +3,11 @@ File to handle test suite generation with Evidently AI. Split file into data, re
 """
 
 import pandas as pd
-import warnings
 import json
 import importlib
 import os
 import logging
-from sklearn.exceptions import UndefinedMetricWarning
 from evidently.test_suite import TestSuite
-
-from src.config_manager import load_config
-from src.etl import etl_pipeline
 from src.metrics import setup_column_mapping
 
 
@@ -24,10 +19,8 @@ def ensure_directory(directory: str) -> None:
     """
     Check if the directory exists and create it if it doesn't.
     """
-    base_dir = "outputs/test_suites/"
-    full_path = os.path.join(base_dir, directory)
-    if not os.path.exists(full_path):
-        os.makedirs(full_path)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
 
 
 def load_json(file_path: str) -> dict:
@@ -99,12 +92,13 @@ def data_tests(
     reference_data: pd.DataFrame,
     config: dict,
     tests_mapping: dict,
-    folder_path: str = "test_results",
+    folder_path: str,
+    timestamp: str,
 ) -> None:
     """
     Generate data test results.
     """
-    ensure_directory(folder_path)
+    ensure_directory(f"snapshots/{timestamp}/{folder_path}")   
     try:
         data_mapping = setup_column_mapping(config, "data")
     except Exception as e:
@@ -119,7 +113,9 @@ def data_tests(
             current_data=data,
             column_mapping=data_mapping,
         )
-        data_test_suite.save(f"outputs/test_suites/{folder_path}/data_test_suite.json")
+        data_test_suite.save(
+            f"snapshots/{timestamp}/{folder_path}//data_test_suite.json"
+        )
     except Exception as e:
         logger.error(f"Error running data tests: {e}")
         return
@@ -130,12 +126,13 @@ def regression_tests(
     reference_data: pd.DataFrame,
     config: dict,
     tests_mapping: dict,
-    folder_path: str = "test_results",
+    folder_path: str,
+    timestamp: str,
 ) -> None:
     """
     Generate regression test results.
     """
-    ensure_directory(folder_path)
+    ensure_directory(f"snapshots/{timestamp}/{folder_path}")
     try:
         regression_mapping = setup_column_mapping(config, "regression")
     except Exception as e:
@@ -152,7 +149,7 @@ def regression_tests(
             column_mapping=regression_mapping,
         )
         regression_test_suite.save(
-            f"outputs/test_suites/{folder_path}/regression_test_suite.json"
+            f"snapshots/{timestamp}/{folder_path}/regression_test_suite.json"
         )
     except Exception as e:
         logger.error(f"Error running regression tests: {e}")
@@ -163,12 +160,13 @@ def classification_tests(
     reference_data: pd.DataFrame,
     config: dict,
     tests_mapping: dict,
-    folder_path: str = "test_results",
+    folder_path: str,
+    timestamp: str,
 ) -> None:
     """
     Generate classification test results.
     """
-    ensure_directory(folder_path)
+    ensure_directory(f"snapshots/{timestamp}/{folder_path}")
     try:
         classification_mapping = setup_column_mapping(config, "classification")
     except Exception as e:
@@ -185,7 +183,7 @@ def classification_tests(
             column_mapping=classification_mapping,
         )
         classification_test_suite.save(
-            f"outputs/test_suites/{folder_path}/classification_test_suite.json"
+            f"snapshots/{timestamp}/{folder_path}/classification_test_suite.json"
         )
     except Exception as e:
         logger.error(f"Error running classification tests: {e}")
@@ -197,7 +195,8 @@ def generate_tests(
     reference_data: pd.DataFrame,
     config: dict,
     model_type: dict,
-    folder_path: str = "test_results",
+    folder_path: str,
+    timestamp: str,
 ) -> None:
     """
     Generate the test suite based on the model type.
@@ -211,48 +210,25 @@ def generate_tests(
 
     # Generate the data tests
     try:
-        data_tests(data, reference_data, config, tests_mapping, folder_path)
+        data_tests(data, reference_data, config, tests_mapping, folder_path, timestamp)
     except Exception as e:
         logger.error(f"Error running data tests: {e}")
 
     # Generate the regression tests
     if model_type["regression"]:
         try:
-            regression_tests(data, reference_data, config, tests_mapping, folder_path)
+            regression_tests(
+                data, reference_data, config, tests_mapping, folder_path, timestamp
+            )
         except Exception as e:
             logger.error(f"Error running regression tests: {e}")
 
     # Generate the classification tests
     if model_type["binary_classification"]:
         try:
-            classification_tests(data, reference_data, config, tests_mapping, folder_path)
+            classification_tests(
+                data, reference_data, config, tests_mapping, folder_path, timestamp
+            )
         except Exception as e:
             logger.error(f"Error running classification tests: {e}")
         return
-
-
-def main():
-    """
-    Main function to run the test suite generation.
-    """
-    # Ignore warnings to clear output (for now)
-    warnings.simplefilter(action="ignore", category=FutureWarning)
-    warnings.simplefilter(action="ignore", category=UndefinedMetricWarning)
-
-    # Load the configuration file
-    config = load_config()
-
-    # Extract the model type from the configuration file
-    model_type = config["model_config"]["model_type"]
-
-    # Load the data
-    data, reference_data = etl_pipeline(
-        "data/data.csv", "data/reference_data.csv", config
-    )
-
-    # Generate the test suite
-    generate_tests(data, reference_data, config, model_type)
-
-
-if __name__ == "__main__":
-    main()
