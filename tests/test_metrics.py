@@ -103,7 +103,14 @@ def test_generate_report(mock_config, mock_data, mock_reference_data):
     ) as mock_regression_report:
 
         model_type = mock_config["model_config"]["model_type"]
-        generate_report(mock_data, mock_reference_data, mock_config, model_type)
+        generate_report(
+            mock_data,
+            mock_reference_data,
+            mock_config,
+            model_type,
+            "folder",
+            "timestamp",
+        )
 
         # Check that data report and classification report are called
         mock_data_report.assert_called_once()

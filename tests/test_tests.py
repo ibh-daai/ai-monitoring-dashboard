@@ -174,7 +174,14 @@ def test_generate_tests(mock_config, mock_data, mock_reference_data):
     ):
 
         model_type = mock_config["model_config"]["model_type"]
-        generate_tests(mock_data, mock_reference_data, mock_config, model_type)
+        generate_tests(
+            mock_data,
+            mock_reference_data,
+            mock_config,
+            model_type,
+            "tests",
+            "timestamp",
+        )
 
         # Check that data tests and classification tests are called
         mock_data_tests.assert_called_once()
