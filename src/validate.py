@@ -114,6 +114,7 @@ def validate_feature(data: pd.DataFrame, feature: str, rules: dict) -> bool:
     rule_type = rules.get("type")
 
     # Feature validation for strings and boolean values
+    # TODO check range and valid values with Evidently tests, instead of here
     if rule_type == "enum":
         if not column_data.isin(rules["values"]).all():
             logger.warning(
