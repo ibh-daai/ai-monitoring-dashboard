@@ -12,16 +12,12 @@ from evidently.metrics import (
     ColumnDriftMetric,
     RegressionQualityMetric,
     RegressionPredictedVsActualScatter,
-    RegressionPredictedVsActualPlot,
-    RegressionErrorPlot,
-    RegressionAbsPercentageErrorPlot,
-    RegressionErrorDistribution,
     ClassificationQualityMetric,
     ClassificationConfusionMatrix,
-    ClassificationClassBalance,
 )
 import logging
 import pandas as pd
+from src.config_manager import load_config
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -35,18 +31,41 @@ def ensure_directory(directory: str) -> None:
         os.makedirs(directory)
 
 
-def split_features(validation_rules: dict) -> tuple[list, list]:
+def get_tags(folder_path: str) -> list:
+    """
+    Get the tags from the folder path.
+    """
+    tags = folder_path.split("/")[-1].split("_")
+    tags = tags[:-1]
+    return tags
+
+
+def split_features(config: dict) -> tuple[list, list]:
     """
     Split the features into numerical and categorical based on the validation rules.
     """
     numerical_features = []
     categorical_features = []
 
-    for feature, rules in validation_rules.items():
-        if rules["type"] == "range":
+    categorical_features.extend(
+        [
+            config["columns"]["sex"],
+            config["columns"]["hospital"],
+            config["columns"]["instrument_type"],
+        ]
+    )
+
+    # Iterate through all features to classify them based on validation rules
+    for feature in config["columns"]["features"]:
+        if feature in config["categorical_validation_rules"]:
+            if feature not in categorical_features:
+                categorical_features.append(feature)
+        else:
             numerical_features.append(feature)
-        elif rules["type"] == "enum":
-            categorical_features.append(feature)
+
+    # Correctly classify 'age' as a numerical feature
+    if config["columns"]["age"] not in numerical_features:
+        numerical_features.append(config["columns"]["age"])
 
     return numerical_features, categorical_features
 
@@ -55,7 +74,7 @@ def setup_column_mapping(config: dict, report_type: str) -> ColumnMapping:
     """
     Configure column mapping for different types of reports based on the configuration.
     """
-    features = split_features(config["validation_rules"])
+    features = split_features(config)
     numerical_features, categorical_features = features
 
     try:
@@ -113,6 +132,10 @@ def data_report(
     - Data Drift Table: Data drift results and visualizations for all columns (TODO: edit to include only specific columns)
     - Column Drift Metric: Detailed drift metrics for the prediction and target columns
     """
+    t = get_tags(folder_path)
+    if len(t) == 1:
+        t.append("single")
+    t.append("data")
     data_quality_report = Report(
         metrics=[
             DatasetSummaryMetric(),
@@ -121,6 +144,7 @@ def data_report(
             ColumnDriftMetric(data_mapping.prediction),
             ColumnDriftMetric(data_mapping.target),
         ],
+        tags=t,
     )
     data_quality_report.run(
         reference_data=reference_data, current_data=data, column_mapping=data_mapping
@@ -155,15 +179,16 @@ def regression_report(
         - Regression Absolute Percentage Error Plot: Absolute percentage error plot
         - Regression Error Distribution: Distribution of errors
     """
+    t = get_tags(folder_path)
+    if len(t) == 1:
+        t.append("single")
+    t.append("regression")
     regression_report = Report(
         metrics=[
             RegressionQualityMetric(),
             RegressionPredictedVsActualScatter(),
-            RegressionPredictedVsActualPlot(),
-            RegressionErrorPlot(),
-            RegressionAbsPercentageErrorPlot(),
-            RegressionErrorDistribution(),
-        ]
+        ],
+        tags=t,
     )
     regression_report.run(
         reference_data=reference_data,
@@ -197,12 +222,16 @@ def classification_report(
         - Classification Confusion Matrix: Confusion matrix for the classification predictions with TPR, FPR, FNR, TNR
         - Classification Class Balance: Class balance metrics
     """
+    t = get_tags(folder_path)
+    if len(t) == 1:
+        t.append("single")
+    t.append("classification")
     classification_report = Report(
         metrics=[
             ClassificationQualityMetric(),
             ClassificationConfusionMatrix(),
-            ClassificationClassBalance(),
-        ]
+        ],
+        tags=t,
     )
     classification_report.run(
         reference_data=reference_data,
@@ -243,3 +272,31 @@ def generate_report(
             classification_report(data, reference_data, config, folder_path, timestamp)
         except Exception as e:
             logger.error(f"Failed to generate classification report: {e}")
+
+
+def main():
+    data = pd.read_csv("data/data.csv")
+    reference_data = pd.read_csv("data/reference_data.csv")
+
+    try:
+        config = load_config()
+    except Exception as e:
+        logger.error(f"Failed to load config: {e}")
+        return
+
+    try:
+        generate_report(
+            data,
+            reference_data,
+            config,
+            config["model_config"]["model_type"],
+            "reports",
+            "2021-10-10T10:10:10",
+        )
+    except Exception as e:
+        logger.error(f"Error generating reports: {e}")
+        raise
+
+
+if __name__ == "__main__":
+    main()

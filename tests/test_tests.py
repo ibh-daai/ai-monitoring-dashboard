@@ -30,13 +30,9 @@ def mock_config():
             "features": ["weight", "height", "blood_pressure"],
             "timestamp": "date",
         },
-        "validation_rules": {
-            "gender": {"type": "enum", "values": ["M", "F"]},
-            "clinic": {"type": "enum", "values": ["clinic1", "clinic2", "clinic3"]},
-            "age": {"type": "range", "min": 0, "max": 120},
-            "weight": {"type": "range", "min": 0, "max": 150},
-            "height": {"type": "range", "min": 0, "max": 250},
-            "blood_pressure": {"type": "range", "min": 0, "max": 200},
+        "categorical_validation_rules": {
+            "gender": ["M", "F"],
+            "clinic": ["clinic1", "clinic2", "clinic3"],
         },
         "tests": {
             "data_quality_tests": [
@@ -174,7 +170,14 @@ def test_generate_tests(mock_config, mock_data, mock_reference_data):
     ):
 
         model_type = mock_config["model_config"]["model_type"]
-        generate_tests(mock_data, mock_reference_data, mock_config, model_type)
+        generate_tests(
+            mock_data,
+            mock_reference_data,
+            mock_config,
+            model_type,
+            "tests",
+            "timestamp",
+        )
 
         # Check that data tests and classification tests are called
         mock_data_tests.assert_called_once()

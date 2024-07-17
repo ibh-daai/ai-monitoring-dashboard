@@ -36,16 +36,13 @@ def mock_config():
             ],
             "timestamp": None,
         },
-        "validation_rules": {
-            "sex": {"type": "enum", "values": ["M", "F"]},
-            "hospital": {"type": "enum", "values": ["hospital1", "hospital2"]},
-            "age": {"type": "range", "min": 0, "max": 120},
-            "instrument_type": {"type": "enum", "values": ["type1", "type2"]},
-            "ethnicity": {"type": "enum", "values": ["White", "Black", "Asian"]},
-            "height": {"type": "range", "min": 50, "max": 250},
-            "weight": {"type": "range", "min": 2, "max": 500},
-            "smoker": {"type": "enum", "values": [True, False]},
-            "alcohol": {"type": "enum", "values": [True, False]},
+        "categorical_validation_rules": {
+            "sex": ["M", "F"],
+            "hospital": ["hospital1", "hospital2"],
+            "instrument_type": ["type1", "type2"],
+            "ethnicity": ["White", "Black", "Asian"],
+            "smoker": [True, False],
+            "alcohol": [True, False],
         },
     }
 

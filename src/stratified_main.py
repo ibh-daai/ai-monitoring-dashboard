@@ -30,7 +30,7 @@ def split_data(data: pd.DataFrame, config: dict, operation: str = "report") -> d
         filter_dict[f"main_{operation}"] = data
 
         # Split the data into stratified reports by sex
-        sex_values = config["validation_rules"][config["columns"]["sex"]]["values"]
+        sex_values = config["categorical_validation_rules"][config["columns"]["sex"]]
         for sex in sex_values:
             if sex.lower() == "f":
                 sex_name = "female"
@@ -116,7 +116,7 @@ def generate_stratified_reports(
         data_stratifications = split_data(data, config, "report")
 
         for key, data_stratification in data_stratifications.items():
-            logger.info(f"Generating report for {key}")
+            logger.info(f"Generating reports for {key}")
             generate_report(
                 data_stratification,
                 reference_data,
@@ -141,7 +141,7 @@ def generate_stratified_tests(
     Generate the test suite for each stratified dataset
     """
     try:
-        data_stratifications = split_data(data, config, "tests")
+        data_stratifications = split_data(data, config, "test")
 
         for key, data_stratification in data_stratifications.items():
             logger.info(f"Generating tests for {key}")
@@ -179,6 +179,13 @@ def main():
         return
 
     timestamp = datetime.now().strftime("%Y_%m_%d_%H_%M")
+
+    # timestamps for testing
+    timestamp1 = "2024_01_06_12_00"
+
+    timestamp2 = "2024_04_08_12_00"
+
+    timestamp3 = "2024_06_05_12_00"
 
     try:
         generate_stratified_reports(

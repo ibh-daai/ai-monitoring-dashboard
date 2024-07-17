@@ -1,0 +1,188 @@
+{
+  "num_cols": {
+    "title": "Number of Columns",
+    "metric_id": "DatasetSummaryMetric",
+    "field_path": "metrics.DatasetSummaryMetric.fields.current.number_of_columns",
+    "category": "data"
+  },
+  "num_rows": {
+    "title": "Number of Rows",
+    "metric_id": "DatasetSummaryMetric",
+    "field_path": "metrics.DatasetSummaryMetric.fields.current.number_of_rows",
+    "category": "data"
+  },
+  "num_missing_values": {
+    "title": "Number of Missing Values",
+    "metric_id": "DatasetSummaryMetric",
+    "field_path": "metrics.DatasetSummaryMetric.fields.current.number_of_missing_values",
+    "category": "data"
+  },
+  "num_categorical_cols": {
+    "title": "Number of Categorical Columns",
+    "metric_id": "DatasetSummaryMetric",
+    "field_path": "metrics.DatasetSummaryMetric.fields.current.number_of_categorical_columns",
+    "category": "data"
+  },
+  "num_numeric_cols": {
+    "title": "Number of Numeric Columns",
+    "metric_id": "DatasetSummaryMetric",
+    "field_path": "metrics.DatasetSummaryMetric.fields.current.number_of_numeric_columns",
+    "category": "data"
+  },
+  "num_datetime_cols": {
+    "title": "Number of Datetime Columns",
+    "metric_id": "DatasetSummaryMetric",
+    "field_path": "metrics.DatasetSummaryMetric.fields.current.number_of_datetime_columns",
+    "category": "data"
+  },
+  "num_constant_cols": {
+    "title": "Number of Constant Columns",
+    "metric_id": "DatasetSummaryMetric",
+    "field_path": "metrics.DatasetSummaryMetric.fields.current.number_of_constant_columns",
+    "category": "data"
+  },
+  "num_duplicated_cols": {
+    "title": "Number of Duplicated Columns",
+    "metric_id": "DatasetSummaryMetric",
+    "field_path": "metrics.DatasetSummaryMetric.fields.current.number_of_duplicated_columns",
+    "category": "data"
+  },
+  "num_almost_duplicated_cols": {
+    "title": "Number of Almost Duplicated Columns",
+    "metric_id": "DatasetSummaryMetric",
+    "field_path": "metrics.DatasetSummaryMetric.fields.current.number_of_almost_duplicated_columns",
+    "category": "data"
+  },
+  "num_empty_rows": {
+    "title": "Number of Empty Rows",
+    "metric_id": "DatasetSummaryMetric",
+    "field_path": "metrics.DatasetSummaryMetric.fields.current.number_of_empty_rows",
+    "category": "data"
+  },
+  "num_empty_cols": {
+    "title": "Number of Empty Columns",
+    "metric_id": "DatasetSummaryMetric",
+    "field_path": "metrics.DatasetSummaryMetric.fields.current.number_of_empty_columns",
+    "category": "data"
+  },
+  "num_duplicated_rows": {
+    "title": "Number of Duplicated Rows",
+    "metric_id": "DatasetSummaryMetric",
+    "field_path": "metrics.DatasetSummaryMetric.fields.current.number_of_duplicated_rows",
+    "category": "data"
+  },
+  "num_drifted_cols": {
+    "title": "Number of Drifted Columns",
+    "metric_id": "DataDriftTable",
+    "field_path": "metrics.DataDriftTable.fields.number_of_drifted_columns",
+    "category": "data"
+  },
+  "share_drifted_cols": {
+    "title": "Share of Drifted Columns",
+    "metric_id": "DataDriftTable",
+    "field_path": "metrics.DataDriftTable.fields.share_of_drifted_columns",
+    "category": "data"
+  },
+  "data_drift": {
+    "title": "Dataset Drift",
+    "metric_id": "DataDriftTable",
+    "field_path": "metrics.DataDriftTable.fields.dataset_drift",
+    "category": "data"
+  },
+  "r2": {
+    "title": "R2 Score",
+    "metric_id": "RegressionQualityMetric",
+    "field_path": "metrics.RegressionQualityMetric.fields.current.r2_score",
+    "category": "regression"
+  },
+  "rmse": {
+    "title": "Root Mean Squared Error (RMSE)",
+    "metric_id": "RegressionQualityMetric",
+    "field_path": "metrics.RegressionQualityMetric.fields.current.rmse",
+    "category": "regression"
+  },
+  "me": {
+    "title": "Mean Error (ME)",
+    "metric_id": "RegressionQualityMetric",
+    "field_path": "metrics.RegressionQualityMetric.fields.current.mean_error",
+    "category": "regression"
+  },
+  "mae": {
+    "title": "Mean Absolute Error (MAE)",
+    "metric_id": "RegressionQualityMetric",
+    "field_path": "metrics.RegressionQualityMetric.fields.current.mean_abs_error",
+    "category": "regression"
+  },
+  "mape": {
+    "title": "Mean Absolute Percentage Error (MAPE)",
+    "metric_id": "RegressionQualityMetric",
+    "field_path": "metrics.RegressionQualityMetric.fields.current.mean_abs_perc_error",
+    "category": "regression"
+  },
+  "abs_max_error": {
+    "title": "Absolute Max Error",
+    "metric_id": "RegressionQualityMetric",
+    "field_path": "metrics.RegressionQualityMetric.fields.current.abs_error_max",
+    "category": "regression"
+  },
+  "error_std": {
+    "title": "Error Standard Deviation",
+    "metric_id": "RegressionQualityMetric",
+    "field_path": "metrics.RegressionQualityMetric.fields.current.error_std",
+    "category": "regression"
+  },
+  "abs_error_std": {
+    "title": "Absolute Error Standard Deviation",
+    "metric_id": "RegressionQualityMetric",
+    "field_path": "metrics.RegressionQualityMetric.fields.current.abs_error_std",
+    "category": "regression"
+  },
+  "accuracy": {
+    "title": "Accuracy",
+    "metric_id": "ClassificationQualityMetric",
+    "field_path": "metrics.ClassificationQualityMetric.fields.current.accuracy",
+    "category": "classification"
+  },
+  "precision": {
+    "title": "Precision / Positive Predictive Value (PPV)",
+    "metric_id": "ClassificationQualityMetric",
+    "field_path": "metrics.ClassificationQualityMetric.fields.current.precision",
+    "category": "classification"
+  },
+  "recall": {
+    "title": "Recall / Sensitivity / True Positive Rate (TPR)",
+    "metric_id": "ClassificationQualityMetric",
+    "field_path": "metrics.ClassificationQualityMetric.fields.current.recall",
+    "category": "classification"
+  },
+  "f1": {
+    "title": "F1 Score",
+    "metric_id": "ClassificationQualityMetric",
+    "field_path": "metrics.ClassificationQualityMetric.fields.current.f1",
+    "category": "classification"
+  },
+  "tpr": {
+    "title": "True Positive Rate (TPR) / Recall / Sensitivity",
+    "metric_id": "ClassificationQualityMetric",
+    "field_path": "metrics.ClassificationQualityMetric.fields.current.tpr",
+    "category": "classification"
+  },
+  "tnr": {
+    "title": "True Negative Rate (TNR) / Specificity",
+    "metric_id": "ClassificationQualityMetric",
+    "field_path": "metrics.ClassificationQualityMetric.fields.current.tnr",
+    "category": "classification"
+  },
+  "fpr": {
+    "title": "False Positive Rate (FPR) / Fall-Out / Type I Error Rate",
+    "metric_id": "ClassificationQualityMetric",
+    "field_path": "metrics.ClassificationQualityMetric.fields.current.fpr",
+    "category": "classification"
+  },
+  "fnr": {
+    "title": "False Negative Rate (FNR) / Miss Rate / Type II Error Rate",
+    "metric_id": "ClassificationQualityMetric",
+    "field_path": "metrics.ClassificationQualityMetric.fields.current.fnr",
+    "category": "classification"
+  }
+}

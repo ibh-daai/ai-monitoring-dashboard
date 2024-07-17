@@ -10,3 +10,5 @@ test_report.ipynb
 __pycache__/
 /snapshots
 /workspace
+/data_generator.ipynb
+add_panels.py
