@@ -39,6 +39,15 @@ def import_function(module_name: str, function_name: str):
     return getattr(module, function_name)
 
 
+def get_tags(folder_path: str) -> list:
+    """
+    Get the tags from the folder path.
+    """
+    tags = folder_path.split("/")[-1].split("_")
+    tags = tags[:-1]
+    return tags
+
+
 def get_tests(
     config: dict,
     tests_mapping: dict,
@@ -98,7 +107,7 @@ def data_tests(
     """
     Generate data test results.
     """
-    ensure_directory(f"snapshots/{timestamp}/{folder_path}")   
+    ensure_directory(f"snapshots/{timestamp}/{folder_path}")
     try:
         data_mapping = setup_column_mapping(config, "data")
     except Exception as e:
@@ -107,7 +116,11 @@ def data_tests(
     try:
         test_functions = get_data_tests(config, tests_mapping)
 
-        data_test_suite = TestSuite(tests=test_functions)
+        t = get_tags(folder_path)
+        if len(t) == 1:
+            t.append("single")
+        t.append("data")
+        data_test_suite = TestSuite(tests=test_functions, tags=t)
         data_test_suite.run(
             reference_data=reference_data,
             current_data=data,
@@ -141,8 +154,11 @@ def regression_tests(
 
     try:
         test_functions = get_regression_tests(config, tests_mapping)
-
-        regression_test_suite = TestSuite(tests=test_functions)
+        t = get_tags(folder_path)
+        if len(t) == 1:
+            t.append("single")
+        t.append("regression")
+        regression_test_suite = TestSuite(tests=test_functions, tags=t)
         regression_test_suite.run(
             reference_data=reference_data,
             current_data=data,
@@ -175,8 +191,11 @@ def classification_tests(
 
     try:
         test_functions = get_classification_tests(config, tests_mapping)
-
-        classification_test_suite = TestSuite(tests=test_functions)
+        t = get_tags(folder_path)
+        if len(t) == 1:
+            t.append("single")
+        t.append("classification")
+        classification_test_suite = TestSuite(tests=test_functions, tags=t)
         classification_test_suite.run(
             reference_data=reference_data,
             current_data=data,
@@ -202,8 +221,7 @@ def generate_tests(
     Generate the test suite based on the model type.
     """
     try:
-        with open("src/tests_map.json", "r") as f:
-            tests_mapping = json.load(f)
+        tests_mapping = load_json("src/utils/tests_map.json")
     except Exception as e:
         logger.error(f"Error loading tests mapping: {e}")
         return

@@ -36,16 +36,11 @@ def mock_config():
             "timestamp": "date",
         },
         "validation_rules": {
-            "sex": {"type": "enum", "values": ["M", "F"]},
-            "hospital": {"type": "enum", "values": ["hospital1", "hospital2"]},
-            "age": {"type": "range", "min": 0, "max": 120},
-            "instrument_type": {"type": "enum", "values": ["type1", "type2"]},
-            "bmi": {"type": "range", "min": 0, "max": 50},
-            "exercise_frequency": {
-                "type": "enum",
-                "values": ["daily", "weekly", "monthly", "never"],
-            },
-            "diabetes": {"type": "enum", "values": [1, 0]},
+            "sex": ["M", "F"],
+            "hospital": ["hospital1", "hospital2"],
+            "instrument_type": ["type1", "type2"],
+            "exercise_frequency": ["daily", "weekly", "monthly", "never"],
+            "diabetes": [1, 0],
         },
     }
     return config

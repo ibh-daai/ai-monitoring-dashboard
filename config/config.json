@@ -31,74 +31,23 @@
     ],
     "timestamp": null
   },
-  "validation_rules": {
-    "sex": {
-      "type": "enum",
-      "values": ["M", "F"]
-    },
-    "hospital": {
-      "type": "enum",
-      "values": [
-        "Credit Valley Hospital",
-        "Mississauga Hospital",
-        "Queensway Hospital"
-      ]
-    },
-    "chronological_age": {
-      "type": "range",
-      "min": 0,
-      "max": 400
-    },
-    "machine_type": {
-      "type": "enum",
-      "values": ["machine1", "machine2"]
-    },
-    "standard_deviation": {
-      "type": "range",
-      "min": 0,
-      "max": 13.05
-    },
-    "two_standard_deviations": {
-      "type": "range",
-      "min": 0,
-      "max": 26.1
-    },
-    "upper_limit": {
-      "type": "range",
-      "min": 0,
-      "max": 300
-    },
-    "lower_limit": {
-      "type": "range",
-      "min": 0,
-      "max": 300
-    },
-    "closest_age": {
-      "type": "range",
-      "min": 0,
-      "max": 216
-    }
+  "categorical_validation_rules": {
+    "sex": ["M", "F"],
+    "hospital": [
+      "Credit Valley Hospital",
+      "Mississauga Hospital",
+      "Queensway Hospital"
+    ],
+    "machine_type": ["machine1", "machine2"]
   },
   "tests": {
     "data_quality_tests": [
-      {
-        "name": "num_cols"
-      },
-      {
-        "name": "num_empty_rows"
-      },
-      {
-        "name": "num_duplicated_rows"
-      },
-      {
-        "name": "num_duplicated_cols"
-      },
-      {
-        "name": "col_types"
-      },
-      {
-        "name": "num_missing_values"
-      },
+      { "name": "num_cols" },
+      { "name": "num_empty_rows" },
+      { "name": "num_duplicated_rows" },
+      { "name": "num_duplicated_cols" },
+      { "name": "col_types" },
+      { "name": "num_missing_values" },
       {
         "name": "test_col_list",
         "params": {
@@ -174,41 +123,88 @@
       }
     ],
     "data_drift_tests": [
-      {
-        "name": "num_drifted_cols"
-      },
-      {
-        "name": "share_drifted_cols"
-      }
+      { "name": "num_drifted_cols" },
+      { "name": "share_drifted_cols" }
     ],
-    "regression_tests": [
-      {
-        "name": "mae"
-      }
-    ],
+    "regression_tests": [{ "name": "mae" }],
     "classification_tests": [
-      {
-        "name": "accuracy"
-      },
-      {
-        "name": "precision"
-      },
-      {
-        "name": "recall"
-      },
-      {
-        "name": "f1"
-      },
-      {
-        "name": "tnr"
-      },
-      {
-        "name": "fpr"
-      },
-      {
-        "name": "fnr"
-      }
+      { "name": "accuracy" },
+      { "name": "precision" },
+      { "name": "recall" },
+      { "name": "f1" },
+      { "name": "tnr" },
+      { "name": "fpr" },
+      { "name": "fnr" }
     ]
+  },
+  "dashboard_panels": [
+    {
+      "name": "num_cols",
+      "type": "bar",
+      "size": "half"
+    },
+    {
+      "name": "num_missing_values",
+      "type": "line",
+      "size": "half"
+    },
+    {
+      "name": "num_empty_rows",
+      "type": "line",
+      "size": "half"
+    },
+    {
+      "name": "num_drifted_cols",
+      "type": "line",
+      "size": "half"
+    },
+    {
+      "name": "data_drift",
+      "type": "line",
+      "size": "half"
+    },
+    {
+      "name": "mae",
+      "type": "line",
+      "size": "full"
+    },
+    {
+      "name": "precision",
+      "type": "line",
+      "size": "half"
+    },
+    {
+      "name": "recall",
+      "type": "line",
+      "size": "half"
+    },
+    {
+      "name": "f1",
+      "type": "line",
+      "size": "half"
+    },
+    {
+      "name": "tnr",
+      "type": "line",
+      "size": "half"
+    },
+    {
+      "name": "fpr",
+      "type": "line",
+      "size": "half"
+    },
+    {
+      "name": "fnr",
+      "type": "line",
+      "size": "half"
+    }
+  ],
+  "info": {
+    "project_name": "Bone Age Prediction",
+    "project_description": "Bone Age Prediction project",
+    "model_developer": "Trillium Health Partners",
+    "contact_name": "John Smith",
+    "contact_email": "johnsmith@thp.ca"
   },
   "alerts": {
     "enable": true,
