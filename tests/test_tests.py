@@ -18,6 +18,7 @@ def mock_config():
             "model_id": "ModelID",
             "sex": "gender",
             "hospital": "clinic",
+            "patient_class": "patient_category",
             "age": "age",
             "predictions": {
                 "regression_prediction": None,
@@ -33,6 +34,7 @@ def mock_config():
         "categorical_validation_rules": {
             "gender": ["M", "F"],
             "clinic": ["clinic1", "clinic2", "clinic3"],
+            "patient_category": ["IP", "OP"],
         },
         "tests": {
             "data_quality_tests": [
@@ -83,6 +85,7 @@ def mock_data():
             "ModelID": [201, 202, 203, 204, 205],
             "gender": ["M", "F", "M", "F", "M"],
             "clinic": ["clinic1", "clinic2", "clinic1", "clinic2", "clinic1"],
+            "patient_category": ["IP", "OP", "IP", "OP", "IP"],
             "age": [20, 25, 30, 35, 40],
             "diagnosis": [1, 0, 1, 0, 1],
             "diagnosis_true": [1, 0, 1, 0, 1],
@@ -104,6 +107,7 @@ def mock_reference_data():
             "ModelID": [201, 202, 203, 204, 205],
             "gender": ["M", "F", "M", "F", "M"],
             "clinic": ["clinic1", "clinic2", "clinic1", "clinic2", "clinic1"],
+            "patient_category": ["IP", "OP", "IP", "OP", "IP"],
             "age": [21, 26, 31, 36, 41],
             "diagnosis": [1, 0, 1, 1, 0],
             "diagnosis_true": [1, 0, 1, 0, 1],

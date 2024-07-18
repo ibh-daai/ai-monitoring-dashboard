@@ -52,6 +52,7 @@ def split_features(config: dict) -> tuple[list, list]:
             config["columns"]["sex"],
             config["columns"]["hospital"],
             config["columns"]["instrument_type"],
+            config["columns"]["patient_class"],
         ]
     )
 

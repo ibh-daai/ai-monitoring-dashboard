@@ -19,6 +19,7 @@ def mock_config():
             "hospital": "hospital",
             "age": "age",
             "instrument_type": "instrument_type",
+            "patient_class": "patient_category",
             "predictions": {
                 "regression_prediction": None,
                 "classification_prediction": "classification",
@@ -39,6 +40,8 @@ def mock_config():
         "validation_rules": {
             "sex": ["M", "F"],
             "hospital": ["hospital1", "hospital2"],
+            "instrument_type": ["type1", "type2"],
+            "patient_category": ["IP", "OP", "ER"],
             "ethnicity": ["White", "Black", "Asian"],
             "smoker": [True, False],
             "alcohol": [True, False],
@@ -59,6 +62,7 @@ def correct_data():
             "hospital": ["hospital1", "hospital2", "hospital1"],
             "age": [9, 11, 34],
             "instrument_type": ["type1", "type2", "type1"],
+            "patient_category": ["IP", "OP", "ER"],
             # "regression_output": [17.1, 20.5, 30],
             "classification": [1, 0, 0],
             # "label": [10, 20, 30],
@@ -84,6 +88,7 @@ def including_regression():
             "sex": ["M", "F", "M"],
             "age": [9, 11, 34],
             "instrument_type": ["type1", "type2", "type1"],
+            "patient_category": ["IP", "OP", "ER"],
             "hospital": ["hospital1", "hospital2", "hospital1"],
             "regression_output": [17.1, 20.5, 30],
             "classification": [1, 0, 0],

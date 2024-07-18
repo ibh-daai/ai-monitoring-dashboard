@@ -1,5 +1,5 @@
 """
-File to split both reference and current data into stratified reports and tests by sex, hospital, age, and instrument_type.
+File to split both reference and current data into stratified reports and tests by sex, hospital, age, instrument_type, and patient_class.
 """
 
 import logging
@@ -59,9 +59,6 @@ def stratify_age(data: pd.DataFrame, config: dict) -> dict:
             filter_dict[f"[{int(cutoff2)}-{int(sorted_ages.max())}]"] = data[
                 data[config["columns"]["age"]] > cutoff2
             ]
-            logger.debug(
-                f"Age terciles: {filter_dict.keys()} {len(filter_dict.keys())}"
-            )
 
         # split the data into custom ranges
         elif filter_type == "custom":
@@ -86,7 +83,6 @@ def stratify_age(data: pd.DataFrame, config: dict) -> dict:
                 logger.warning(
                     "Custom age ranges do not cover all data. Consider adding more ranges."
                 )
-            logger.debug(f"Custom age ranges: {filter_dict.keys()}")
 
         # split age into under 18, 18-65, and over 65
         else:
@@ -96,7 +92,6 @@ def stratify_age(data: pd.DataFrame, config: dict) -> dict:
                 & (data[config["columns"]["age"]] <= 65)
             ]
             filter_dict["[65+]"] = data[data[config["columns"]["age"]] > 65]
-            logger.debug(f"Default age ranges: {filter_dict.keys()}")
 
     except Exception as e:
         filter_dict["[0-18]"] = data[data[config["columns"]["age"]] < 18]
@@ -105,9 +100,6 @@ def stratify_age(data: pd.DataFrame, config: dict) -> dict:
             & (data[config["columns"]["age"]] <= 65)
         ]
         filter_dict["[65+]"] = data[data[config["columns"]["age"]] > 65]
-        logger.debug(f"Default age ranges: {filter_dict.keys()}")
-
-    logger.debug(f"Generated filter keys: {filter_dict.keys()}")
     return filter_dict
 
 
@@ -144,7 +136,7 @@ def stratify_list(data: pd.DataFrame, config: dict, column: str) -> dict:
 
 
 def strata_products(
-    data: pd.DataFrame, config: dict, filter_dict: dict, operation: str = "report"
+    data: pd.DataFrame, filter_dict: dict, operation: str = "report"
 ) -> dict:
     """
     Generate all unique combinations of two strata for the data.
@@ -152,33 +144,40 @@ def strata_products(
     filter_product_dict = {}
     # Generate combinations of two strata
     keys = list(filter_dict.keys())
-    logger.debug(f"Keys: {keys}")
 
     # Generate all combinations of two strata, use set to avoid duplicates. e.g. age1_sex1 = sex1_age1
     combinations = set()
     for key1, key2 in product(keys, repeat=2):
-        # set all the keys to lower case, and replace all spaces with underscores
+        # if the keys are different, combine the dataframes
         if key1 != key2:
-            # Sort the keys to avoid duplicates
+
+            # Sort the keys to avoid duplicates (i.e. age1_sex1 = sex1_age1)
             sorted_keys = sorted([key1, key2])
 
-            # handle case where combining with main data
+            # handle case where combining with main data (original filter is from main, so unnecessary)
             if "main" in key1 or "main" in key2:
                 combined_key = (
                     f"{key1}_{operation}" if "main" in key2 else f"{key2}_{operation}"
                 )
-            else:
+
+            else:  # combine the keys and operation, e.g. age1_sex1_report
                 combined_key = f"{'_'.join(sorted_keys)}_{operation}"
+
+            # add the combined key to the set
             if combined_key not in combinations:
                 combinations.add(combined_key)
+
+            # merge the two dataframes
             combined_df = filter_dict[sorted_keys[0]].merge(
                 filter_dict[sorted_keys[1]], how="inner"
             )
             # if the combined dataframe is not empty, add it to the dictionary
-            if not combined_df.empty:
+            if (
+                not combined_df.empty
+            ):  # handles case where filters from the same category are combined
                 filter_product_dict[combined_key] = combined_df
 
-            # add main data to the combined data
+            # add main data to new dict
             filter_product_dict[f"main_{operation}"] = data
 
     return filter_product_dict
@@ -205,9 +204,10 @@ def split_data(data: pd.DataFrame, config: dict, operation: str = "report") -> d
         # Split the data by hospital and instrument type
         filter_dict.update(stratify_list(data, config, "hospital"))
         filter_dict.update(stratify_list(data, config, "instrument_type"))
+        filter_dict.update(stratify_list(data, config, "patient_class"))
 
         # Generate combinations of two strata
-        filter_product_dict = strata_products(data, config, filter_dict, operation)
+        filter_product_dict = strata_products(data, filter_dict, operation)
 
     except Exception as e:
         logger.error(f"Error splitting data: {e}")
