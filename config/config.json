@@ -199,6 +199,14 @@
       "size": "half"
     }
   ],
+  "age_filtering": {
+    "filter_type": "statistical",
+    "custom_ranges": [
+      { "min": 0, "max": 0 },
+      { "min": 0, "max": 0 },
+      { "min": 0, "max": 0 }
+    ]
+  },
   "info": {
     "project_name": "Bone Age Prediction",
     "project_description": "Bone Age Prediction project",
