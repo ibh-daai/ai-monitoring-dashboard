@@ -52,6 +52,8 @@ Defines the mapping of data columns to required schema properties. Only the valu
 
 -   **instrument_type** (`string`): Type of instrument used to make the prediction.
 
+-   **patient_class** (`string`): Class of the patient. Common values are `IP` (Inpatient), `OP` (Outpatient), `ED` (Emergency Department), or `ICU` (Intensive Care Unit).
+
 -   **predictions** (`object`):
     -   **regression_prediction** (`string`): Column for predicted regression values.
     -   **classification_prediction** (`string`): Column for predicted classification values.
@@ -74,6 +76,7 @@ Defines the mapping of data columns to required schema properties. Only the valu
     "hospital": "hospital",
     "age": "chronological_age",
     "instrument_type": "machine_type",
+    "patient_class": "patient_classification",
     "predictions": {
       "regression_prediction": "predicted_age",
       "classification_prediction": "classification"
@@ -126,7 +129,7 @@ Specifies the age filtering settings for the monitoring system. The `filter_type
 
 ### Validation Rules (`categorical_validation_rules`)
 
-Specifies rules for validating the categorical data to ensure accuracy and consistency. The rules are defined only for categorical features, and it is assumed that any feature not present in the rules is numerical (e.g. timestamp should be not be in features.). The user must input both the keys and values, the key must match the specific column name in your Dataframe. These rules are used to determine which features are categorical vs numerical, and to define the unique values for the data stratification. These rules will not be used for data validation, that will be done with the Evidence AI tests in the next section. The only parts that should be changed are the objects within the `categorical` object. ***Note:*** *Validation rules must be provided for the required categorical columns, `sex`, `hospital`, `instrument_type`*
+Specifies rules for validating the categorical data to ensure accuracy and consistency. The rules are defined only for categorical features, and it is assumed that any feature not present in the rules is numerical (e.g. timestamp should be not be in features.). The user must input both the keys and values, the key must match the specific column name in your Dataframe. These rules are used to determine which features are categorical vs numerical, and to define the unique values for the data stratification. These rules will not be used for data validation, that will be done with the Evidence AI tests in the next section. The only parts that should be changed are the objects within the `categorical` object. ***Note:*** *Validation rules must be provided for the required categorical columns, `sex`, `hospital`, `instrument_type`, and `patient_class`*
 
 
 
@@ -140,7 +143,8 @@ Specifies rules for validating the categorical data to ensure accuracy and consi
         "Mississauga Hospital",
         "Queensway Hospital"
       ],
-      "machine_type": ["machine1", "machine2"]
+      "machine_type": ["machine1", "machine2"],
+      "patient_classification": ["IP", "OP", "ED", "ICU"]
   },
 }
 ```
@@ -294,7 +298,19 @@ To add a test, include the name of the test in its corresponding category, and a
             "Queensway Hospital"
           ]
         }
-      }
+      },
+      {
+        "name": "test_col_list",
+        "params": {
+          "column_name": "patient_classification",
+          "values": [
+            "IP",
+            "OP",
+            "ED",
+            "ICU"
+          ]
+        }
+      }, 
     ],
     "data_drift_tests": [
       { "name": "num_drifted_cols" },

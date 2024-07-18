@@ -14,6 +14,7 @@
     "hospital": "hospital",
     "age": "chronological_age",
     "instrument_type": "machine_type",
+    "patient_class": "patient_classification",
     "predictions": {
       "regression_prediction": "predicted_age",
       "classification_prediction": "classification"
@@ -38,7 +39,8 @@
       "Mississauga Hospital",
       "Queensway Hospital"
     ],
-    "machine_type": ["machine1", "machine2"]
+    "machine_type": ["machine1", "machine2"],
+    "patient_classifications": ["IP", "OP", "ED", "ICU"]
   },
   "tests": {
     "data_quality_tests": [
@@ -64,6 +66,13 @@
             "Mississauga Hospital",
             "Queensway Hospital"
           ]
+        }
+      },
+      {
+        "name": "test_col_list",
+        "params": {
+          "column_name": "patient_classification",
+          "values": ["IP", "OP", "ED", "ICU"]
         }
       },
       {

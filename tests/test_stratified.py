@@ -24,6 +24,7 @@ def mock_config():
             "hospital": "hospital",
             "age": "age",
             "instrument_type": "instrument_type",
+            "patient_class": "patient_category",
             "predictions": {
                 "regression_prediction": "regression_output",
                 "classification_prediction": "classification",
@@ -45,6 +46,7 @@ def mock_config():
             "sex": ["M", "F"],
             "hospital": ["hospital1", "hospital2"],
             "instrument_type": ["type1", "type2"],
+            "patient_category": ["IP", "OP", "ER"],
             "ethnicity": ["White", "Black", "Asian"],
             "smoker": [True, False],
             "alcohol": [True, False],
@@ -80,6 +82,7 @@ def correct_data():
             ],
             "age": [9, 11, 34, 65, 78, 50],
             "instrument_type": ["type1", "type2", "type1", "type2", "type1", "type2"],
+            "patient_category": ["IP", "OP", "IP", "OP", "ER", "ER"],
             "regression_output": [17.1, 20.5, 30, 40, 50, 60],
             "classification": [1, 0, 0, 1, 0, 1],
             "label": [10, 20, 30, 40, 50, 60],
@@ -117,6 +120,16 @@ def test_split_data_by_instrument_type(correct_data, mock_config):
     assert len(results["type2_report"]) == 3  # Three records for instrument type 2
 
 
+def test_split_data_by_patient_category(correct_data, mock_config):
+    results = split_data(correct_data, mock_config)
+    assert all(results["IP_report"]["patient_category"] == "IP")
+    assert all(results["OP_report"]["patient_category"] == "OP")
+    assert all(results["ER_report"]["patient_category"] == "ER")
+    assert len(results["IP_report"]) == 2  # Two records for IP
+    assert len(results["OP_report"]) == 2  # Two records for OP
+    assert len(results["ER_report"]) == 2  # Two records for ER
+
+
 def test_split_data_by_age_default(correct_data, mock_config):
     mock_config["age_filtering"]["filter_type"] = "default"
     results = stratify_age(correct_data, mock_config)
@@ -148,9 +161,7 @@ def test_split_data_by_age_statistical(correct_data, mock_config):
     # confirm that all the data is accounted for
     assert len(results[f"[{int(sorted_ages.min())}-{int(cutoff1)}]"]) + len(
         results[f"[{int(cutoff1)}-{int(cutoff2)}]"]
-    ) + len(results[f"[{int(cutoff2)}-{int(sorted_ages.max())}]"]) == len(
-        correct_data
-    )
+    ) + len(results[f"[{int(cutoff2)}-{int(sorted_ages.max())}]"]) == len(correct_data)
 
 
 def test_split_data_by_age_custom(correct_data, mock_config):
