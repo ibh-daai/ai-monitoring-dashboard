@@ -93,6 +93,37 @@ Defines the mapping of data columns to required schema properties. Only the valu
   }
 }
 ```
+
+### Age Filtering (`age_filtering`)
+Specifies the age filtering settings for the monitoring system. The `filter_type` field should be set to one of `default` | `statistical` | `custom`. The `custom_ranges` field should be set to an array of objects, each containing the `min` and `max` values for the age range. *Notes: The `custom_ranges` field will only be used if the `filter_type` is set to `custom`. If an invalid `filter_type` is entered, `default` will be chosen*
+
+- **filter_type** (`string`): Type of age filtering to be applied.
+
+  - **`default`**: Default age filtering:
+    1. Under 18
+    2. 18-65
+    3. Over 65
+
+  - **`statistical`**: Age filtering based on statistical analysis: Split into 3 terciles based on the age distribution, i.e. 33% of the data in each group.
+
+  - **`custom`**: Custom age filtering based on the `custom_ranges` field.
+    1. { "min": x1, "max": y1 }
+    2. { "min": x2, "max": y2 }
+    3. { "min": x3, "max": y3 }
+
+
+#### Example
+```json
+"age_filtering": {
+    "filter_type": "default",
+    "custom_ranges": [
+      { "min": 0, "max": 0 },
+      { "min": 0, "max": 0 },
+      { "min": 0, "max": 0 }
+    ]
+  },
+```
+
 ### Validation Rules (`categorical_validation_rules`)
 
 Specifies rules for validating the categorical data to ensure accuracy and consistency. The rules are defined only for categorical features, and it is assumed that any feature not present in the rules is numerical (e.g. timestamp should be not be in features.). The user must input both the keys and values, the key must match the specific column name in your Dataframe. These rules are used to determine which features are categorical vs numerical, and to define the unique values for the data stratification. These rules will not be used for data validation, that will be done with the Evidence AI tests in the next section. The only parts that should be changed are the objects within the `categorical` object. ***Note:*** *Validation rules must be provided for the required categorical columns, `sex`, `hospital`, `instrument_type`*
@@ -164,7 +195,7 @@ Enables specific tests for regression and classification. To add tests, include 
     -  `left`: Minimum value for the column.
     -  `right`: Maximum value for the column.
 
--   **`test_col_list`**: Checks the values in a categorical column against a set of acceptable values. ***Use this test to ensure that the values within a categorical column are within a defined set of values***
+-   **`test_col_list`**: Checks the values in a categorical column against a set of acceptable values. **Values should not contain underscores, _** ***Use this test to ensure that the values within a categorical column are within a defined set of values.***
 
   **parameters**:
     -  `column_name`: Name of the column to be tested.
@@ -425,6 +456,7 @@ Here are some sample images of the dashboard panels:
 ]
 ```
 
+
 ### Info (`info`)
 Provides info about the model that will be displayed on the monitoring dashboard. The `info` object should contain the following fields:
 
@@ -449,7 +481,6 @@ Provides info about the model that will be displayed on the monitoring dashboard
     "contact_email": "johnsmith@thp.ca"
   },
 ```
-
 
 
 ### Alerts (`alerts`)
