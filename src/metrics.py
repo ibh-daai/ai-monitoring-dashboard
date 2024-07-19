@@ -3,6 +3,7 @@ File to handle metric report generation with Evidently AI. Split file into data,
 """
 
 import os
+import time
 from evidently import ColumnMapping
 from evidently.report import Report
 from evidently.metrics import (
@@ -146,9 +147,12 @@ def data_report(
             ColumnDriftMetric(data_mapping.target),
         ],
         tags=t,
+        timestamp=timestamp,
     )
     data_quality_report.run(
-        reference_data=reference_data, current_data=data, column_mapping=data_mapping
+        reference_data=reference_data,
+        current_data=data,
+        column_mapping=data_mapping,
     )
     data_quality_report.save(
         f"snapshots/{timestamp}/{folder_path}/data_quality_report.json"
@@ -190,6 +194,7 @@ def regression_report(
             RegressionPredictedVsActualScatter(),
         ],
         tags=t,
+        timestamp=timestamp,
     )
     regression_report.run(
         reference_data=reference_data,
@@ -233,12 +238,13 @@ def classification_report(
             ClassificationConfusionMatrix(),
         ],
         tags=t,
+        timestamp=timestamp,
     )
     classification_report.run(
         reference_data=reference_data,
         current_data=data,
         column_mapping=classification_mapping,
-    )
+     )
     classification_report.save(
         f"snapshots/{timestamp}/{folder_path}/classification_report.json"
     )

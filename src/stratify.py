@@ -272,6 +272,71 @@ def generate_stratified_tests(
         raise
 
 
+def create_test_snapshots():
+    warnings.simplefilter(action="ignore", category=FutureWarning)
+    warnings.simplefilter(action="ignore", category=UndefinedMetricWarning)
+    warnings.simplefilter(action="ignore", category=RuntimeWarning)
+    warnings.simplefilter(action="ignore", category=UserWarning)
+
+    # for testing:
+    test_timestamps = [
+        "2024_01_06_12_00",
+        "2024_04_08_12_00",
+        "2024_06_05_12_00",
+        "2024_08_07_12_00",
+        "2024_10_09_12_00",
+    ]
+
+    test_timestamps = [
+        datetime.strptime(ts, "%Y_%m_%d_%H_%M").isoformat() for ts in test_timestamps
+    ]
+
+    test_data_paths = [
+        "data/data.csv",
+        "data/fakedata1.csv",
+        "data/fakedata2.csv",
+        "data/fakedata3.csv",
+        "data/fakedata4.csv",
+    ]
+
+    try:
+        # load config and test split function
+        config = load_config()
+    except Exception as e:
+        logger.error(f"Failed to load config: {e}")
+        return
+
+    for timestamp, data_path in zip(test_timestamps, test_data_paths):
+        try:
+            data = pd.read_csv(data_path)
+            reference_data = pd.read_csv("data/reference_data.csv")
+        except Exception as e:
+            logger.error(f"Failed to load data: {e}")
+            return
+
+        try:
+            generate_stratified_reports(
+                data,
+                reference_data,
+                config,
+                config["model_config"]["model_type"],
+                timestamp,
+            )
+        except Exception as e:
+            logger.error(f"Failed to generate stratified tests: {e}")
+
+        try:
+            generate_stratified_tests(
+                data,
+                reference_data,
+                config,
+                config["model_config"]["model_type"],
+                timestamp,
+            )
+        except Exception as e:
+            logger.error(f"Failed to generate stratified tests: {e}")
+
+
 def main():
     warnings.simplefilter(action="ignore", category=FutureWarning)
     warnings.simplefilter(action="ignore", category=UndefinedMetricWarning)
@@ -293,13 +358,6 @@ def main():
         return
 
     timestamp = datetime.now().strftime("%Y_%m_%d_%H_%M")
-
-    # # timestamps for testing
-    # timestamp1 = "2024_01_06_12_00"
-
-    # timestamp2 = "2024_04_08_12_00"
-
-    # timestamp3 = "2024_06_05_12_00"
 
     try:
         generate_stratified_reports(
@@ -326,3 +384,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    # create_test_snapshots()
