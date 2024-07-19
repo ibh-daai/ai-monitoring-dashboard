@@ -120,7 +120,7 @@ def data_tests(
         if len(t) == 1:
             t.append("single")
         t.append("data")
-        data_test_suite = TestSuite(tests=test_functions, tags=t)
+        data_test_suite = TestSuite(tests=test_functions, tags=t, timestamp=timestamp)
         data_test_suite.run(
             reference_data=reference_data,
             current_data=data,
@@ -158,7 +158,9 @@ def regression_tests(
         if len(t) == 1:
             t.append("single")
         t.append("regression")
-        regression_test_suite = TestSuite(tests=test_functions, tags=t)
+        regression_test_suite = TestSuite(
+            tests=test_functions, tags=t, timestamp=timestamp
+        )
         regression_test_suite.run(
             reference_data=reference_data,
             current_data=data,
@@ -195,7 +197,9 @@ def classification_tests(
         if len(t) == 1:
             t.append("single")
         t.append("classification")
-        classification_test_suite = TestSuite(tests=test_functions, tags=t)
+        classification_test_suite = TestSuite(
+            tests=test_functions, tags=t, timestamp=timestamp
+        )
         classification_test_suite.run(
             reference_data=reference_data,
             current_data=data,
