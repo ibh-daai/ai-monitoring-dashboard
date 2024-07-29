@@ -29,6 +29,10 @@
             "type": ["string", "null"],
             "default": null
           },
+          "patient_class": {
+            "type": ["string", "number", "null"],
+            "default": null
+          },
           "predictions": {
             "type": "object",
             "properties": {
@@ -71,7 +75,8 @@
           "model_id",
           "hospital",
           "age",
-          "instrument_type"
+          "instrument_type",
+          "patient_class"
         ]
       }
     }

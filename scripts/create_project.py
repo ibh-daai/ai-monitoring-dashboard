@@ -59,12 +59,16 @@ def create_summary_panels(config: dict, project) -> None:
     contact_name = config["info"]["contact_name"]
     contact_email = config["info"]["contact_email"]
 
+    md = f"Model Developer: {model_developer}"
+    cn = f"Contact Name: {contact_name}"
+    ce = f"Contact Email: {contact_email}"
+
     project.dashboard.add_panel(
         DashboardPanelCounter(
             filter=ReportFilter(metadata_values={}, tag_values=[]),
             agg=CounterAgg.NONE,
             text="Model Information",
-            title=f"Model Developer: {model_developer}\nContact Name: {contact_name}\nContact Email: {contact_email}",
+            title=f"{md}<br>{cn}<br>{ce}",
             size=WidgetSize.HALF,
         )
     )

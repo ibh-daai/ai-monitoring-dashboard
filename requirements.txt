@@ -10,6 +10,7 @@ asttokens==2.4.1
 async-timeout==4.0.3
 asyncpg==0.29.0
 attrs==23.2.0
+blinker==1.8.2
 cachetools==5.3.3
 certifi==2024.6.2
 cffi==1.16.0
@@ -36,6 +37,7 @@ exceptiongroup==1.2.1
 executing==2.0.1
 Faker==25.8.0
 filelock==3.14.0
+Flask==3.0.3
 fonttools==4.53.0
 fsspec==2024.6.0
 google-auth==2.30.0
@@ -109,6 +111,7 @@ pycparser==2.22
 pydantic==2.7.4
 pydantic_core==2.18.4
 Pygments==2.18.0
+pymongo==4.8.0
 pyparsing==3.1.2
 pytest==8.2.2
 python-dateutil==2.9.0.post0
@@ -161,3 +164,4 @@ watchfiles==0.22.0
 wcwidth==0.2.13
 websocket-client==1.8.0
 websockets==12.0
+Werkzeug==3.0.3

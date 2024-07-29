@@ -18,3 +18,4 @@ def load_data(
         reference_data = pd.read_csv(reference_path)
 
     return data, reference_data
+
