@@ -76,6 +76,7 @@ def construct_nested_json(row: pd.Series, mapping: dict) -> dict:
         "hospital": row[mapping["hospital"]],
         "age": row[mapping["age"]],
         "instrument_type": row[mapping["instrument_type"]],
+        "patient_class": row[mapping["patient_class"]],
         "predictions": {},
         "labels": {},
         "features": {key: row[key] for key in mapping["features"] if key in row},
@@ -179,7 +180,6 @@ def validate_data(data: pd.DataFrame, config: dict) -> bool:
 
     # call helper functions to extract mappings and columns
     mapping = config_mappings(config["columns"])
-    validation_rules = config["validation_rules"]
     columns = set()
     columns = extract_columns(mapping, columns, config)
 
@@ -201,12 +201,6 @@ def validate_data(data: pd.DataFrame, config: dict) -> bool:
         ):
             logger.error("Classification columns are not properly configured.")
             raise ValueError("Classification columns are not properly configured.")
-
-    # validate features
-    for feature, rules in validation_rules.items():
-        if not validate_feature(data, feature, rules):
-            logger.warning(f"Validation failed for feature '{feature}'")
-            return False
 
     # validate schema for each row of the DataFrame
     validate_schema(data, mapping)

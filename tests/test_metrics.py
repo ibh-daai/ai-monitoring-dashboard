@@ -24,6 +24,7 @@ def mock_config():
             "hospital": "hospital",
             "age": "age",
             "instrument_type": "instrument_type",
+            "patient_class": "patient_category",
             "predictions": {
                 "regression_prediction": None,
                 "classification_prediction": "class",
@@ -36,16 +37,12 @@ def mock_config():
             "timestamp": "date",
         },
         "validation_rules": {
-            "sex": {"type": "enum", "values": ["M", "F"]},
-            "hospital": {"type": "enum", "values": ["hospital1", "hospital2"]},
-            "age": {"type": "range", "min": 0, "max": 120},
-            "instrument_type": {"type": "enum", "values": ["type1", "type2"]},
-            "bmi": {"type": "range", "min": 0, "max": 50},
-            "exercise_frequency": {
-                "type": "enum",
-                "values": ["daily", "weekly", "monthly", "never"],
-            },
-            "diabetes": {"type": "enum", "values": [1, 0]},
+            "sex": ["M", "F"],
+            "hospital": ["hospital1", "hospital2"],
+            "instrument_type": ["type1", "type2"],
+            "patient_category": ["IP", "OP"],
+            "exercise_frequency": ["daily", "weekly", "monthly", "never"],
+            "diabetes": [1, 0],
         },
     }
     return config
@@ -64,6 +61,7 @@ def mock_data():
             "hospital": ["hospital1", "hospital2", "hospital1", "hospital2"],
             "age": [25, 30, 35, 40],
             "instrument_type": ["type1", "type2", "type1", "type2"],
+            "patient_category": ["IP", "OP", "IP", "OP"],
             "class": [1, 0, 1, 0],
             "class_true": [1, 0, 1, 0],
             "bmi": [20, 25, 30, 35],
@@ -86,6 +84,7 @@ def mock_reference_data():
             "hospital": ["hospital1", "hospital2", "hospital1", "hospital2"],
             "age": [25, 30, 35, 40],
             "instrument_type": ["type1", "type2", "type1", "type2"],
+            "patient_category": ["IP", "OP", "IP", "OP"],
             "class": [1, 0, 1, 1],
             "class_true": [1, 0, 1, 0],
             "bmi": [20, 28, 40, 32],
@@ -103,7 +102,14 @@ def test_generate_report(mock_config, mock_data, mock_reference_data):
     ) as mock_regression_report:
 
         model_type = mock_config["model_config"]["model_type"]
-        generate_report(mock_data, mock_reference_data, mock_config, model_type)
+        generate_report(
+            mock_data,
+            mock_reference_data,
+            mock_config,
+            model_type,
+            "folder",
+            "timestamp",
+        )
 
         # Check that data report and classification report are called
         mock_data_report.assert_called_once()

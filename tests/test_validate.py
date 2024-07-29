@@ -20,6 +20,7 @@ def mock_config():
             "hospital": "hospital",
             "age": "age",
             "instrument_type": "type",
+            "patient_class": "patient_category",
             "predictions": {
                 "regression_prediction": "regression_output",
                 "classification_prediction": "classification",
@@ -38,14 +39,13 @@ def mock_config():
             "timestamp": None,
         },
         "validation_rules": {
-            "sex": {"type": "enum", "values": ["M", "F"]},
-            "hospital": {"type": "enum", "values": ["hospital1", "hospital2"]},
-            "age": {"type": "range", "min": 0, "max": 120},
-            "ethnicity": {"type": "enum", "values": ["White", "Black", "Asian"]},
-            "height": {"type": "range", "min": 50, "max": 250},
-            "weight": {"type": "range", "min": 2, "max": 500},
-            "smoker": {"type": "enum", "values": [True, False]},
-            "alcohol": {"type": "enum", "values": [True, False]},
+            "sex": ["M", "F"],
+            "hospital": ["hospital1", "hospital2"],
+            "type": ["type1", "type2"],
+            "patient_category": ["IP", "OP", "ER"],
+            "ethnicity": ["White", "Black", "Asian"],
+            "smoker": [True, False],
+            "alcohol": [True, False],
         },
     }
 
@@ -63,6 +63,7 @@ def correct_data():
             "hospital": ["hospital1", "hospital2", "hospital1"],
             "age": [9, 11, 34],
             "type": ["type1", "type2", "type1"],
+            "patient_category": ["IP", "OP", "ER"],
             "regression_output": [17.1, 20.5, 30],
             "classification": [1, 0, 0],
             "label": [10, 20, 30],
@@ -89,6 +90,7 @@ def data_with_wrong_types():
             "hospital": ["hospital1", "hospital2", "hospital1"],
             "age": [9, 11, 34],
             "type": ["type1", "type2", "type1"],
+            "patient_category": ["IP", "OP", "ER"],
             "regression_output": ["ten", "twenty", "thirty"],  # Expected numeric
             "classification": [1, 0, 0],
             "label": [10, 20, 30],
@@ -116,6 +118,7 @@ def large_data():
             "age": [i % 100 for i in range(num_entries)],
             "hospital": ["hospital1", "hospital2"] * (num_entries // 2),
             "type": ["type1", "type2"] * (num_entries // 2),
+            "patient_category": ["IP", "OP"] * (num_entries // 2),
             "regression_output": [i % 100 for i in range(num_entries)],
             "classification": [i % 2 for i in range(num_entries)],
             "label": [i % 100 for i in range(num_entries)],
@@ -142,6 +145,7 @@ def corrupted_data():
             "hospital": ["hospital1", "hospital2", "hospital1"],
             "age": [9, 11, 34],
             "type": ["type1", "type2", "type1"],
+            "patient_category": ["IP", "OP", "ER"],
             "regression_output": [
                 10,
                 20,
@@ -172,6 +176,7 @@ def missing_regression_output():
             "hospital": ["hospital1", "hospital2", "hospital1"],
             "age": [9, 11, 34],
             "type": ["type1", "type2", "type1"],
+            "patient_category": ["IP", "OP", "ER"],
             # missing regression_output
             "classification": [1, 0, 0],
             "label": [10, 20, 30],

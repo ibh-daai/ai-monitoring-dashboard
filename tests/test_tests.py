@@ -18,8 +18,8 @@ def mock_config():
             "model_id": "ModelID",
             "sex": "gender",
             "hospital": "clinic",
+            "patient_class": "patient_category",
             "age": "age",
-            "instrument_type": "machine",
             "predictions": {
                 "regression_prediction": None,
                 "classification_prediction": "diagnosis",
@@ -31,13 +31,10 @@ def mock_config():
             "features": ["weight", "height", "blood_pressure"],
             "timestamp": "date",
         },
-        "validation_rules": {
-            "gender": {"type": "enum", "values": ["M", "F"]},
-            "clinic": {"type": "enum", "values": ["clinic1", "clinic2", "clinic3"]},
-            "age": {"type": "range", "min": 0, "max": 120},
-            "weight": {"type": "range", "min": 0, "max": 150},
-            "height": {"type": "range", "min": 0, "max": 250},
-            "blood_pressure": {"type": "range", "min": 0, "max": 200},
+        "categorical_validation_rules": {
+            "gender": ["M", "F"],
+            "clinic": ["clinic1", "clinic2", "clinic3"],
+            "patient_category": ["IP", "OP"],
         },
         "tests": {
             "data_quality_tests": [
@@ -88,8 +85,8 @@ def mock_data():
             "ModelID": [201, 202, 203, 204, 205],
             "gender": ["M", "F", "M", "F", "M"],
             "clinic": ["clinic1", "clinic2", "clinic1", "clinic2", "clinic1"],
+            "patient_category": ["IP", "OP", "IP", "OP", "IP"],
             "age": [20, 25, 30, 35, 40],
-            "machine": ["type1", "type2", "type1", "type2", "type1"],
             "diagnosis": [1, 0, 1, 0, 1],
             "diagnosis_true": [1, 0, 1, 0, 1],
             "weight": [70, 60, 80, 55, 90],
@@ -110,8 +107,8 @@ def mock_reference_data():
             "ModelID": [201, 202, 203, 204, 205],
             "gender": ["M", "F", "M", "F", "M"],
             "clinic": ["clinic1", "clinic2", "clinic1", "clinic2", "clinic1"],
+            "patient_category": ["IP", "OP", "IP", "OP", "IP"],
             "age": [21, 26, 31, 36, 41],
-            "machine": ["type1", "type2", "type1", "type2", "type1"],
             "diagnosis": [1, 0, 1, 1, 0],
             "diagnosis_true": [1, 0, 1, 0, 1],
             "weight": [71, 61, 81, 56, 91],
@@ -177,7 +174,14 @@ def test_generate_tests(mock_config, mock_data, mock_reference_data):
     ):
 
         model_type = mock_config["model_config"]["model_type"]
-        generate_tests(mock_data, mock_reference_data, mock_config, model_type)
+        generate_tests(
+            mock_data,
+            mock_reference_data,
+            mock_config,
+            model_type,
+            "tests",
+            "timestamp",
+        )
 
         # Check that data tests and classification tests are called
         mock_data_tests.assert_called_once()
