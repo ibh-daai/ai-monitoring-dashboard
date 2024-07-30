@@ -46,8 +46,10 @@ def process_duplicates(df: pd.DataFrame, config: dict) -> pd.DataFrame:
 
 def move_matched_data(
     db: MongoClient,
+    merged_data: pd.DataFrame,
     matched_ids: list,
-    source_collection: str,
+    results_collection: str,
+    labels_collection: str,
     destination_collection: str,
     config: dict,
 ) -> None:
@@ -55,14 +57,19 @@ def move_matched_data(
     Move matched data from one collection to another.
     """
     try:
-        source = db[source_collection]
+        results = db[results_collection]
+        labels = db[labels_collection]
         destination = db[destination_collection]
-        matched_records = list(
-            source.find({config["columns"]["study_id"]: {"$in": matched_ids}})
+
+        matched_records = merged_data.to_dict("records")
+        records_to_delete = list(
+            labels.find({config["columns"]["study_id"]: {"$in": matched_ids}})
         )
+
         if matched_records:
             destination.insert_many(matched_records)
-            source.delete_many({config["columns"]["study_id"]: {"$in": matched_ids}})
+            results.delete_many({config["columns"]["study_id"]: {"$in": matched_ids}})
+            labels.delete_many({config["columns"]["study_id"]: {"$in": matched_ids}})
     except Exception as e:
         print(f"Error moving matched data: {e}")
 
@@ -112,10 +119,13 @@ def fetch_and_merge(config: dict) -> pd.DataFrame:
     # Move matched data to a new collection
     matched_ids = merged_data[study_id_col].tolist()
     move_matched_data(
-        db, matched_ids, f"{model_id}_results", f"{model_id}_matched_results", config
-    )
-    move_matched_data(
-        db, matched_ids, f"{model_id}_labels", f"{model_id}_matched_labels", config
+        db,
+        merged_data,
+        matched_ids,
+        f"{model_id}_results",
+        f"{model_id}_labels",
+        f"{model_id}_matched",
+        config,
     )
 
     print(merged_data.head())
