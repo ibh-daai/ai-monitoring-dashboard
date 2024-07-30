@@ -15,7 +15,6 @@ def mock_config():
         },
         "columns": {
             "study_id": "StudyID",
-            "model_id": "ModelID",
             "sex": "sex",
             "hospital": "hospital",
             "age": "age",
@@ -58,7 +57,6 @@ def correct_data():
     return pd.DataFrame(
         {
             "StudyID": ["001", "002", "003"],
-            "ModelID": ["Model1", "Model1", "Model1"],
             "sex": ["M", "F", "M"],
             "hospital": ["hospital1", "hospital2", "hospital1"],
             "age": [9, 11, 34],
@@ -85,7 +83,6 @@ def data_with_wrong_types():
     return pd.DataFrame(
         {
             "StudyID": ["001", "002", "003"],
-            "ModelID": ["Model1", "Model1", "Model1"],
             "sex": ["M", "F", "M"],
             "hospital": ["hospital1", "hospital2", "hospital1"],
             "age": [9, 11, 34],
@@ -113,7 +110,6 @@ def large_data():
     return pd.DataFrame(
         {
             "StudyID": ["ID" + str(i) for i in range(num_entries)],
-            "ModelID": ["Model1"] * num_entries,
             "sex": ["M", "F"] * (num_entries // 2),
             "age": [i % 100 for i in range(num_entries)],
             "hospital": ["hospital1", "hospital2"] * (num_entries // 2),
@@ -140,7 +136,6 @@ def corrupted_data():
     return pd.DataFrame(
         {
             "StudyID": ["001", "002", "003"],
-            "ModelID": ["Model1", "Model1", "Model1"],
             "sex": ["M", "F", "M"],
             "hospital": ["hospital1", "hospital2", "hospital1"],
             "age": [9, 11, 34],
@@ -171,7 +166,6 @@ def missing_regression_output():
     return pd.DataFrame(
         {
             "StudyID": ["001", "002", "003"],
-            "ModelID": ["Model1", "Model1", "Model1"],
             "sex": ["M", "F", "M"],
             "hospital": ["hospital1", "hospital2", "hospital1"],
             "age": [9, 11, 34],

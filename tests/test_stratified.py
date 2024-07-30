@@ -19,7 +19,6 @@ def mock_config():
         },
         "columns": {
             "study_id": "StudyID",
-            "model_id": "ModelID",
             "sex": "sex",
             "hospital": "hospital",
             "age": "age",
@@ -70,7 +69,6 @@ def correct_data():
     return pd.DataFrame(
         {
             "StudyID": ["001", "002", "003", "004", "005", "006"],
-            "ModelID": ["Model1", "Model1", "Model1", "Model1", "Model1", "Model1"],
             "sex": ["M", "F", "M", "F", "M", "F"],
             "hospital": [
                 "hospital1",

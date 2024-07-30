@@ -3,7 +3,7 @@ ETL pipeline script. This script is responsible for loading, validating, and spl
 """
 
 import os
-from src.data_handler import load_data
+from scripts.fetch_data import fetch_and_merge
 from src.validate import validate_data
 import pandas as pd
 import logging
@@ -12,35 +12,43 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def main_load_and_validate(config: dict, file_path: str) -> pd.DataFrame:
+def main_load_and_validate(config: dict) -> pd.DataFrame:
     """
-    Load and validate data from a CSV file
+    Load and validate data from the database
     """
-    data, _ = load_data(file_path)
+    data = fetch_and_merge(config)
 
     # Validate the data
     try:
         validate_data(data, config)
     except ValueError as e:
-        logger.error(f"Data validation failed for main dataset: {file_path}, {e}")
+        logger.error(f"Data validation failed: {e}")
         raise
 
     return data
 
 
-def reference_load_and_validate(
-    config: dict, file_path: str, reference_path: str
-) -> pd.DataFrame:
+def reference_load_and_validate(config: dict, data: pd.DataFrame) -> pd.DataFrame:
     """
-    Load and validate reference data from a CSV file
+    Load and validate reference data from the database or the provided data.
     """
-    _, reference_data = load_data(file_path, reference_path)
+    reference_data = None
 
-    # Check if reference data is provided
-    if reference_data.empty:
-        logger.warning("Reference data file is empty or not provided.")
-        return None
-    # Validate the reference data
+    reference_path = "data/reference_data.csv"
+    if os.path.exists(reference_path):
+        reference_data = pd.read_csv(reference_path)
+
+        # If the reference data is smaller than 50 rows, log a warning
+        if len(reference_data) < 50:
+            logger.warning(
+                "Reference data has less than 50 rows, consider updating the reference data."
+            )
+    else:
+        logger.info("Reference data not found or empty.")
+        reference_data = data.copy()
+
+        reference_data.to_csv(reference_path, index=False)
+
     try:
         validate_data(reference_data, config)
     except ValueError as e:
@@ -50,31 +58,12 @@ def reference_load_and_validate(
     return reference_data
 
 
-def etl_pipeline(
-    file_path: str, reference_path: str, config: dict
-) -> tuple[pd.DataFrame, pd.DataFrame]:
+def etl_pipeline(config: dict) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
     ETL pipeline for loading, validating, and possibly splitting data.
     """
-    data = main_load_and_validate(config, file_path)
+    data = main_load_and_validate(config)
 
-    # Split the data into reference and current data if required
-    if not config["model_config"].get("provide_reference", False):
-        if not os.path.exists("data/reference_data.csv"):
-            # if the reference data does not exist, use the first data ingestion as reference data
-            reference_data = data.copy()
-
-            # write the data to a new CSV file
-            data.to_csv("data/data.csv", index=False)
-            reference_data.to_csv("data/reference_data.csv", index=False)
-        else:
-            logger.info("Reference data already exists.")
-    else:
-        if not os.path.exists("data/reference_data.csv"):
-            logger.error("Reference data is required but not provided.")
-            raise ValueError("Reference data is required but not provided.")
-        logger.info("Reference data provided.")
-
-    reference_data = reference_load_and_validate(config, file_path, reference_path)
+    reference_data = reference_load_and_validate(config, data)
 
     return data, reference_data

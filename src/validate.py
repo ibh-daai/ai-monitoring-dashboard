@@ -71,7 +71,6 @@ def construct_nested_json(row: pd.Series, mapping: dict) -> dict:
     """
     output = {
         "study_id": row[mapping["study_id"]],
-        "model_id": row[mapping["model_id"]],
         "sex": row[mapping["sex"]],
         "hospital": row[mapping["hospital"]],
         "age": row[mapping["age"]],
