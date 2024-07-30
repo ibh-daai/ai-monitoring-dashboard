@@ -37,6 +37,7 @@ function App() {
 
     const formData = new FormData();
     formData.append('csvFile', file);
+    formData.append('model_id', modelId);
 
     try {
       setLoading(true);
@@ -46,7 +47,6 @@ function App() {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-        withCredentials: true,
       });
       setSuccess(true);
       setFile(null); 

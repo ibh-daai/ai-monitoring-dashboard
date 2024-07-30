@@ -31,9 +31,6 @@ data_generator.ipynb
 # Package manager lock files
 package-lock.json
 
-# Configuration files
-api/config.py
-
 # Node modules and build files
 frontend/node_modules
 frontend/build

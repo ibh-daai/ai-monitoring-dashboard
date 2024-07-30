@@ -2,7 +2,7 @@
 File to create API endpoints to ingest the results (predictions, data) and labels from the user.
 """
 
-from flask import Flask, request, jsonify, render_template, session
+from flask import Flask, request, jsonify, render_template 
 from flask_cors import CORS
 from pymongo.mongo_client import MongoClient
 from datetime import datetime, timezone
@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 app.config.from_object("api.config.Config")
-app.secret_key = app.config["SECRET_KEY"]
+# app.secret_key = app.config["SECRET_KEY"]
 CORS(
     app,
     supports_credentials=True,
@@ -95,7 +95,7 @@ def ingest_results():
     Ingest the results from the user.
     """
     try:
-        model_id = session.get("model_id")
+        model_id = request.form.get("model_id")
         if not model_id:
             return jsonify({"message": "Model ID not in session."}), 400
 
@@ -168,7 +168,7 @@ def ingest_results():
         logger.info("Results ingested successfully.")
         return jsonify({"message": "Results ingested successfully."}), 200
     except Exception as e:
-        logger.error(f"Error occurred while ingesting results: {e}", exc_info=True)
+        logger.error(f"Error occurred while ingesting results: {e}")
         return jsonify({"message": f"Error occurred while ingesting results: {e}"}), 500
 
 
@@ -178,7 +178,7 @@ def ingest_labels():
     Ingest the labels from the user.
     """
     try:
-        model_id = session.get("model_id")
+        model_id = request.form.get("model_id")
         if not model_id:
             return jsonify({"message": "Model ID not in session."}), 400
 
@@ -234,7 +234,7 @@ def ingest_labels():
         logger.info("Labels ingested successfully.")
         return jsonify({"message": "Labels ingested successfully."}), 200
     except Exception as e:
-        logger.error(f"Error occurred while ingesting labels: {str(e)}", exc_info=True)
+        logger.error(f"Error occurred while ingesting labels: {str(e)}")
         return (
             jsonify({"message": f"Error occurred while ingesting labels: {str(e)}"}),
             500,
@@ -279,12 +279,10 @@ def authenticate():
                 jsonify({"message": "Model ID does not match the configuration file."}),
                 400,
             )
-        session["model_id"] = model_id
         return jsonify({"message": "Sign up successful.", "model": model_id}), 200
 
     elif action == "login":
         if model_id == config["model_config"]["model_id"]:
-            session["model_id"] = model_id
             return (
                 jsonify({"message": "Authentication successful.", "model": model_id}),
                 200,
