@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Box, Button, TextField, Typography, AppBar, Toolbar, Snackbar, Alert } from '@mui/material';
+import { Container, Box, Button, TextField, Typography, AppBar, Toolbar, Snackbar } from '@mui/material';
 import axios from 'axios';
 import logo from './thp_logo.png';
 
@@ -8,7 +8,7 @@ function Auth({ setModelId }) {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     if (!modelId) {
       setError('Please enter a model ID.');
@@ -17,13 +17,41 @@ function Auth({ setModelId }) {
 
     try {
       setError(null);
-      const response = await axios.post('http://localhost:5001/authenticate', { model_id: modelId }, { withCredentials: true });
+      const response = await axios.post('http://localhost:5001/authenticate', { model_id: modelId, action: 'login' }, { withCredentials: true });
       setModelId(modelId);
       localStorage.setItem('modelId', modelId);
       setSuccess(true);
     } catch (error) {
       console.error('Error authenticating:', error);
-      setError('Model ID not provided or different from configuration file');
+      setError(error.response?.data?.message || 'Error during login');
+    }
+  };
+
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+    if (!modelId) {
+      setError('Please enter a model ID.');
+      return;
+    }
+
+    try {
+      setError(null);
+      const checkResponse = await axios.post('http://localhost:5001/check_model_id', { model_id: modelId });
+      if (checkResponse.status === 200) {
+        const response = await axios.post('http://localhost:5001/authenticate', { model_id: modelId, action: 'signup' }, { withCredentials: true });
+        setModelId(modelId);
+        localStorage.setItem('modelId', modelId);
+        setSuccess(true);
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 409) {
+        setError('Model ID already in use. Please choose another one.');
+      } else if (error.response && error.response.status === 400 && error.response.data.message === "Model ID does not match the configuration file.") {
+        setError('Model ID does not match the configuration file.');
+      } else {
+        console.error('Error signing up:', error);
+        setError(error.response?.data?.message || 'Error during sign up process');
+      }
     }
   };
 
@@ -39,7 +67,7 @@ function Auth({ setModelId }) {
         <Typography variant="h6" component="h1" gutterBottom>
           Enter Model ID
         </Typography>
-        <form onSubmit={handleSubmit}>
+        <form>
           <TextField
             label="Model ID"
             variant="outlined"
@@ -50,9 +78,12 @@ function Auth({ setModelId }) {
             error={!!error}
             helperText={error}
           />
-          <Box my={2}>
-            <Button variant="contained" color="primary" fullWidth disableElevation type="submit">
-              Submit
+          <Box my={2} display="flex" justifyContent="space-between">
+            <Button variant="contained" color="primary" onClick={handleLogin} disableElevation>
+              Login
+            </Button>
+            <Button variant="contained" color="secondary" onClick={handleSignUp} disableElevation>
+              Sign Up
             </Button>
           </Box>
         </form>

@@ -42,33 +42,19 @@ model_id = config["model_config"]["model_id"]
 # Load the database
 db = client["data_ingestion"]
 
+ALLOWED_EXTENSIONS = {"csv"}
+
+
+def allowed_file(filename):
+    """
+    Check if the file extension is allowed.
+    """
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 @app.route("/")
 def index():
     return render_template("upload.html")
-
-
-@app.route("/authenticate", methods=["POST"])
-def authenticate():
-    """
-    Authenticate the user and set the model ID in the session.
-    """
-    model_id = request.json.get("model_id")
-    if model_id and model_id == config["model_config"]["model_id"]:
-        session["model_id"] = model_id
-        return (
-            jsonify({"message": "Authentication successful.", "model": model_id}),
-            200,
-        )
-    else:
-        return (
-            jsonify(
-                {
-                    "message": "Model ID not provided or different from configuration file"
-                }
-            ),
-            400,
-        )
 
 
 def get_column_mapping():
@@ -113,7 +99,11 @@ def ingest_results():
         if not model_id:
             return jsonify({"message": "Model ID not in session."}), 400
 
+        # Load the uploaded CSV file
         file = request.files["csvFile"]
+        if not file or not allowed_file(file.filename):
+            return jsonify({"message": "Invalid file."}), 400
+
         df = pd.read_csv(file)
 
         columns = get_column_mapping()
@@ -192,7 +182,11 @@ def ingest_labels():
         if not model_id:
             return jsonify({"message": "Model ID not in session."}), 400
 
+        # Load the uploaded CSV file
         file = request.files["csvFile"]
+        if not file or not allowed_file(file.filename):
+            return jsonify({"message": "Invalid file."}), 400
+
         df = pd.read_csv(file)
         columns = get_column_mapping()
         model_config = get_model_config()
@@ -245,6 +239,67 @@ def ingest_labels():
             jsonify({"message": f"Error occurred while ingesting labels: {str(e)}"}),
             500,
         )
+
+
+@app.route("/check_model_id", methods=["POST"])
+def check_model_id():
+    """
+    Check if the model ID is already in use.
+    """
+    model_id = request.json.get("model_id")
+    if not model_id:
+        return jsonify({"message": "Model ID not provided."}), 400
+
+    if db.list_collection_names(filter={"name": f"{model_id}_results"}):
+        return (
+            jsonify({"message": "Model ID already in use."}),
+            409,
+        )
+    return jsonify({"message": "Model ID is available."}), 200
+
+
+@app.route("/authenticate", methods=["POST"])
+def authenticate():
+    """
+    Authenticate the user and set the model ID in the session.
+    """
+    model_id = request.json.get("model_id")
+    action = request.json.get("action", "login")
+
+    if not model_id:
+        return jsonify({"message": "Model ID not provided."}), 400
+
+    if action == "signup":
+        if db.list_collection_names(
+            filter={"name": f"{model_id}_results"}
+        ) or db.list_collection_names(filter={"name": f"{model_id}_labels"}):
+            return jsonify({"message": "Model ID is already in use."}), 409
+        if model_id != config["model_config"]["model_id"]:
+            return (
+                jsonify({"message": "Model ID does not match the configuration file."}),
+                400,
+            )
+        session["model_id"] = model_id
+        return jsonify({"message": "Sign up successful.", "model": model_id}), 200
+
+    elif action == "login":
+        if model_id == config["model_config"]["model_id"]:
+            session["model_id"] = model_id
+            return (
+                jsonify({"message": "Authentication successful.", "model": model_id}),
+                200,
+            )
+        else:
+            return (
+                jsonify(
+                    {
+                        "message": "Model ID not provided or different from configuration file."
+                    }
+                ),
+                400,
+            )
+
+    return jsonify({"message": "Invalid action."}), 400
 
 
 if __name__ == "__main__":
