@@ -15,7 +15,6 @@ def mock_config():
         },
         "columns": {
             "study_id": "StudyID",
-            "model_id": "ModelID",
             "sex": "gender",
             "hospital": "clinic",
             "patient_class": "patient_category",
@@ -82,7 +81,6 @@ def mock_data():
     return pd.DataFrame(
         {
             "StudyID": [101, 102, 103, 104, 105],
-            "ModelID": [201, 202, 203, 204, 205],
             "gender": ["M", "F", "M", "F", "M"],
             "clinic": ["clinic1", "clinic2", "clinic1", "clinic2", "clinic1"],
             "patient_category": ["IP", "OP", "IP", "OP", "IP"],
@@ -104,7 +102,6 @@ def mock_reference_data():
     return pd.DataFrame(
         {
             "StudyID": [101, 102, 103, 104, 105],
-            "ModelID": [201, 202, 203, 204, 205],
             "gender": ["M", "F", "M", "F", "M"],
             "clinic": ["clinic1", "clinic2", "clinic1", "clinic2", "clinic1"],
             "patient_category": ["IP", "OP", "IP", "OP", "IP"],

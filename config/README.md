@@ -28,7 +28,7 @@ This section defines the basic settings of the model. Only the values should be 
 ```json
 {
   "model_config": {
-    "model_id": "bone_age_01",
+    "model_id": "bone_age",
     "model_type": {
       "regression": true,
       "binary_classification": true
@@ -41,8 +41,6 @@ This section defines the basic settings of the model. Only the values should be 
 
 Defines the mapping of data columns to required schema properties. Only the values should be changed, not the keys. The `timestamp` field is optional and should be set to `null` if not applicable. The `predictions` and `labels` objects should contain the column names for the predicted values and labels, respectively. The `features` array should contain the names of the additional columns in the model. *Notes: The features must be either categorical or numerical (i.e. no timestamp).*
 -   **study_id** (`string`): Identifier for the study.
-
--   **model_id** (`string`): Identifier for the model.
 
 -   **sex** (`string`): Patient's sex.
 
@@ -71,7 +69,6 @@ Defines the mapping of data columns to required schema properties. Only the valu
 {
   "columns": {
     "study_id": "StudyID",
-    "model_id": "ModelID",
     "sex": "sex",
     "hospital": "hospital",
     "age": "chronological_age",

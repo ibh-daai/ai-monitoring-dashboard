@@ -10,6 +10,7 @@ from sklearn.exceptions import UndefinedMetricWarning
 from src.config_manager import load_config
 from src.metrics import generate_report
 from src.tests import generate_tests
+from src.etl import etl_pipeline
 from datetime import datetime
 
 logging.basicConfig(level=logging.INFO)
@@ -18,19 +19,7 @@ logger = logging.getLogger(__name__)
 
 def stratify_age(data: pd.DataFrame, config: dict) -> dict:
     """
-      Split the data into stratified data based on age.
-
-      - **`default`**: Default age filtering:
-      1. Under 18
-      2. 18-65
-      3. Over 65
-
-    - **`statistical`**: Age filtering based on statistical analysis: Split into 3 terciles based on the age distribution, i.e. 33% of the data in each group.
-
-    - **`custom`**: Custom age filtering based on the `custom_ranges` field.
-      1. { "min": x1, "max": y1 }
-      2. { "min": x2, "max": y2 }
-      3. { "min": x3, "max": y3 }
+    Split the data into stratified data based on age.
     """
     filter_dict = {}
     # get the filter type from the config, default to default if not specified
@@ -272,6 +261,7 @@ def generate_stratified_tests(
         raise
 
 
+"""
 def create_test_snapshots():
     warnings.simplefilter(action="ignore", category=FutureWarning)
     warnings.simplefilter(action="ignore", category=UndefinedMetricWarning)
@@ -335,6 +325,7 @@ def create_test_snapshots():
             )
         except Exception as e:
             logger.error(f"Failed to generate stratified tests: {e}")
+"""
 
 
 def main():
@@ -344,15 +335,13 @@ def main():
     warnings.simplefilter(action="ignore", category=UserWarning)
 
     try:
-        # load config and test split function
         config = load_config()
     except Exception as e:
         logger.error(f"Failed to load config: {e}")
         return
 
     try:
-        data = pd.read_csv("data/data.csv")
-        reference_data = pd.read_csv("data/reference_data.csv")
+        data, reference_data = etl_pipeline(config)
     except Exception as e:
         logger.error(f"Failed to load data: {e}")
         return

@@ -126,6 +126,7 @@ def data_tests(
             current_data=data,
             column_mapping=data_mapping,
         )
+        # will save to AWS S3 instead of local in the future
         data_test_suite.save(
             f"snapshots/{timestamp}/{folder_path}//data_test_suite.json"
         )

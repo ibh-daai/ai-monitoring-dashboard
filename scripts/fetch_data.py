@@ -73,7 +73,7 @@ def fetch_and_merge(config: dict) -> pd.DataFrame:
     """
     db = get_db_connection(Config.MONGO_URI)
 
-    model_id = config["model_config"["model_id"]]
+    model_id = config["model_config"]["model_id"]
 
     # Fetch results and labels data
     results = fetch_data(db, f"{model_id}_results")
@@ -118,6 +118,7 @@ def fetch_and_merge(config: dict) -> pd.DataFrame:
         db, matched_ids, f"{model_id}_labels", f"{model_id}_matched_labels", config
     )
 
+    print(merged_data.head())
     return merged_data
 
 

@@ -10,9 +10,6 @@
           "study_id": {
             "type": ["string", "number"]
           },
-          "model_id": {
-            "type": ["string", "number"]
-          },
           "sex": {
             "type": ["string", "null"],
             "default": null
@@ -72,7 +69,6 @@
         },
         "required": [
           "study_id",
-          "model_id",
           "hospital",
           "age",
           "instrument_type",

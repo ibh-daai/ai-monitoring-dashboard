@@ -19,7 +19,6 @@ def mock_config():
         },
         "columns": {
             "study_id": "StudyID",
-            "model_id": "ModelID",
             "sex": "sex",
             "hospital": "hospital",
             "age": "age",
@@ -56,7 +55,6 @@ def mock_data():
     return pd.DataFrame(
         {
             "StudyID": [1, 2, 3, 4],
-            "ModelID": [1, 2, 3, 4],
             "sex": ["M", "F", "M", "F"],
             "hospital": ["hospital1", "hospital2", "hospital1", "hospital2"],
             "age": [25, 30, 35, 40],
@@ -79,7 +77,6 @@ def mock_reference_data():
     return pd.DataFrame(
         {
             "StudyID": [1, 2, 3, 4],
-            "ModelID": [1, 2, 3, 4],
             "sex": ["M", "F", "M", "F"],
             "hospital": ["hospital1", "hospital2", "hospital1", "hospital2"],
             "age": [25, 30, 35, 40],

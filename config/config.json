@@ -9,7 +9,6 @@
   },
   "columns": {
     "study_id": "StudyID",
-    "model_id": "ModelID",
     "sex": "sex",
     "hospital": "hospital",
     "age": "chronological_age",

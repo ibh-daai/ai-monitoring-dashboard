@@ -14,7 +14,6 @@ def mock_config():
         },
         "columns": {
             "study_id": "StudyID",
-            "model_id": "ModelID",
             "sex": "sex",
             "hospital": "hospital",
             "age": "age",
@@ -57,7 +56,6 @@ def correct_data():
     return pd.DataFrame(
         {
             "StudyID": ["001", "002", "003"],
-            "ModelID": ["Model1", "Model1", "Model1"],
             "sex": ["M", "F", "M"],
             "hospital": ["hospital1", "hospital2", "hospital1"],
             "age": [9, 11, 34],
@@ -84,7 +82,6 @@ def including_regression():
     return pd.DataFrame(
         {
             "StudyID": ["001", "002", "003"],
-            "ModelID": ["Model1", "Model1", "Model1"],
             "sex": ["M", "F", "M"],
             "age": [9, 11, 34],
             "instrument_type": ["type1", "type2", "type1"],
