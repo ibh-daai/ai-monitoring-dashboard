@@ -20,13 +20,8 @@ __pycache__/
 /workspace
 
 # Scripts
-simulate_data.py
 add_panels.py
-mock_database.py
-csv_to_mongo.py
-test_data_upload.ipynb
-test_report.ipynb
-data_generator.ipynb
+start_servers.py
 
 # Package manager lock files
 package-lock.json

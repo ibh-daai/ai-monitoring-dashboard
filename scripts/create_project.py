@@ -33,23 +33,30 @@ def load_json(file_path: str) -> dict:
         return json.load(file)
 
 
-def create_summary_panels(config: dict, project) -> None:
+def create_summary_panels(config: dict, tags: list, project) -> None:
     """
     Create the summary panels for the dashboard.
     """
+    # empty the dashboard
+    project.dashboard.panels = []
+
     # dashboard title panel
     title = config["info"]["project_name"]
     description = config["info"]["project_description"]
 
-    # empty the dashboard
-    project.dashboard.panels = []
+    model_intro = f"""
+        <div style='background-color: #f0f8ff; padding: 15px; border-radius: 5px;'>
+            <h2 style='color: #02B3E6;'> {title}</h2>
+            <p style='text-align: left;'>{description}</p>
+        </div>
+        """
 
     project.dashboard.add_panel(
         DashboardPanelCounter(
             filter=ReportFilter(metadata_values={}, tag_values=[]),
             agg=CounterAgg.NONE,
-            title=description,
-            text=title,
+            text="",
+            title=model_intro,
             size=WidgetSize.HALF,
         )
     )
@@ -59,17 +66,52 @@ def create_summary_panels(config: dict, project) -> None:
     contact_name = config["info"]["contact_name"]
     contact_email = config["info"]["contact_email"]
 
-    md = f"Model Developer: {model_developer}"
-    cn = f"Contact Name: {contact_name}"
-    ce = f"Contact Email: {contact_email}"
+    model_info = f"""
+    <div style='background-color: #f0f8ff; padding: 15px; border-radius: 5px;'>
+        <h2 style='color: #02B3E6; text-align: center;'>Model Information</h2>
+        <p style='text-align: left;'><strong>Model Developer:</strong> {model_developer}</p>
+        <p style='text-align: left;'><strong>Contact Name:</strong> {contact_name}</p>
+        <p style='text-align: left;'><strong>Contact Email:</strong> {contact_email}</p>
+    </div>
+    """
 
     project.dashboard.add_panel(
         DashboardPanelCounter(
             filter=ReportFilter(metadata_values={}, tag_values=[]),
             agg=CounterAgg.NONE,
-            text="Model Information",
-            title=f"{md}<br>{cn}<br>{ce}",
+            text="",
+            title=model_info,
             size=WidgetSize.HALF,
+        )
+    )
+    if "single" in tags:
+        filters = ", ".join([tag for tag in tags if tag != "single"])
+    else:
+        filters = ", ".join(tags)
+    logger.info(f"Filters: {filters}")
+    filters_text = (
+        f"""
+        <div style='background-color: #EEF6DF; padding: 1px; border-radius: 5px;'>
+            <p style='color: #9ACA3B; text-align: center;'>Applied Filters:
+                <span style='font-style: italic; color: #9ACA3B;'>{filters}</span>
+            </p>
+        </div>
+        """
+        if tags != ["main", "single"]
+        else f"""
+        <div style='background-color: #EEF6DF; padding: 1px; border-radius: 5px;'>
+            <p style='color: #9ACA3B; text-align: center;'>No Filters Applied</p>
+        </div>
+        """
+    )
+
+    project.dashboard.add_panel(
+        DashboardPanelCounter(
+            filter=ReportFilter(metadata_values={}, tag_values=[]),
+            agg=CounterAgg.NONE,
+            text="",
+            title=filters_text,
+            size=WidgetSize.FULL,
         )
     )
 
@@ -130,12 +172,17 @@ def create_metric_panels(config: dict, tags: list, project) -> None:
 
     for panel in sorted_panel_info:
         if panel["category"] != current_category:
+            title = f"""
+            <div style='background-color: #f0f8ff; padding: 13px; border-radius: 5px;'>
+                <h3 style='color: #02B3E6;'> {panel["category"].replace("_", " ").title()} Metrics</h3>
+            </div>
+            """
             current_category = panel["category"]
             project.dashboard.add_panel(
                 DashboardPanelCounter(
                     filter=ReportFilter(metadata_values={}, tag_values=[]),
                     agg=CounterAgg.NONE,
-                    title=current_category.replace("_", " ").title() + " Metrics",
+                    title=title,
                     size=WidgetSize.FULL,
                 )
             )
@@ -246,6 +293,19 @@ def create_test_panels(config: dict, tags: list, project) -> None:
     """
     Create the test panels for the dashboard.
     """
+    title = f"""
+    <div style='background-color: #f0f8ff; padding: 13px; border-radius: 5px;'>
+        <h3 style='color: #02B3E6;'> Test Results</h3>
+    </div>
+    """
+    project.dashboard.add_panel(
+        DashboardPanelCounter(
+            filter=ReportFilter(metadata_values={}, tag_values=[]),
+            agg=CounterAgg.NONE,
+            title=title,
+            size=WidgetSize.FULL,
+        )
+    )
     # get the test functions
     test_functions = get_tests(config)
 
@@ -375,6 +435,7 @@ def create_project(workspace, config: dict) -> None:
     try:
         project = workspace.create_project(config["info"]["project_name"])
         project.description = config["info"]["project_description"]
+        update_panels(workspace, config)
         project.save()
     except Exception as e:
         logger.error(f"Error creating project: {e}")
@@ -383,20 +444,21 @@ def create_project(workspace, config: dict) -> None:
     # log the snapshots
     log_snapshots(project, workspace)
 
-    default_tags = ["main", "single"]
-
-    # create the summary panels
-    create_summary_panels(config, project)
-
-    # create the metric panels
-    create_metric_panels(config, default_tags, project)
-
-    # create the test panels
-    create_test_panels(config, default_tags, project)
-
     project.save()
 
 
-if __name__ == "__main__":
-    config = load_config()
-    create_project(config)
+def update_panels(workspace, config: dict, tags=["main", "single"]) -> None:
+    try:
+        project = workspace.search_project(config["info"]["project_name"])[0]
+        # create the summary panels
+        create_summary_panels(config, tags, project)
+
+        # create the metric panels
+        create_metric_panels(config, tags, project)
+
+        # create the test panels
+        create_test_panels(config, tags, project)
+
+        project.save()
+    except Exception as e:
+        logger.error(f"Error updating panels: {e}")
