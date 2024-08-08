@@ -39,7 +39,7 @@
       "Queensway Hospital"
     ],
     "machine_type": ["machine1", "machine2"],
-    "patient_classifications": ["IP", "OP", "ED", "ICU"]
+    "patient_classification": ["IP", "OP", "ED", "ICU"]
   },
   "tests": {
     "data_quality_tests": [
