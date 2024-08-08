@@ -14,9 +14,7 @@ def mock_config():
     Fixture to mock the configuration file
     """
     return {
-        "model_config": {
-            "model_type": {"regression": True, "binary_classification": True}
-        },
+        "model_config": {"model_type": {"regression": True, "binary_classification": True}},
         "columns": {
             "study_id": "StudyID",
             "sex": "sex",
@@ -136,9 +134,7 @@ def test_split_data_by_age_default(correct_data, mock_config):
     assert all((results["[18-65]"]["age"] >= 18) & (results["[18-65]"]["age"] <= 65))
     assert all(results["[65+]"]["age"] > 65)
     # confirm that all the data is accounted for
-    assert len(results["[0-18]"]) + len(results["[18-65]"]) + len(
-        results["[65+]"]
-    ) == len(correct_data)
+    assert len(results["[0-18]"]) + len(results["[18-65]"]) + len(results["[65+]"]) == len(correct_data)
 
 
 def test_split_data_by_age_statistical(correct_data, mock_config):
@@ -168,10 +164,7 @@ def test_split_data_by_age_custom(correct_data, mock_config):
     logger.debug(f"Results keys: {results.keys()}")
     for custom_range in mock_config["age_filtering"]["custom_ranges"]:
         key = f"[{custom_range['min']}-{custom_range['max']}]"
-        assert all(
-            (results[key]["age"] >= custom_range["min"])
-            & (results[key]["age"] <= custom_range["max"])
-        )
+        assert all((results[key]["age"] >= custom_range["min"]) & (results[key]["age"] <= custom_range["max"]))
 
 
 def test_split_data_by_age_invalid(correct_data, mock_config):

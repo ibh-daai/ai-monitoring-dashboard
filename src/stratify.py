@@ -43,8 +43,7 @@ class DataSplitter:
                     data[config["columns"]["age"]] <= cutoff1
                 ]
                 filter_dict[f"[{int(cutoff1)}-{int(cutoff2)}]"] = data[
-                    (data[config["columns"]["age"]] > cutoff1)
-                    & (data[config["columns"]["age"]] <= cutoff2)
+                    (data[config["columns"]["age"]] > cutoff1) & (data[config["columns"]["age"]] <= cutoff2)
                 ]
                 filter_dict[f"[{int(cutoff2)}-{int(sorted_ages.max())}]"] = data[
                     data[config["columns"]["age"]] > cutoff2
@@ -61,9 +60,7 @@ class DataSplitter:
                         custom_range["min"] < data[config["columns"]["age"]].min()
                         or custom_range["max"] > data[config["columns"]["age"]].max()
                     ):
-                        logger.warning(
-                            f"Age {custom_range} is outside the data age range."
-                        )
+                        logger.warning(f"Age {custom_range} is outside the data age range.")
 
                     key = f"[{custom_range['min']}-{custom_range['max']}]"
                     filter_dict[key] = data[
@@ -71,27 +68,21 @@ class DataSplitter:
                         & (data[config["columns"]["age"]] <= custom_range["max"])
                     ]
                 # send a warning if the custom ranges do not cover all the data
-                if sum([len(filter_dict[key]) for key in filter_dict.keys()]) != len(
-                    data
-                ):
-                    logger.warning(
-                        "Custom age ranges do not cover all data. Consider adding more ranges."
-                    )
+                if sum([len(filter_dict[key]) for key in filter_dict.keys()]) != len(data):
+                    logger.warning("Custom age ranges do not cover all data. Consider adding more ranges.")
 
             # split age into under 18, 18-65, and over 65
             else:
                 filter_dict["[0-18]"] = data[data[config["columns"]["age"]] < 18]
                 filter_dict["[18-65]"] = data[
-                    (data[config["columns"]["age"]] >= 18)
-                    & (data[config["columns"]["age"]] <= 65)
+                    (data[config["columns"]["age"]] >= 18) & (data[config["columns"]["age"]] <= 65)
                 ]
                 filter_dict["[65+]"] = data[data[config["columns"]["age"]] > 65]
 
         except Exception as e:
             filter_dict["[0-18]"] = data[data[config["columns"]["age"]] < 18]
             filter_dict["[18-65]"] = data[
-                (data[config["columns"]["age"]] >= 18)
-                & (data[config["columns"]["age"]] >= 18)
+                (data[config["columns"]["age"]] >= 18) & (data[config["columns"]["age"]] >= 18)
             ]
             filter_dict["[65+]"] = data[data[config["columns"]["age"]] > 65]
         return filter_dict
@@ -126,9 +117,7 @@ class DataSplitter:
 
         return filter_dict
 
-    def strata_products(
-        self, data: pd.DataFrame, filter_dict: dict, operation: str = "report"
-    ) -> dict:
+    def strata_products(self, data: pd.DataFrame, filter_dict: dict, operation: str = "report") -> dict:
         """
         Generate all unique combinations of two strata for the data.
         """
@@ -146,11 +135,7 @@ class DataSplitter:
 
                 # handle case where combining with main data (original filter is from main, so unnecessary)
                 if "main" in key1 or "main" in key2:
-                    combined_key = (
-                        f"{key1}_{operation}"
-                        if "main" in key2
-                        else f"{key2}_{operation}"
-                    )
+                    combined_key = f"{key1}_{operation}" if "main" in key2 else f"{key2}_{operation}"
                 else:  # combine the keys and operation, e.g. age1_sex1_report
                     combined_key = f"{'_'.join(sorted_keys)}_{operation}"
 
@@ -159,13 +144,9 @@ class DataSplitter:
                     combinations.add(combined_key)
 
                 # merge the two dataframes
-                combined_df = filter_dict[sorted_keys[0]].merge(
-                    filter_dict[sorted_keys[1]], how="inner"
-                )
+                combined_df = filter_dict[sorted_keys[0]].merge(filter_dict[sorted_keys[1]], how="inner")
                 # if the combined dataframe is not empty, add it to the dictionary
-                if (
-                    not combined_df.empty
-                ):  # handles case where filters from the same category are combined
+                if not combined_df.empty:  # handles case where filters from the same category are combined
                     filter_product_dict[combined_key] = combined_df
 
                 # add main data to new dict
@@ -173,9 +154,7 @@ class DataSplitter:
 
         return filter_product_dict
 
-    def split_data(
-        self, data: pd.DataFrame, config: dict, operation: str = "report"
-    ) -> dict:
+    def split_data(self, data: pd.DataFrame, config: dict, operation: str = "report") -> dict:
         """
         Split the data into stratified dataframes for reports and tests by sex, hospital, age, and instrument_type.
 
@@ -196,10 +175,16 @@ class DataSplitter:
             # Split the data by age
             filter_dict.update(self.stratify_age(data, config))
 
-            # Split the data by hospital and instrument type
+            # Split the data by hospital
             filter_dict.update(self.stratify_list(data, config, "hospital"))
-            filter_dict.update(self.stratify_list(data, config, "instrument_type"))
-            filter_dict.update(self.stratify_list(data, config, "patient_class"))
+
+            # Split the data by instrument type
+            if config["columns"]["instrument_type"]:
+                filter_dict.update(self.stratify_list(data, config, "instrument_type"))
+
+            # Split the data by patient class
+            if config["columns"]["patient_class"]:
+                filter_dict.update(self.stratify_list(data, config, "patient_class"))
 
             # Cache the filter_dict for subsequent runs
             self.filter_dict = filter_dict
@@ -234,4 +219,3 @@ if __name__ == "__main__":
 
     splitter = DataSplitter()
     filter_product_dict = splitter.split_data(data, config)
-    # Do something with filter_product_dict

@@ -21,9 +21,11 @@ def get_filters(config: dict) -> dict:
     cols = config["columns"]
     strata_mapping = {
         "hospital": rules[cols["hospital"]],
-        "instrument_type": rules[cols["instrument_type"]],
-        "patient_class": rules[cols["patient_class"]],
     }
+    if cols["instrument_type"]:
+        strata_mapping["instrument_type"] = rules[cols["instrument_type"]]
+    if cols["patient_class"]:
+        strata_mapping["patient_class"] = rules[cols["patient_class"]]
 
     sex_values = rules[cols["sex"]]
     sex_list = []

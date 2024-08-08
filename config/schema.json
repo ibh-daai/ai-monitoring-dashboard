@@ -70,9 +70,7 @@
         "required": [
           "study_id",
           "hospital",
-          "age",
-          "instrument_type",
-          "patient_class"
+          "age"
         ]
       }
     }

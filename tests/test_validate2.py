@@ -9,9 +9,7 @@ def mock_config():
     Fixture to mock the configuration file
     """
     return {
-        "model_config": {
-            "model_type": {"regression": False, "binary_classification": True}
-        },
+        "model_config": {"model_type": {"regression": False, "binary_classification": True}},
         "columns": {
             "study_id": "StudyID",
             "sex": "sex",

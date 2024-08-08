@@ -23,7 +23,7 @@ def generate_stratified_reports(
     config: dict,
     model_type: dict,
     timestamp: str,
-    splitter: DataSplitter,  # Pass the splitter instance
+    splitter: DataSplitter,
 ) -> None:
     """
     Generate the reports for each stratified dataset
@@ -51,7 +51,7 @@ def generate_stratified_tests(
     config: dict,
     model_type: dict,
     timestamp: str,
-    splitter: DataSplitter,  # Pass the splitter instance
+    splitter: DataSplitter,
 ) -> None:
     """
     Generate the test suite for each stratified dataset

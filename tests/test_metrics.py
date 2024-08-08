@@ -14,9 +14,7 @@ def mock_config():
     Fixture to mock the configuration file
     """
     config = {
-        "model_config": {
-            "model_type": {"regression": False, "binary_classification": True}
-        },
+        "model_config": {"model_type": {"regression": False, "binary_classification": True}},
         "columns": {
             "study_id": "StudyID",
             "sex": "sex",
@@ -94,9 +92,7 @@ def mock_reference_data():
 def test_generate_report(mock_config, mock_data, mock_reference_data):
     with patch("src.metrics.data_report") as mock_data_report, patch(
         "src.metrics.classification_report"
-    ) as mock_class_report, patch(
-        "src.metrics.regression_report"
-    ) as mock_regression_report:
+    ) as mock_class_report, patch("src.metrics.regression_report") as mock_regression_report:
 
         model_type = mock_config["model_config"]["model_type"]
         generate_report(

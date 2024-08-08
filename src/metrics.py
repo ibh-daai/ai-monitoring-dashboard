@@ -3,7 +3,6 @@ File to handle metric report generation with Evidently AI. Split file into data,
 """
 
 import os
-import time
 from evidently import ColumnMapping
 from evidently.report import Report
 from evidently.metrics import (
@@ -18,7 +17,6 @@ from evidently.metrics import (
 )
 import logging
 import pandas as pd
-from src.config_manager import load_config
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -52,10 +50,14 @@ def split_features(config: dict) -> tuple[list, list]:
         [
             config["columns"]["sex"],
             config["columns"]["hospital"],
-            config["columns"]["instrument_type"],
-            config["columns"]["patient_class"],
         ]
     )
+
+    if config["columns"]["instrument_type"]:
+        categorical_features.append(config["columns"]["instrument_type"])
+
+    if config["columns"]["patient_class"]:
+        categorical_features.append(config["columns"]["patient_class"])
 
     # Iterate through all features to classify them based on validation rules
     for feature in config["columns"]["features"]:
@@ -154,9 +156,7 @@ def data_report(
         current_data=data,
         column_mapping=data_mapping,
     )
-    data_quality_report.save(
-        f"snapshots/{timestamp}/{folder_path}/data_quality_report.json"
-    )
+    data_quality_report.save(f"snapshots/{timestamp}/{folder_path}/data_quality_report.json")
 
 
 def regression_report(
@@ -201,9 +201,7 @@ def regression_report(
         current_data=data,
         column_mapping=regression_mapping,
     )
-    regression_report.save(
-        f"snapshots/{timestamp}/{folder_path}/regression_report.json"
-    )
+    regression_report.save(f"snapshots/{timestamp}/{folder_path}/regression_report.json")
 
 
 def classification_report(
@@ -244,10 +242,8 @@ def classification_report(
         reference_data=reference_data,
         current_data=data,
         column_mapping=classification_mapping,
-     )
-    classification_report.save(
-        f"snapshots/{timestamp}/{folder_path}/classification_report.json"
     )
+    classification_report.save(f"snapshots/{timestamp}/{folder_path}/classification_report.json")
 
 
 def generate_report(
@@ -279,31 +275,3 @@ def generate_report(
             classification_report(data, reference_data, config, folder_path, timestamp)
         except Exception as e:
             logger.error(f"Failed to generate classification report: {e}")
-
-
-def main():
-    data = pd.read_csv("data/data.csv")
-    reference_data = pd.read_csv("data/reference_data.csv")
-
-    try:
-        config = load_config()
-    except Exception as e:
-        logger.error(f"Failed to load config: {e}")
-        return
-
-    try:
-        generate_report(
-            data,
-            reference_data,
-            config,
-            config["model_config"]["model_type"],
-            "reports",
-            "2021-10-10T10:10:10",
-        )
-    except Exception as e:
-        logger.error(f"Error generating reports: {e}")
-        raise
-
-
-if __name__ == "__main__":
-    main()

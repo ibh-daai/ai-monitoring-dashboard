@@ -4,6 +4,7 @@ File to load the JSON config file.
 
 import json
 
+
 def load_config(filepath: str = "config/config.json") -> dict:
     """
     Load the JSON config file

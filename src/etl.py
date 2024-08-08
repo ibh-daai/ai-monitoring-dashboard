@@ -40,30 +40,23 @@ def reference_load_and_validate(config: dict, data: pd.DataFrame) -> pd.DataFram
 
         # If the reference data is smaller than 50 rows, log a warning
         if len(reference_data) < 50:
-            logger.warning(
-                "Reference data has less than 50 rows, consider updating the reference data."
-            )
+            logger.warning("Reference data has less than 50 rows, consider updating the reference data.")
     else:
-        logger.info("Reference data not found or empty.")
+        logger.info("Reference data not found or empty, copying the current data.")
         reference_data = data.copy()
-
         reference_data.to_csv(reference_path, index=False)
-
     try:
         validate_data(reference_data, config)
     except ValueError as e:
         logger.error(f"Reference data validation failed: {e}")
         raise
-
     return reference_data
 
 
 def etl_pipeline(config: dict) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
-    ETL pipeline for loading, validating, and possibly splitting data.
+    ETL pipeline for loading and validating data.
     """
     data = main_load_and_validate(config)
-
     reference_data = reference_load_and_validate(config, data)
-
     return data, reference_data
