@@ -1,5 +1,6 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { CircularProgress, Box } from '@mui/material';
 
 const FilterOverlay = lazy(() => import('./FilterOverlay'));
 const DashboardComponent = lazy(() => import('./DashboardComponent'));
@@ -56,8 +57,11 @@ const AppContent = () => {
       <FilterOverlay onApplyFilters={handleApplyFilters} colors={colors} />
       <div style={{ height: 'calc(100% - 64px)', marginTop: '64px', overflow: 'hidden' }}>
         {isLoading ? (
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-            <p>Loading dashboard...</p>
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', backgroundColor: colors.background }}>
+            <Box textAlign="center">
+              <CircularProgress style={{ color: colors.primary }} />
+              <p style={{ color: colors.text, marginTop: '20px' }}>Loading Dashboard...</p>
+            </Box>
           </div>
         ) : (
           <DashboardComponent url={dashboardUrl} />
