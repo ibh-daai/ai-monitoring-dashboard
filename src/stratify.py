@@ -9,6 +9,7 @@ from itertools import product
 from sklearn.exceptions import UndefinedMetricWarning
 from src.config_manager import load_config
 from src.etl import etl_pipeline
+from scripts.data_details import load_details
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -18,7 +19,7 @@ class DataSplitter:
     def __init__(self):
         self.filter_dict = None
 
-    def stratify_age(self, data: pd.DataFrame, config: dict) -> dict:
+    def stratify_age(self, data: pd.DataFrame, config: dict, details: dict) -> dict:
         """
         Split the data into stratified data based on age.
         """
@@ -29,26 +30,24 @@ class DataSplitter:
         try:
             # split the data into three evenly sized terciles
             if filter_type == "statistical":
-                # sort the ages
-                sorted_ages = data[config["columns"]["age"]].sort_values()
-                n = len(sorted_ages)
-                tercile_size = n // 3
-
-                # get the cutoffs for the terciles
-                cutoff1 = sorted_ages.iloc[tercile_size - 1]
-                cutoff2 = sorted_ages.iloc[2 * tercile_size - 1]
-
-                # split the data into terciles
-                filter_dict[f"[{int(sorted_ages.min())}-{int(cutoff1)}]"] = data[
-                    data[config["columns"]["age"]] <= cutoff1
+                filter_dict[
+                    f"[{details['statistical_terciles'][0]['min']}-{details['statistical_terciles'][0]['max']}]"
+                ] = data[
+                    (data[config["columns"]["age"]] >= data[config["columns"]["age"]].min())
+                    & (data[config["columns"]["age"]] <= details["statistical_terciles"][0]["max"])
                 ]
-                filter_dict[f"[{int(cutoff1)}-{int(cutoff2)}]"] = data[
-                    (data[config["columns"]["age"]] > cutoff1) & (data[config["columns"]["age"]] <= cutoff2)
+                filter_dict[
+                    f"[{details['statistical_terciles'][1]['min']}-{details['statistical_terciles'][1]['max']}]"
+                ] = data[
+                    (data[config["columns"]["age"]] >= details["statistical_terciles"][1]["min"])
+                    & (data[config["columns"]["age"]] <= details["statistical_terciles"][1]["max"])
                 ]
-                filter_dict[f"[{int(cutoff2)}-{int(sorted_ages.max())}]"] = data[
-                    data[config["columns"]["age"]] > cutoff2
+                filter_dict[
+                    f"[{details['statistical_terciles'][2]['min']}-{details['statistical_terciles'][2]['max']}]"
+                ] = data[
+                    (data[config["columns"]["age"]] >= details["statistical_terciles"][2]["min"])
+                    & (data[config["columns"]["age"]] <= data[config["columns"]["age"]].max())
                 ]
-
             # split the data into custom ranges
             elif filter_type == "custom":
                 custom_ranges = config["age_filtering"]["custom_ranges"]
@@ -87,13 +86,14 @@ class DataSplitter:
             filter_dict["[65+]"] = data[data[config["columns"]["age"]] > 65]
         return filter_dict
 
-    def stratify_sex(self, data: pd.DataFrame, config: dict) -> dict:
+    def stratify_sex(self, data: pd.DataFrame, config: dict, details: dict) -> dict:
         """
         Split the data into stratified data based on sex (M/F).
         """
         filter_dict = {}
 
-        sex_values = config["categorical_validation_rules"][config["columns"]["sex"]]
+        sex_values = details["sex_unique_values"]
+
         for sex in sex_values:
             if sex.lower() == "f":
                 sex_name = "female"
@@ -106,14 +106,14 @@ class DataSplitter:
 
         return filter_dict
 
-    def stratify_list(self, data: pd.DataFrame, config: dict, column: str) -> dict:
+    def stratify_list(self, data: pd.DataFrame, config: dict, details: dict, column: str) -> dict:
         """
         Split the data into stratified data based on a list of values in a column.
         """
         filter_dict = {}
 
-        for value in data[config["columns"][column]].unique():
-            filter_dict[value] = data[data[config["columns"]["column"]] == value]
+        for value in details[f'{column}_unique_values']:
+            filter_dict[value] = data[data[config["columns"][column]] == value]
 
         return filter_dict
 
@@ -154,7 +154,7 @@ class DataSplitter:
 
         return filter_product_dict
 
-    def split_data(self, data: pd.DataFrame, config: dict, operation: str = "report") -> dict:
+    def split_data(self, data: pd.DataFrame, config: dict, details: dict, operation: str = "report") -> dict:
         """
         Split the data into stratified dataframes for reports and tests by sex, hospital, age, and instrument_type.
 
@@ -170,21 +170,21 @@ class DataSplitter:
             filter_dict[f"main_{operation}"] = data
 
             # Split the data by sex
-            filter_dict.update(self.stratify_sex(data, config))
+            filter_dict.update(self.stratify_sex(data, config, details))
 
             # Split the data by age
-            filter_dict.update(self.stratify_age(data, config))
+            filter_dict.update(self.stratify_age(data, config, details))
 
             # Split the data by hospital
-            filter_dict.update(self.stratify_list(data, config, "hospital"))
+            filter_dict.update(self.stratify_list(data, config, details, "hospital"))
 
             # Split the data by instrument type
             if config["columns"]["instrument_type"]:
-                filter_dict.update(self.stratify_list(data, config, "instrument_type"))
+                filter_dict.update(self.stratify_list(data, config, details, "instrument_type"))
 
             # Split the data by patient class
             if config["columns"]["patient_class"]:
-                filter_dict.update(self.stratify_list(data, config, "patient_class"))
+                filter_dict.update(self.stratify_list(data, config, details, "patient_class"))
 
             # Cache the filter_dict for subsequent runs
             self.filter_dict = filter_dict
@@ -212,10 +212,16 @@ if __name__ == "__main__":
         exit(1)
 
     try:
+        details = load_details()
+    except Exception as e:
+        logger.error(f"Failed to load details: {e}")
+        exit(1)
+
+    try:
         data, reference_data = etl_pipeline(config)
     except Exception as e:
         logger.error(f"Failed to load data: {e}")
         exit(1)
 
     splitter = DataSplitter()
-    filter_product_dict = splitter.split_data(data, config)
+    filter_product_dict = splitter.split_data(data, config, details)

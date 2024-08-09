@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import logging
 from scripts.workspace_manager import WorkspaceManager
+from scripts.data_details import load_details
 from src.config_manager import load_config
 from scripts.create_project import update_panels
 
@@ -12,22 +13,22 @@ app = Flask(__name__)
 CORS(app)  # Enable CORS
 
 config = load_config()
+details = load_details()
 workspace_instance = WorkspaceManager.get_instance()
 ws = workspace_instance.workspace
 
 
 def get_filters(config: dict) -> dict:
-    rules = config["categorical_validation_rules"]
     cols = config["columns"]
     strata_mapping = {
-        "hospital": rules[cols["hospital"]],
+        "hospital": details["hospital_unique_values"],
     }
     if cols["instrument_type"]:
-        strata_mapping["instrument_type"] = rules[cols["instrument_type"]]
+        strata_mapping["instrument_type"] = details["instrument_type_unique_values"]
     if cols["patient_class"]:
-        strata_mapping["patient_class"] = rules[cols["patient_class"]]
+        strata_mapping["patient_class"] = details["patient_class_unique_values"]
 
-    sex_values = rules[cols["sex"]]
+    sex_values = details["sex_unique_values"]
     sex_list = []
     for sex in sex_values:
         if sex.lower() == "f":
@@ -43,7 +44,10 @@ def get_filters(config: dict) -> dict:
         range_list = [f"[{range_['min']}-{range_['max']}]" for range_ in custom_ranges]
         strata_mapping["age"] = range_list
     elif config["age_filtering"]["filter_type"] == "statistical":
-        strata_mapping["age"] = ["1st tercile", "2nd tercile", "3rd tercile"]
+        strata_mapping["age"] = [
+            f'[{details["statistical_terciles"][i]["min"]}-{details["statistical_terciles"][i]["max"]}]'
+            for i in range(3)
+        ]
     else:
         strata_mapping["age"] = [
             "[0-18]",

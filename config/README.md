@@ -7,7 +7,7 @@ This documentation is designed to assist users in configuring the AI Model Monit
 
 ## Configuration Sections
 
-The configuration file is structured into several key sections: `model_config`, `columns`, `age_filtering`, `categorical_validation_rules`, `tests`, `dashboard_panels`, `info`, and `alerts`. Each section plays a crucial role in setting up the monitoring system accurately.
+The configuration file is structured into several key sections: `model_config`, `columns`, `age_filtering`, `tests`, `dashboard_panels`, `info`, and `alerts`. Each section plays a crucial role in setting up the monitoring system accurately.
 
 ### Model Configuration (`model_config`)
 
@@ -121,27 +121,6 @@ Specifies the age filtering settings for the monitoring system. The `filter_type
   },
 ```
 
-### Validation Rules (`categorical_validation_rules`)
-
-Specifies rules for validating the categorical data to ensure accuracy and consistency. The rules are defined only for categorical features, and it is assumed that any feature not present in the rules is numerical (e.g. timestamp should be not be in features.). The user must input both the keys and values, the key must match the specific column name in your Dataframe. These rules are used to determine which features are categorical vs numerical, and to define the unique values for the data stratification. These rules will not be used for data validation, that will be done with the Evidence AI tests in the next section. The only parts that should be changed are the objects within the `categorical` object. ***Note:*** *Validation rules must be provided for the required categorical columns, `sex`, `hospital`, `instrument_type`, and `patient_class`*
-
-
-
-#### Example
-```json
-{
-  "categorical_validation_rules": {
-      "sex": ["M", "F"],
-      "hospital": [
-        "Credit Valley Hospital",
-        "Mississauga Hospital",
-        "Queensway Hospital"
-      ],
-      "machine_type": ["machine1", "machine2"],
-      "patient_classification": ["IP", "OP", "ED", "ICU"]
-  },
-}
-```
 ### Tests
 
 Enables specific tests for regression and classification. To add tests, include the name of the test in its corresponding category (and the params if desired/required), as seen below and in the example to follow. For more information on any test, please check [Evidently AI](https://docs.evidentlyai.com/reference/all-tests). ***Notes:*** *When doing a column specific test, use the exact name of the column in your Dataframe, NOT the generic config name.  If your model is either not regression or not classification, please still include the section titles (leave the lists empty)** The tests to choose from are:

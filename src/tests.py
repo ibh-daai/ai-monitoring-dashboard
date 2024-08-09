@@ -103,13 +103,14 @@ def data_tests(
     tests_mapping: dict,
     folder_path: str,
     timestamp: str,
+    details: dict,
 ) -> None:
     """
     Generate data test results.
     """
     ensure_directory(f"snapshots/{timestamp}/{folder_path}")
     try:
-        data_mapping = setup_column_mapping(config, "data")
+        data_mapping = setup_column_mapping(config, "data", details)
     except Exception as e:
         logger.error(f"Error setting up column mapping: {e}")
         return
@@ -140,13 +141,14 @@ def regression_tests(
     tests_mapping: dict,
     folder_path: str,
     timestamp: str,
+    details: dict,
 ) -> None:
     """
     Generate regression test results.
     """
     ensure_directory(f"snapshots/{timestamp}/{folder_path}")
     try:
-        regression_mapping = setup_column_mapping(config, "regression")
+        regression_mapping = setup_column_mapping(config, "regression", details)
     except Exception as e:
         logger.error(f"Error setting up column mapping: {e}")
         return
@@ -175,13 +177,14 @@ def classification_tests(
     tests_mapping: dict,
     folder_path: str,
     timestamp: str,
+    details: dict,
 ) -> None:
     """
     Generate classification test results.
     """
     ensure_directory(f"snapshots/{timestamp}/{folder_path}")
     try:
-        classification_mapping = setup_column_mapping(config, "classification")
+        classification_mapping = setup_column_mapping(config, "classification", details)
     except Exception as e:
         logger.error(f"Error setting up column mapping: {e}")
         return
@@ -211,6 +214,7 @@ def generate_tests(
     model_type: dict,
     folder_path: str,
     timestamp: str,
+    details: dict,
 ) -> None:
     """
     Generate the test suite based on the model type.
@@ -223,21 +227,21 @@ def generate_tests(
 
     # Generate the data tests
     try:
-        data_tests(data, reference_data, config, tests_mapping, folder_path, timestamp)
+        data_tests(data, reference_data, config, tests_mapping, folder_path, timestamp, details)
     except Exception as e:
         logger.error(f"Error running data tests: {e}")
 
     # Generate the regression tests
     if model_type["regression"]:
         try:
-            regression_tests(data, reference_data, config, tests_mapping, folder_path, timestamp)
+            regression_tests(data, reference_data, config, tests_mapping, folder_path, timestamp, details)
         except Exception as e:
             logger.error(f"Error running regression tests: {e}")
 
     # Generate the classification tests
     if model_type["binary_classification"]:
         try:
-            classification_tests(data, reference_data, config, tests_mapping, folder_path, timestamp)
+            classification_tests(data, reference_data, config, tests_mapping, folder_path, timestamp, details)
         except Exception as e:
             logger.error(f"Error running classification tests: {e}")
         return

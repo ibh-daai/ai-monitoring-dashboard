@@ -39,7 +39,7 @@ def get_tags(folder_path: str) -> list:
     return tags
 
 
-def split_features(config: dict) -> tuple[list, list]:
+def split_features(config: dict, details: dict) -> tuple[list, list]:
     """
     Split the features into numerical and categorical based on the validation rules.
     """
@@ -61,7 +61,7 @@ def split_features(config: dict) -> tuple[list, list]:
 
     # Iterate through all features to classify them based on validation rules
     for feature in config["columns"]["features"]:
-        if feature in config["categorical_validation_rules"]:
+        if feature in details["categorical_columns"]:
             if feature not in categorical_features:
                 categorical_features.append(feature)
         else:
@@ -74,11 +74,11 @@ def split_features(config: dict) -> tuple[list, list]:
     return numerical_features, categorical_features
 
 
-def setup_column_mapping(config: dict, report_type: str) -> ColumnMapping:
+def setup_column_mapping(config: dict, report_type: str, details: dict) -> ColumnMapping:
     """
     Configure column mapping for different types of reports based on the configuration.
     """
-    features = split_features(config)
+    features = split_features(config, details)
     numerical_features, categorical_features = features
 
     try:
@@ -114,18 +114,14 @@ def setup_column_mapping(config: dict, report_type: str) -> ColumnMapping:
 
 
 def data_report(
-    data: pd.DataFrame,
-    reference_data: pd.DataFrame,
-    config: dict,
-    folder_path: str,
-    timestamp: str,
+    data: pd.DataFrame, reference_data: pd.DataFrame, config: dict, folder_path: str, timestamp: str, details: dict
 ) -> None:
     """
     Generate data quality metrics report.
     """
     ensure_directory(f"snapshots/{timestamp}/{folder_path}")
     try:
-        data_mapping = setup_column_mapping(config, "data")
+        data_mapping = setup_column_mapping(config, "data", details)
     except Exception as e:
         logger.error(f"Error setting up column mapping: {e}")
         raise
@@ -160,18 +156,14 @@ def data_report(
 
 
 def regression_report(
-    data: pd.DataFrame,
-    reference_data: pd.DataFrame,
-    config: dict,
-    folder_path: str,
-    timestamp: str,
+    data: pd.DataFrame, reference_data: pd.DataFrame, config: dict, folder_path: str, timestamp: str, details: dict
 ) -> None:
     """
     Generate regression metrics report.
     """
     ensure_directory(f"snapshots/{timestamp}/{folder_path}")
     try:
-        regression_mapping = setup_column_mapping(config, "regression")
+        regression_mapping = setup_column_mapping(config, "regression", details)
     except Exception as e:
         logger.error(f"Error setting up column mapping: {e}")
         raise
@@ -205,18 +197,14 @@ def regression_report(
 
 
 def classification_report(
-    data: pd.DataFrame,
-    reference_data: pd.DataFrame,
-    config: dict,
-    folder_path: str,
-    timestamp: str,
+    data: pd.DataFrame, reference_data: pd.DataFrame, config: dict, folder_path: str, timestamp: str, details: dict
 ) -> None:
     """
     Generate classification metrics report.
     """
     ensure_directory(f"snapshots/{timestamp}/{folder_path}")
     try:
-        classification_mapping = setup_column_mapping(config, "classification")
+        classification_mapping = setup_column_mapping(config, "classification", details)
     except Exception as e:
         logger.error(f"Error setting up column mapping: {e}")
         raise
@@ -253,25 +241,26 @@ def generate_report(
     model_type: dict,
     folder_path: str,
     timestamp: str,
+    details: dict,
 ) -> None:
     """
     Generate the metrics report based on the model type.
     """
     try:
         # Generate the data quality report
-        data_report(data, reference_data, config, folder_path, timestamp)
+        data_report(data, reference_data, config, folder_path, timestamp, details)
     except Exception as e:
         logger.error(f"Failed to generate data quality report: {e}")
 
     # Generate the regression and classification reports based on the model type
     if model_type["regression"]:
         try:
-            regression_report(data, reference_data, config, folder_path, timestamp)
+            regression_report(data, reference_data, config, folder_path, timestamp, details)
         except Exception as e:
             logger.error(f"Failed to generate regression report: {e}")
 
     if model_type["binary_classification"]:
         try:
-            classification_report(data, reference_data, config, folder_path, timestamp)
+            classification_report(data, reference_data, config, folder_path, timestamp, details)
         except Exception as e:
             logger.error(f"Failed to generate classification report: {e}")

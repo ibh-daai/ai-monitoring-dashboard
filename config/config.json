@@ -38,16 +38,6 @@
       { "min": 0, "max": 0 }
     ]
   },
-  "categorical_validation_rules": {
-    "sex": ["M", "F"],
-    "hospital": [
-      "Credit Valley Hospital",
-      "Mississauga Hospital",
-      "Queensway Hospital"
-    ],
-    "machine_type": ["machine1", "machine2"],
-    "patient_classification": ["IP", "OP", "ED", "ICU"]
-  },
   "tests": {
     "data_quality_tests": [
       { "name": "num_cols" },

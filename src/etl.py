@@ -5,6 +5,7 @@ ETL pipeline script. This script is responsible for loading, validating, and spl
 import os
 from scripts.fetch_data import fetch_and_merge
 from src.validate import validate_data
+from scripts.data_details import data_details
 import pandas as pd
 import logging
 
@@ -53,10 +54,22 @@ def reference_load_and_validate(config: dict, data: pd.DataFrame) -> pd.DataFram
     return reference_data
 
 
+def set_details(data: pd.DataFrame, config: dict) -> None:
+    """
+    Get details about the data and store them in a JSON file.
+    """
+    data_details(data, config)
+
+
 def etl_pipeline(config: dict) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
     ETL pipeline for loading and validating data.
     """
+    logger.info("Starting ETL pipeline...")
     data = main_load_and_validate(config)
+    logger.info("Data loaded and validated successfully.")
     reference_data = reference_load_and_validate(config, data)
+    logger.info("Reference data loaded and validated successfully.")
+    set_details(data, config)
+    logger.info("Details updated and saved successfully.")
     return data, reference_data

@@ -12,6 +12,7 @@ from src.etl import etl_pipeline
 from src.stratify import DataSplitter
 from sklearn.exceptions import UndefinedMetricWarning
 from datetime import datetime
+from scripts.data_details import load_details
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -24,12 +25,13 @@ def generate_stratified_reports(
     model_type: dict,
     timestamp: str,
     splitter: DataSplitter,
+    details: dict,
 ) -> None:
     """
     Generate the reports for each stratified dataset
     """
     try:
-        data_stratifications = splitter.split_data(data, config, "report")
+        data_stratifications = splitter.split_data(data, config, details, "report")
         for key, data_stratification in data_stratifications.items():
             logger.info(f"Generating reports for {key}")
             generate_report(
@@ -39,6 +41,7 @@ def generate_stratified_reports(
                 model_type,
                 folder_path=f"/reports/{key}",
                 timestamp=timestamp,
+                details=details,
             )
     except Exception as e:
         logger.error(f"Error generating reports: {e}")
@@ -52,12 +55,13 @@ def generate_stratified_tests(
     model_type: dict,
     timestamp: str,
     splitter: DataSplitter,
+    details: dict,
 ) -> None:
     """
     Generate the test suite for each stratified dataset
     """
     try:
-        data_stratifications = splitter.split_data(data, config, "test")
+        data_stratifications = splitter.split_data(data, config, details, "test")
         for key, data_stratification in data_stratifications.items():
             logger.info(f"Generating tests for {key}")
             generate_tests(
@@ -67,6 +71,7 @@ def generate_stratified_tests(
                 model_type,
                 folder_path=f"/tests/{key}",
                 timestamp=timestamp,
+                details=details,
             )
     except Exception as e:
         logger.error(f"Error generating tests: {e}")
@@ -83,6 +88,12 @@ if __name__ == "__main__":
         config = load_config()
     except Exception as e:
         logger.error(f"Failed to load config: {e}")
+        exit(1)
+
+    try:
+        details = load_details()
+    except Exception as e:
+        logger.error(f"Failed to load data details: {e}")
         exit(1)
 
     try:
@@ -103,6 +114,7 @@ if __name__ == "__main__":
             config["model_config"]["model_type"],
             timestamp,
             splitter,
+            details,
         )
     except Exception as e:
         logger.error(f"Failed to generate stratified reports: {e}")
@@ -115,6 +127,7 @@ if __name__ == "__main__":
             config["model_config"]["model_type"],
             timestamp,
             splitter,
+            details,
         )
     except Exception as e:
         logger.error(f"Failed to generate stratified tests: {e}")
