@@ -10,16 +10,14 @@ def mock_config():
     Fixture to mock the configuration file
     """
     return {
-        "model_config": {
-            "model_type": {"regression": True, "binary_classification": True}
-        },
+        "model_config": {"model_type": {"regression": True, "binary_classification": True}},
         "columns": {
             "study_id": "StudyID",
             "sex": "sex",
             "hospital": "hospital",
             "age": "age",
             "instrument_type": "type",
-            "patient_class": "patient_category",
+            "patient_class": None,
             "predictions": {
                 "regression_prediction": "regression_output",
                 "classification_prediction": "classification",
@@ -37,15 +35,22 @@ def mock_config():
             ],
             "timestamp": None,
         },
-        "validation_rules": {
-            "sex": ["M", "F"],
-            "hospital": ["hospital1", "hospital2"],
-            "type": ["type1", "type2"],
-            "patient_category": ["IP", "OP", "ER"],
-            "ethnicity": ["White", "Black", "Asian"],
-            "smoker": [True, False],
-            "alcohol": [True, False],
-        },
+    }
+
+
+@pytest.fixture
+def mock_details():
+    """
+    Fixture to mock the details file
+    """
+    return {
+        "num_rows": 5,
+        "statistical_terciles": [{"min": 0, "max": 0}, {"min": 0, "max": 0}, {"min": 0, "max": 0}],
+        "hospital_unique_values": ["hospital1", "hospital2"],
+        "sex_unique_values": ["M", "F"],
+        "instrument_type_unique_values": ["type1", "type2"],
+        "patient_class_unique_values": [],
+        "categorical_columns": ["sex", "hospital", "type", "ethnicity"],
     }
 
 
@@ -61,7 +66,6 @@ def correct_data():
             "hospital": ["hospital1", "hospital2", "hospital1"],
             "age": [9, 11, 34],
             "type": ["type1", "type2", "type1"],
-            "patient_category": ["IP", "OP", "ER"],
             "regression_output": [17.1, 20.5, 30],
             "classification": [1, 0, 0],
             "label": [10, 20, 30],
@@ -87,7 +91,6 @@ def data_with_wrong_types():
             "hospital": ["hospital1", "hospital2", "hospital1"],
             "age": [9, 11, 34],
             "type": ["type1", "type2", "type1"],
-            "patient_category": ["IP", "OP", "ER"],
             "regression_output": ["ten", "twenty", "thirty"],  # Expected numeric
             "classification": [1, 0, 0],
             "label": [10, 20, 30],
@@ -114,7 +117,6 @@ def large_data():
             "age": [i % 100 for i in range(num_entries)],
             "hospital": ["hospital1", "hospital2"] * (num_entries // 2),
             "type": ["type1", "type2"] * (num_entries // 2),
-            "patient_category": ["IP", "OP"] * (num_entries // 2),
             "regression_output": [i % 100 for i in range(num_entries)],
             "classification": [i % 2 for i in range(num_entries)],
             "label": [i % 100 for i in range(num_entries)],
@@ -140,7 +142,6 @@ def corrupted_data():
             "hospital": ["hospital1", "hospital2", "hospital1"],
             "age": [9, 11, 34],
             "type": ["type1", "type2", "type1"],
-            "patient_category": ["IP", "OP", "ER"],
             "regression_output": [
                 10,
                 20,
@@ -170,7 +171,6 @@ def missing_regression_output():
             "hospital": ["hospital1", "hospital2", "hospital1"],
             "age": [9, 11, 34],
             "type": ["type1", "type2", "type1"],
-            "patient_category": ["IP", "OP", "ER"],
             # missing regression_output
             "classification": [1, 0, 0],
             "label": [10, 20, 30],

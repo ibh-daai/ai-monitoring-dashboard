@@ -41,27 +41,15 @@ def extract_columns(mapping: dict, columns: set, config: dict) -> set:
             # Cases where the model_type is set to False, but its columns are present in the configuration.
             if key.startswith("regression") and not model_type.get("regression", False):
                 continue
-            if key.startswith("classification") and not model_type.get(
-                "binary_classification", False
-            ):
+            if key.startswith("classification") and not model_type.get("binary_classification", False):
                 continue
             columns.add(value)
-        else:
+        else:  # value is None
             # Cases where the model_type is set to True, but is columns are set to None in the configuration.
             if key.startswith("regression") and model_type.get("regression", False):
-                logger.error(f"Regression column '{key}' is None, update config.")
-                raise ValueError(
-                    f"Regression column '{key}' is None, update config and/or data."
-                )
-            if key.startswith("classification") and model_type.get(
-                "binary_classification", False
-            ):
-                logger.error(
-                    f"Classification column '{key}' is None, update config and/or data."
-                )
-                raise ValueError(
-                    f"Classification column '{key}' is None, update config."
-                )
+                raise ValueError(f"Regression column '{key}' is None, update config and/or data.")
+            if key.startswith("classification") and model_type.get("binary_classification", False):
+                raise ValueError(f"Classification column '{key}' is None, update config.")
     return columns
 
 
@@ -74,67 +62,26 @@ def construct_nested_json(row: pd.Series, mapping: dict) -> dict:
         "sex": row[mapping["sex"]],
         "hospital": row[mapping["hospital"]],
         "age": row[mapping["age"]],
-        "instrument_type": row[mapping["instrument_type"]],
-        "patient_class": row[mapping["patient_class"]],
         "predictions": {},
         "labels": {},
         "features": {key: row[key] for key in mapping["features"] if key in row},
     }
+    if mapping["instrument_type"] is not None and row[mapping["instrument_type"]]:
+        output["instrument_type"] = row[mapping["instrument_type"]]
+    if mapping["patient_class"] is not None and row[mapping["patient_class"]]:
+        output["patient_class"] = row[mapping["patient_class"]]
     # Add prediction and label columns for both model types if they exist in the mapping
     if mapping.get("regression_prediction"):
-        output["predictions"]["regression_prediction"] = row.get(
-            mapping["regression_prediction"]
-        )
+        output["predictions"]["regression_prediction"] = row.get(mapping["regression_prediction"])
     if mapping.get("classification_prediction"):
-        output["predictions"]["classification_prediction"] = row.get(
-            mapping["classification_prediction"]
-        )
+        output["predictions"]["classification_prediction"] = row.get(mapping["classification_prediction"])
 
     if mapping.get("regression_label"):
         output["labels"]["regression_label"] = row.get(mapping["regression_label"])
     if mapping.get("classification_label"):
-        output["labels"]["classification_label"] = row.get(
-            mapping["classification_label"]
-        )
+        output["labels"]["classification_label"] = row.get(mapping["classification_label"])
 
     return {"outputs": [output]}
-
-
-def validate_feature(data: pd.DataFrame, feature: str, rules: dict) -> bool:
-    """
-    Validate a feature in the DataFrame against the rules specified in the JSON config file.
-    """
-    if feature not in data.columns:
-        logger.warning(
-            f"Feature '{feature}' in validation rules not in DataFrame, cannot be validated."
-        )
-        return False
-
-    column_data = data[feature].dropna()
-    rule_type = rules.get("type")
-
-    # Feature validation for strings and boolean values
-    # TODO check range and valid values with Evidently tests, instead of here
-    if rule_type == "enum":
-        if not column_data.isin(rules["values"]).all():
-            logger.warning(
-                f"Value error for '{feature}': values not in {rules['values']}"
-            )
-            return False
-
-    # Feature validation for numerical values (int, float)
-    elif rule_type == "range":
-        if not column_data.between(rules["min"], rules["max"]).all():
-            logger.warning(
-                f"Value error for '{feature}': values out of range [{rules['min']}, {rules['max']}]"
-            )
-            return False
-    else:
-        logger.warning(
-            f"Unsupported rule type for '{feature}': {rule_type}. Please edit the JSON config file."
-        )
-        return False
-    return True
 
 
 def validate_row(row: pd.Series, mapping: dict, schema: dict) -> bool:
@@ -194,15 +141,10 @@ def validate_data(data: pd.DataFrame, config: dict) -> bool:
             logger.error("Regression columns are not properly configured.")
             raise ValueError("Regression columns are not properly configured.")
     if model_type.get("binary_classification", False):
-        if (
-            "classification_prediction" not in mapping
-            or "classification_label" not in mapping
-        ):
+        if "classification_prediction" not in mapping or "classification_label" not in mapping:
             logger.error("Classification columns are not properly configured.")
             raise ValueError("Classification columns are not properly configured.")
 
     # validate schema for each row of the DataFrame
     validate_schema(data, mapping)
-
-    logger.info("Data validation successful")
     return True

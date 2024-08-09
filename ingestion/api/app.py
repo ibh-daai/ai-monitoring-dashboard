@@ -2,7 +2,7 @@
 File to create API endpoints to ingest the results (predictions, data) and labels from the user.
 """
 
-from flask import Flask, request, jsonify, render_template 
+from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 from pymongo.mongo_client import MongoClient
 from datetime import datetime, timezone
@@ -16,7 +16,7 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-app.config.from_object("api.config.Config")
+app.config.from_object("config.Config")
 # app.secret_key = app.config["SECRET_KEY"]
 CORS(
     app,
@@ -215,14 +215,10 @@ def ingest_labels():
                 columns["study_id"]: row[columns["study_id"]],
             }
             if model_config["model_type"]["regression"]:
-                new_label[columns["labels"]["regression_label"]] = row[
-                    columns["labels"]["regression_label"]
-                ]
+                new_label[columns["labels"]["regression_label"]] = row[columns["labels"]["regression_label"]]
 
             if model_config["model_type"]["binary_classification"]:
-                new_label[columns["labels"]["classification_label"]] = row[
-                    columns["labels"]["classification_label"]
-                ]
+                new_label[columns["labels"]["classification_label"]] = row[columns["labels"]["classification_label"]]
 
             if columns.get("timestamp") and columns["timestamp"] in row:
                 new_label[columns["timestamp"]] = row[columns["timestamp"]]
@@ -270,9 +266,9 @@ def authenticate():
         return jsonify({"message": "Model ID not provided."}), 400
 
     if action == "signup":
-        if db.list_collection_names(
-            filter={"name": f"{model_id}_results"}
-        ) or db.list_collection_names(filter={"name": f"{model_id}_labels"}):
+        if db.list_collection_names(filter={"name": f"{model_id}_results"}) or db.list_collection_names(
+            filter={"name": f"{model_id}_labels"}
+        ):
             return jsonify({"message": "Model ID is already in use."}), 409
         if model_id != config["model_config"]["model_id"]:
             return (
@@ -289,11 +285,7 @@ def authenticate():
             )
         else:
             return (
-                jsonify(
-                    {
-                        "message": "Model ID not provided or different from configuration file."
-                    }
-                ),
+                jsonify({"message": "Model ID not provided or different from configuration file."}),
                 400,
             )
 

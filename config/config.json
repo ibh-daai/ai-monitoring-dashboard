@@ -3,8 +3,7 @@
     "model_id": "bone_age",
     "model_type": {
       "regression": true,
-      "binary_classification": true,
-      "provide_reference": false
+      "binary_classification": true
     }
   },
   "columns": {
@@ -31,15 +30,13 @@
     ],
     "timestamp": null
   },
-  "categorical_validation_rules": {
-    "sex": ["M", "F"],
-    "hospital": [
-      "Credit Valley Hospital",
-      "Mississauga Hospital",
-      "Queensway Hospital"
-    ],
-    "machine_type": ["machine1", "machine2"],
-    "patient_classification": ["IP", "OP", "ED", "ICU"]
+  "age_filtering": {
+    "filter_type": "statistical",
+    "custom_ranges": [
+      { "min": 0, "max": 0 },
+      { "min": 0, "max": 0 },
+      { "min": 0, "max": 0 }
+    ]
   },
   "tests": {
     "data_quality_tests": [
@@ -207,14 +204,6 @@
       "size": "half"
     }
   ],
-  "age_filtering": {
-    "filter_type": "statistical",
-    "custom_ranges": [
-      { "min": 0, "max": 0 },
-      { "min": 0, "max": 0 },
-      { "min": 0, "max": 0 }
-    ]
-  },
   "info": {
     "project_name": "Bone Age Prediction",
     "project_description": "Bone Age Prediction project",

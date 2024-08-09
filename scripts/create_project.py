@@ -238,13 +238,9 @@ def test_to_function(tests: list, mapping: dict):
     for test in tests:
         try:
             if "params" in test:
-                test_functions.append(
-                    {"test_id": mapping[test["name"]], "test_args": test["params"]}
-                )
+                test_functions.append({"test_id": mapping[test["name"]], "test_args": test["params"]})
             else:
-                test_functions.append(
-                    {"test_id": mapping[test["name"]], "test_args": {}}
-                )
+                test_functions.append({"test_id": mapping[test["name"]], "test_args": {}})
         except KeyError as e:
             logger.warning(f"Invalid test name: {test['name']}... skipping, {e}")
             continue
@@ -268,18 +264,10 @@ def get_tests(config: dict):
     if config["model_config"]["model_type"]["binary_classification"]:
         classification_tests = config["tests"]["classification_tests"]
 
-    data_quality_functions = test_to_function(
-        data_quality_tests, test_mapping["data_quality"]
-    )
-    data_drift_functions = test_to_function(
-        data_drift_tests, test_mapping["data_drift"]
-    )
-    regression_functions = test_to_function(
-        regression_tests, test_mapping["regression"]
-    )
-    classification_functions = test_to_function(
-        classification_tests, test_mapping["classification"]
-    )
+    data_quality_functions = test_to_function(data_quality_tests, test_mapping["data_quality"])
+    data_drift_functions = test_to_function(data_drift_tests, test_mapping["data_drift"])
+    regression_functions = test_to_function(regression_tests, test_mapping["regression"])
+    classification_functions = test_to_function(classification_tests, test_mapping["classification"])
 
     return {
         "data_quality": data_quality_functions,

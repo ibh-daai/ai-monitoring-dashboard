@@ -10,9 +10,7 @@ def mock_config():
     Fixture to mock the configuration file
     """
     config = {
-        "model_config": {
-            "model_type": {"regression": False, "binary_classification": True}
-        },
+        "model_config": {"model_type": {"regression": False, "binary_classification": True}},
         "columns": {
             "study_id": "StudyID",
             "sex": "gender",
@@ -29,11 +27,6 @@ def mock_config():
             },
             "features": ["weight", "height", "blood_pressure"],
             "timestamp": "date",
-        },
-        "categorical_validation_rules": {
-            "gender": ["M", "F"],
-            "clinic": ["clinic1", "clinic2", "clinic3"],
-            "patient_category": ["IP", "OP"],
         },
         "tests": {
             "data_quality_tests": [
@@ -71,6 +64,19 @@ def mock_config():
         },
     }
     return config
+
+
+@pytest.fixture
+def mock_details():
+    return {
+        "num_rows": 5,
+        "statistical_terciles": [{"min": 0, "max": 0}, {"min": 0, "max": 0}, {"min": 0, "max": 0}],
+        "hospital_unique_values": ["clinic1", "clinic2", "clinic3"],
+        "sex_unique_values": ["M", "F"],
+        "instrument_type_unique_values": [],
+        "patient_class_unique_values": ["IP", "OP"],
+        "categorical_columns": ["gender", "clinic", "patient_category"],
+    }
 
 
 @pytest.fixture
@@ -118,11 +124,7 @@ def mock_reference_data():
 def test_generate_tests(mock_config, mock_data, mock_reference_data):
     with patch("src.tests.data_tests") as mock_data_tests, patch(
         "src.tests.classification_tests"
-    ) as mock_class_tests, patch(
-        "src.tests.regression_tests"
-    ) as mock_regression_tests, patch(
-        "builtins.open"
-    ), patch(
+    ) as mock_class_tests, patch("src.tests.regression_tests") as mock_regression_tests, patch("builtins.open"), patch(
         "json.load",
         return_value={
             "data_quality": {
@@ -178,6 +180,7 @@ def test_generate_tests(mock_config, mock_data, mock_reference_data):
             model_type,
             "tests",
             "timestamp",
+            mock_details,
         )
 
         # Check that data tests and classification tests are called

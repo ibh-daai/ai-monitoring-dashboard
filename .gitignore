@@ -19,10 +19,6 @@ __pycache__/
 /test_data
 /workspace
 
-# Scripts
-add_panels.py
-start_servers.py
-
 # Package manager lock files
 package-lock.json
 
@@ -32,3 +28,7 @@ frontend/build
 
 # Dependency lock files (
 frontend/package-lock.json
+
+# Data Details
+details.json
+
