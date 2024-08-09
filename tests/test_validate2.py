@@ -47,6 +47,22 @@ def mock_config():
 
 
 @pytest.fixture
+def mock_details():
+    """
+    Fixture to mock the details file
+    """
+    return {
+        "num_rows": 3,
+        "statistical_terciles": [{"min": 0, "max": 0}, {"min": 0, "max": 0}, {"min": 0, "max": 0}],
+        "hospital_unique_values": ["hospital1", "hospital2"],
+        "sex_unique_values": ["M", "F"],
+        "instrument_type_unique_values": ["type1", "type2"],
+        "patient_class_unique_values": ["IP", "OP"],
+        "categorical_columns": ["sex", "hospital", "instrument_type", "patient_category", "ethnicity"],
+    }
+
+
+@pytest.fixture
 def correct_data():
     """
     Fixture to generate correct data for testing

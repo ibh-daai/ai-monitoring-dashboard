@@ -66,9 +66,9 @@ def construct_nested_json(row: pd.Series, mapping: dict) -> dict:
         "labels": {},
         "features": {key: row[key] for key in mapping["features"] if key in row},
     }
-    if row[mapping["instrument_type"]]:
+    if mapping["instrument_type"] is not None and row[mapping["instrument_type"]]:
         output["instrument_type"] = row[mapping["instrument_type"]]
-    if row[mapping["patient_class"]]:
+    if mapping["patient_class"] is not None and row[mapping["patient_class"]]:
         output["patient_class"] = row[mapping["patient_class"]]
     # Add prediction and label columns for both model types if they exist in the mapping
     if mapping.get("regression_prediction"):

@@ -28,11 +28,6 @@ def mock_config():
             "features": ["weight", "height", "blood_pressure"],
             "timestamp": "date",
         },
-        "categorical_validation_rules": {
-            "gender": ["M", "F"],
-            "clinic": ["clinic1", "clinic2", "clinic3"],
-            "patient_category": ["IP", "OP"],
-        },
         "tests": {
             "data_quality_tests": [
                 {"name": "num_rows"},
@@ -69,6 +64,19 @@ def mock_config():
         },
     }
     return config
+
+
+@pytest.fixture
+def mock_details():
+    return {
+        "num_rows": 5,
+        "statistical_terciles": [{"min": 0, "max": 0}, {"min": 0, "max": 0}, {"min": 0, "max": 0}],
+        "hospital_unique_values": ["clinic1", "clinic2", "clinic3"],
+        "sex_unique_values": ["M", "F"],
+        "instrument_type_unique_values": [],
+        "patient_class_unique_values": ["IP", "OP"],
+        "categorical_columns": ["gender", "clinic", "patient_category"],
+    }
 
 
 @pytest.fixture
@@ -172,6 +180,7 @@ def test_generate_tests(mock_config, mock_data, mock_reference_data):
             model_type,
             "tests",
             "timestamp",
+            mock_details,
         )
 
         # Check that data tests and classification tests are called
