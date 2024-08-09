@@ -106,6 +106,8 @@ if __name__ == "__main__":
 
     splitter = DataSplitter()
 
+    splitter.reset_filter_dict()
+
     try:
         generate_stratified_reports(
             data,

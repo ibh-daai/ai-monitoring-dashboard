@@ -112,7 +112,7 @@ class DataSplitter:
         """
         filter_dict = {}
 
-        for value in details[f'{column}_unique_values']:
+        for value in details[f"{column}_unique_values"]:
             filter_dict[value] = data[data[config["columns"][column]] == value]
 
         return filter_dict
@@ -197,6 +197,12 @@ class DataSplitter:
             raise
 
         return filter_product_dict
+
+    def reset_filter_dict(self):
+        """
+        Reset the filter_dict to None.
+        """
+        self.filter_dict = None
 
 
 if __name__ == "__main__":
