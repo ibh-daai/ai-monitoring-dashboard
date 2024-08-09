@@ -16,12 +16,12 @@ class Result:
         sex,
         hospital,
         age,
-        instrument_type,
-        patient_class,
         regression_prediction,
         classification_prediction,
         features,
         timestamp,
+        instrument_type=None,
+        patient_class=None,
     ):
         self.study_id = study_id
         self.sex = sex
@@ -40,7 +40,7 @@ class Label:
     The Label model.
     """
 
-    def __init__(self, study_id, regression_label, classification_label, timestamp):
+    def __init__(self, study_id, timestamp, regression_label=None, classification_label=None):
         self.study_id = study_id
         self.regression_label = regression_label
         self.classification_label = classification_label

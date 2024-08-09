@@ -21,6 +21,7 @@ __pycache__/
 
 # Helper scripts
 test_snapshots.py
+test_api.py
 
 # Package manager lock files
 package-lock.json
