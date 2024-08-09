@@ -8,6 +8,7 @@ from pymongo.mongo_client import MongoClient
 from datetime import datetime, timezone
 import pandas as pd
 import logging
+from werkzeug.exceptions import RequestEntityTooLarge
 
 from src.config_manager import load_config
 
@@ -21,12 +22,13 @@ app.config.from_object("config.Config")
 CORS(
     app,
     supports_credentials=True,
-    resources={r"/*": {"origins": "http://localhost:3000"}},
+    resources={r"/*": {"origins": ["http://localhost:3000"]}},  # TODO Update URL in production
 )
 
 # Load the database
 mongo_uri = app.config["MONGO_URI"]
 client = MongoClient(mongo_uri)
+app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16 MB limit
 
 # Send a ping to confirm a successful connection
 try:
@@ -50,6 +52,18 @@ def allowed_file(filename):
     Check if the file extension is allowed.
     """
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.errorhandler(RequestEntityTooLarge)
+def handle_request_entity_too_large(error):
+    return jsonify({"message": "File size too large. Maximum size is 16MB."}), 413
+
+
+@app.errorhandler(Exception)
+def handle_exception(e):
+    # Log the full exception for debugging
+    logger.error(f"An error occurred: {str(e)}", exc_info=True)
+    # Return a generic error message to the client
+    return jsonify({"message": "An internal error occurred."}), 500
 
 
 @app.route("/")
@@ -115,9 +129,13 @@ def ingest_results():
             columns["sex"],
             columns["hospital"],
             columns["age"],
-            columns["instrument_type"],
-            columns["patient_class"],
         ]
+
+        if columns["instrument_type"]:
+            required_columns.append(columns["instrument_type"])
+
+        if columns["patient_class"]:
+            required_columns.append(columns["patient_class"])
 
         if model_config["model_type"]["regression"]:
             required_columns.append(columns["predictions"]["regression_prediction"])
@@ -136,15 +154,20 @@ def ingest_results():
 
         # Insert data into MongoDB
         results_collection = get_collection(model_id, "results")
+        results = []
         for row in data:
             new_result = {
                 columns["study_id"]: row[columns["study_id"]],
                 columns["sex"]: row.get(columns["sex"]),
                 columns["hospital"]: row.get(columns["hospital"]),
                 columns["age"]: row.get(columns["age"]),
-                columns["instrument_type"]: row.get(columns["instrument_type"]),
-                columns["patient_class"]: row.get(columns["patient_class"]),
             }
+            if columns["instrument_type"]:
+                new_result[columns["instrument_type"]] = row.get(columns["instrument_type"])
+
+            if columns["patient_class"]:
+                new_result[columns["patient_class"]] = row.get(columns["patient_class"])
+
             for feature in features:
                 new_result[feature] = row.get(feature)
 
@@ -163,7 +186,9 @@ def ingest_results():
             else:
                 new_result["timestamp"] = datetime.now(timezone.utc)
 
-            results_collection.insert_one(new_result)
+            results.append(new_result)
+
+        results_collection.insert_many(results)
 
         logger.info("Results ingested successfully.")
         return jsonify({"message": "Results ingested successfully."}), 200
@@ -210,6 +235,7 @@ def ingest_labels():
 
         # Insert data into MongoDB
         labels_collection = get_collection(model_id, "labels")
+        labels = []
         for row in data:
             new_label = {
                 columns["study_id"]: row[columns["study_id"]],
@@ -225,7 +251,9 @@ def ingest_labels():
             else:
                 new_label["timestamp"] = datetime.now(timezone.utc)
 
-            labels_collection.insert_one(new_label)
+            labels.append(new_label)
+
+        labels_collection.insert_many(labels)
 
         logger.info("Labels ingested successfully.")
         return jsonify({"message": "Labels ingested successfully."}), 200
