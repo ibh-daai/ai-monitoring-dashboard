@@ -19,6 +19,9 @@ __pycache__/
 /test_data
 /workspace
 
+# Helper scripts
+test_snapshots.py
+
 # Package manager lock files
 package-lock.json
 

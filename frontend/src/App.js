@@ -60,7 +60,7 @@ const AppContent = () => {
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', backgroundColor: colors.background }}>
             <Box textAlign="center">
               <CircularProgress style={{ color: colors.primary }} />
-              <p style={{ color: colors.text, marginTop: '20px' }}>Loading Dashboard...</p>
+              <p style={{ color: colors.text, marginTop: '20px', fontFamily: 'Roboto, sans-serif' }}>Loading Dashboard...</p>
             </Box>
           </div>
         ) : (

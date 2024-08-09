@@ -33,6 +33,15 @@ def load_json(file_path: str) -> dict:
         return json.load(file)
 
 
+"""
+THP Colors:
+    - Light Blue: #02B3E6
+    - Green: #9ACA3B
+    - Blue: #00599D
+    - Turquoise: #5AC3B3
+"""
+
+
 def create_summary_panels(config: dict, tags: list, project) -> None:
     """
     Create the summary panels for the dashboard.
@@ -46,8 +55,8 @@ def create_summary_panels(config: dict, tags: list, project) -> None:
 
     model_intro = f"""
         <div style='background-color: #f0f8ff; padding: 15px; border-radius: 5px;'>
-            <h2 style='color: #02B3E6;'> {title}</h2>
-            <p style='text-align: left;'>{description}</p>
+            <h3 style='color: #02B3E6;'> {title}</h3>
+            <p style='text-align: left; font-size: 16px;'>{description}</p>
         </div>
         """
 
@@ -68,10 +77,10 @@ def create_summary_panels(config: dict, tags: list, project) -> None:
 
     model_info = f"""
     <div style='background-color: #f0f8ff; padding: 15px; border-radius: 5px;'>
-        <h2 style='color: #02B3E6; text-align: center;'>Model Information</h2>
-        <p style='text-align: left;'><strong>Model Developer:</strong> {model_developer}</p>
-        <p style='text-align: left;'><strong>Contact Name:</strong> {contact_name}</p>
-        <p style='text-align: left;'><strong>Contact Email:</strong> {contact_email}</p>
+        <h3 style='color: #02B3E6; text-align: center;'>Model Information</h3>
+        <p style='text-align: left; font-size: 16px;'><strong>Model Developer:</strong> {model_developer}</p>
+        <p style='text-align: left; font-size: 16px;'><strong>Contact Name:</strong> {contact_name}</p>
+        <p style='text-align: left; font-size: 16px;'><strong>Contact Email:</strong> {contact_email}</p>
     </div>
     """
 
@@ -174,7 +183,7 @@ def create_metric_panels(config: dict, tags: list, project) -> None:
         if panel["category"] != current_category:
             title = f"""
             <div style='background-color: #f0f8ff; padding: 13px; border-radius: 5px;'>
-                <h3 style='color: #02B3E6;'> {panel["category"].replace("_", " ").title()} Metrics</h3>
+                <h4 style='color: #02B3E6;'> {panel["category"].replace("_", " ").title()} Metrics</h4>
             </div>
             """
             current_category = panel["category"]
@@ -283,7 +292,7 @@ def create_test_panels(config: dict, tags: list, project) -> None:
     """
     title = f"""
     <div style='background-color: #f0f8ff; padding: 13px; border-radius: 5px;'>
-        <h3 style='color: #02B3E6;'> Test Results</h3>
+        <h4 style='color: #02B3E6;'> Test Results</h4>
     </div>
     """
     project.dashboard.add_panel(
@@ -392,6 +401,52 @@ def create_test_panels(config: dict, tags: list, project) -> None:
         )
 
 
+def create_bottom_panels(config: dict, tags: list, project) -> None:
+    """
+    Create the bottom panels for the dashboard.
+    """
+
+    # dashboard title panel
+    references = config["info"]["references"]
+
+    # references are a list of urls, so we need to format them as a list and click-able links
+    references_list = f"""
+    <div style='background-color: #f0f8ff; padding: 1px; border-radius: 5px;'>
+        <h3 style='color: #02B3E6; text-align: center;'>References</h3>
+        <ul style='text-align: left; font-size: 16px;'>
+            {"".join([f"<li><a href='{reference['url']}'>{reference['name']}</a></li>" for reference in references])}
+        </ul>
+    </div>
+    """
+
+    project.dashboard.add_panel(
+        DashboardPanelCounter(
+            filter=ReportFilter(metadata_values={}, tag_values=[]),
+            agg=CounterAgg.NONE,
+            text="",
+            title=references_list,
+            size=WidgetSize.HALF,
+        )
+    )
+
+    disclaimer = config["info"]["disclaimer"]
+    disclaimer_text = f"""
+    <div style='background-color: #f0f8ff; padding: 1px; border-radius: 5px;'>
+        <p style='color: #00599D; font-size: 18px;'>{disclaimer}</p>
+    </div>
+    """
+
+    project.dashboard.add_panel(
+        DashboardPanelCounter(
+            filter=ReportFilter(metadata_values={}, tag_values=[]),
+            agg=CounterAgg.NONE,
+            text="",
+            title=disclaimer_text,
+            size=WidgetSize.HALF,
+        )
+    )
+
+
 def log_snapshots(project, workspace):
     """
     Log the JSON snapshots to the workspace.
@@ -446,6 +501,9 @@ def update_panels(workspace, config: dict, tags=["main", "single"]) -> None:
 
         # create the test panels
         create_test_panels(config, tags, project)
+
+        # create the bottom panels
+        create_bottom_panels(config, tags, project)
 
         project.save()
     except Exception as e:

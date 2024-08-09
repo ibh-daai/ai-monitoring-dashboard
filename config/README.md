@@ -459,6 +459,14 @@ Provides info about the model that will be displayed on the monitoring dashboard
 
 -   **contact_email** (`string`): Email of the contact person.
 
+-   **references** (`array` of `objects`): List of references for the model.
+
+    -   **name** (`string`): Name of the reference.
+
+    -   **url** (`string`): URL of the reference.
+
+-   **disclaimer** (`string`): Disclaimer for the model.
+
 
 #### Example
 ```json
@@ -467,7 +475,14 @@ Provides info about the model that will be displayed on the monitoring dashboard
     "project_description": "Bone Age Prediction project",
     "model_developer": "Trillium Health Partners",
     "contact_name": "John Smith",
-    "contact_email": "johnsmith@thp.ca"
+    "contact_email": "johnsmith@thp.ca",
+    "references": [
+      {
+        "name": "RSNA Pediatric Bone Age Challenge 2017",
+        "url": "https://www.rsna.org/education/ai-resources-and-training/ai-image-challenge/rsna-pediatric-bone-age-challenge-2017"
+      }
+    ],
+    "disclaimer": "This model has not been evaluated to assess potential performance differentials across race and ethnicity. Socioeconomic factors are known to play a role in the development of children."
   },
 ```
 
