@@ -17,12 +17,12 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-app.config.from_object("config.Config")
+app.config.from_object("api.ingestion.config.Config")
 # app.secret_key = app.config["SECRET_KEY"]
 CORS(
     app,
     supports_credentials=True,
-    resources={r"/*": {"origins": ["http://localhost:3000"]}},  # TODO Update URL in production
+    resources={r"/*": {"origins": ["http://localhost:3001"]}},  # TODO Update URL in production
 )
 
 # Load the database
@@ -52,6 +52,7 @@ def allowed_file(filename):
     Check if the file extension is allowed.
     """
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 @app.errorhandler(RequestEntityTooLarge)
 def handle_request_entity_too_large(error):

@@ -20,7 +20,6 @@ __pycache__/
 /workspace
 
 # Helper scripts
-test_snapshots.py
 
 # API ingestion scripts
 db_api_ingestion.py

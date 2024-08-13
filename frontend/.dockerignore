@@ -1,0 +1,15 @@
+venv/
+test_data/
+data/
+snapshots/
+
+__pycache__
+*.pyc
+.pytest_cache
+.git.
+.gitignore
+README.md
+.DS_Store
+
+ingestion_flow.py
+db_api_ingestion.py
