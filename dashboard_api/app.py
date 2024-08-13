@@ -1,3 +1,7 @@
+"""
+Backend file for the monitoring dashboard. This file contains the API endpoints for the dashboard.
+"""
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import logging

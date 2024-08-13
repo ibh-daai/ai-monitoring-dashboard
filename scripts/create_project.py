@@ -478,21 +478,44 @@ def create_project(workspace, config: dict) -> None:
     try:
         project = workspace.create_project(config["info"]["project_name"])
         project.description = config["info"]["project_description"]
-        update_panels(workspace, config)
+        log_snapshots(project, workspace)
+        update_panels(workspace, config, project=project)
         project.save()
     except Exception as e:
         logger.error(f"Error creating project: {e}")
         return
 
-    # log the snapshots
-    log_snapshots(project, workspace)
-
     project.save()
 
 
-def update_panels(workspace, config: dict, tags=["main", "single"]) -> None:
+def update_project(workspace, config: dict) -> None:
     try:
         project = workspace.search_project(config["info"]["project_name"])[0]
+        project.description = config["info"]["project_description"]
+        log_snapshots(project, workspace)
+        update_panels(workspace, config, project=project)
+        project.save()
+    except Exception as e:
+        logger.error(f"Error updating project: {e}")
+        return
+
+
+def create_or_update(workspace, config: dict) -> None:
+    try:
+        project = workspace.search_project(config["info"]["project_name"])
+        if not project:
+            create_project(workspace, config)
+        else:
+            update_project(workspace, config)
+    except Exception as e:
+        logger.error(f"Error creating or updating project: {e}")
+        return
+
+
+def update_panels(workspace, config: dict, tags=["main", "single"], project=None) -> None:
+    try:
+        if project is None:
+            project = workspace.search_project(config["info"]["project_name"])[0]
         # create the summary panels
         create_summary_panels(config, tags, project)
 

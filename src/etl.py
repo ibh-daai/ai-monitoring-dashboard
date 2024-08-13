@@ -3,7 +3,7 @@ ETL pipeline script. This script is responsible for loading, validating, and spl
 """
 
 import os
-from scripts.fetch_data import fetch_and_merge
+from ingestion.scripts.fetch_data import fetch_and_merge
 from src.validate import validate_data
 from scripts.data_details import data_details
 import pandas as pd

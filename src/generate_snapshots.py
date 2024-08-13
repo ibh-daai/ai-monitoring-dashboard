@@ -78,7 +78,10 @@ def generate_stratified_tests(
         raise
 
 
-if __name__ == "__main__":
+def generate_snapshots():
+    """
+    Generate stratified reports and tests for the data.
+    """
     warnings.simplefilter(action="ignore", category=FutureWarning)
     warnings.simplefilter(action="ignore", category=UndefinedMetricWarning)
     warnings.simplefilter(action="ignore", category=RuntimeWarning)
@@ -133,3 +136,7 @@ if __name__ == "__main__":
         )
     except Exception as e:
         logger.error(f"Failed to generate stratified tests: {e}")
+
+
+if __name__ == "__main__":
+    generate_snapshots()
