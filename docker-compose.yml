@@ -1,0 +1,89 @@
+version: '3'
+services:
+  dashboard_api:
+    build:
+      context: .
+      dockerfile: api/dashboard/Dockerfile
+    ports:
+      - "5002:5002"
+    volumes:
+      - ./api/dashboard:/app/api/dashboard
+      - ./src:/app/src
+      - ./config:/app/config
+      - ./scripts:/app/scripts
+      - ./workspace:/app/workspace
+    environment:
+      - MONGO_URI=${MONGO_URI}
+      - SECRET_KEY=${SECRET_KEY}
+      - EVIDENTLY_UI_URL=http://localhost:8000
+    depends_on:
+      - mongodb
+
+  dashboard_frontend:
+    build:
+      context: .
+      dockerfile: frontend/dashboard/Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:5002
+      - REACT_APP_DASHBOARD_URL=http://localhost:8000
+
+  evidently_ui:
+    build:
+      context: .
+      dockerfile: Dockerfile.evidently
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./workspace:/app/workspace
+    command: ["evidently", "ui", "--host", "0.0.0.0"]
+    environment:
+      - EVIDENTLY_WORKSPACE=/app/workspace
+      - PYTHONUNBUFFERED=1
+
+
+  data_ingestion_api: 
+    build:
+      context: .
+      dockerfile: api/ingestion/Dockerfile
+    ports:
+      - "5001:5001"
+    volumes:
+      - ./api/ingestion:/app/api/ingestion
+      - ./src:/app/src
+      - ./config:/app/config
+    environment:
+      - MONGO_URI=${MONGO_URI}
+      - SECRET_KEY=${SECRET_KEY}
+      # - MODEL_CONFIG_PATH=/app/config/config.json
+      # - MAX_CONTENT_LENGTH=16777216
+      # - CORS_ORIGINS=http://localhost:3001
+    depends_on:
+      - mongodb
+
+  ingestion_frontend:
+    build:
+      context: .
+      dockerfile: frontend/ingestion/Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - REACT_APP_API_URL=http://localhost:5001
+      # - PORT=3001
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data:/data/db
+
+volumes:
+  mongodb_data:
+
+networks:
+  default:
+      name: app_network
+
+      
