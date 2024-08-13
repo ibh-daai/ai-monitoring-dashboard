@@ -4,7 +4,7 @@ Script to test the metrics code.
 
 import pytest
 import pandas as pd
-from src.metrics import generate_report
+from src.monitoring.metrics import generate_report
 from unittest.mock import patch
 
 
@@ -96,9 +96,9 @@ def mock_reference_data():
 
 
 def test_generate_report(mock_config, mock_data, mock_reference_data, mock_details):
-    with patch("src.metrics.data_report") as mock_data_report, patch(
-        "src.metrics.classification_report"
-    ) as mock_class_report, patch("src.metrics.regression_report") as mock_regression_report:
+    with patch("src.monitoring.metrics.data_report") as mock_data_report, patch(
+        "src.monitoring.metrics.classification_report"
+    ) as mock_class_report, patch("src.monitoring.metrics.regression_report") as mock_regression_report:
 
         model_type = mock_config["model_config"]["model_type"]
         generate_report(

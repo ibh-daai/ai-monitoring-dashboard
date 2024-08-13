@@ -4,7 +4,7 @@ This script fetches data from the MongoDB database and stores it in a pandas Dat
 
 import pandas as pd
 from pymongo import MongoClient
-from ingestion.api.config import Config
+from api.ingestion.config import Config
 
 
 def get_db_connection(mongo_uri: str) -> MongoClient:

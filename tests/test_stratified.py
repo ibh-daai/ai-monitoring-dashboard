@@ -1,6 +1,6 @@
 import pytest
 import pandas as pd
-from src.stratify import DataSplitter
+from src.monitoring.stratify import DataSplitter
 import logging
 
 

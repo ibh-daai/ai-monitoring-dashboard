@@ -7,8 +7,8 @@ import pandas as pd
 import warnings
 from itertools import product
 from sklearn.exceptions import UndefinedMetricWarning
-from src.config_manager import load_config
-from src.etl import etl_pipeline
+from src.utils.config_manager import load_config
+from src.data_preprocessing.etl import etl_pipeline
 from scripts.data_details import load_details
 
 logging.basicConfig(level=logging.INFO)

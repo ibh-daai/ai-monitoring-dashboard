@@ -7,13 +7,13 @@ from prefect.task_runners import SequentialTaskRunner
 import logging
 from datetime import datetime
 
-from src.config_manager import load_config
+from src.utils.config_manager import load_config
 from scripts.data_details import load_details, data_details
-from src.etl import etl_pipeline
-from src.generate_snapshots import generate_stratified_reports, generate_stratified_tests
-from src.stratify import DataSplitter
-from scripts.workspace_manager import WorkspaceManager
-from scripts.create_project import create_or_update
+from src.data_preprocessing.etl import etl_pipeline
+from src.dashboard.generate_snapshots import generate_stratified_reports, generate_stratified_tests
+from src.monitoring.stratify import DataSplitter
+from src.dashboard.workspace_manager import WorkspaceManager
+from src.dashboard.create_project import create_or_update
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

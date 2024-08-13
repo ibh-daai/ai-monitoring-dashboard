@@ -2,7 +2,7 @@
 This script creates a new Evidently AI project in the workspace.
 """
 
-from src.config_manager import load_config
+from src.utils.config_manager import load_config
 import json
 import logging
 from evidently.ui.dashboards import (
@@ -454,7 +454,7 @@ def log_snapshots(project, workspace):
     Currently, the snapshots are stored in the snapshots directory.
     In the future, they will be stored in AWS S3, and this function will be updated to load them from there.
     """
-    snapshots_dir = os.path.abspath(os.path.join(__file__, "..", "../snapshots"))
+    snapshots_dir = os.path.abspath(os.path.join(__file__, "..", "../../snapshots"))
     for timestamp in os.listdir(snapshots_dir):
         if timestamp.startswith("."):
             continue

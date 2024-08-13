@@ -8,7 +8,7 @@ import importlib
 import os
 import logging
 from evidently.test_suite import TestSuite
-from src.metrics import setup_column_mapping
+from src.monitoring.metrics import setup_column_mapping
 
 
 logging.basicConfig(level=logging.INFO)
