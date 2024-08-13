@@ -1,6 +1,6 @@
 import pytest
 import pandas as pd
-from src.tests import generate_tests
+from src.monitoring.tests import generate_tests
 from unittest.mock import patch
 
 
@@ -122,9 +122,9 @@ def mock_reference_data():
 
 
 def test_generate_tests(mock_config, mock_data, mock_reference_data):
-    with patch("src.tests.data_tests") as mock_data_tests, patch(
-        "src.tests.classification_tests"
-    ) as mock_class_tests, patch("src.tests.regression_tests") as mock_regression_tests, patch("builtins.open"), patch(
+    with patch("src.monitoring.tests.data_tests") as mock_data_tests, patch(
+        "src.monitoring.tests.classification_tests"
+    ) as mock_class_tests, patch("src.monitoring.tests.regression_tests") as mock_regression_tests, patch("builtins.open"), patch(
         "json.load",
         return_value={
             "data_quality": {

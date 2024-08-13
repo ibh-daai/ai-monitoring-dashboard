@@ -1,6 +1,6 @@
 import pytest
 import pandas as pd
-from src.validate import validate_data
+from src.data_preprocessing.validate import validate_data
 import numpy as np
 
 

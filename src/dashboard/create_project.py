@@ -2,7 +2,7 @@
 This script creates a new Evidently AI project in the workspace.
 """
 
-from src.config_manager import load_config
+from src.utils.config_manager import load_config
 import json
 import logging
 from evidently.ui.dashboards import (
@@ -454,7 +454,7 @@ def log_snapshots(project, workspace):
     Currently, the snapshots are stored in the snapshots directory.
     In the future, they will be stored in AWS S3, and this function will be updated to load them from there.
     """
-    snapshots_dir = os.path.abspath(os.path.join(__file__, "..", "../snapshots"))
+    snapshots_dir = os.path.abspath(os.path.join(__file__, "..", "../../snapshots"))
     for timestamp in os.listdir(snapshots_dir):
         if timestamp.startswith("."):
             continue
@@ -478,21 +478,44 @@ def create_project(workspace, config: dict) -> None:
     try:
         project = workspace.create_project(config["info"]["project_name"])
         project.description = config["info"]["project_description"]
-        update_panels(workspace, config)
+        log_snapshots(project, workspace)
+        update_panels(workspace, config, project=project)
         project.save()
     except Exception as e:
         logger.error(f"Error creating project: {e}")
         return
 
-    # log the snapshots
-    log_snapshots(project, workspace)
-
     project.save()
 
 
-def update_panels(workspace, config: dict, tags=["main", "single"]) -> None:
+def update_project(workspace, config: dict) -> None:
     try:
         project = workspace.search_project(config["info"]["project_name"])[0]
+        project.description = config["info"]["project_description"]
+        log_snapshots(project, workspace)
+        update_panels(workspace, config, project=project)
+        project.save()
+    except Exception as e:
+        logger.error(f"Error updating project: {e}")
+        return
+
+
+def create_or_update(workspace, config: dict) -> None:
+    try:
+        project = workspace.search_project(config["info"]["project_name"])
+        if not project:
+            create_project(workspace, config)
+        else:
+            update_project(workspace, config)
+    except Exception as e:
+        logger.error(f"Error creating or updating project: {e}")
+        return
+
+
+def update_panels(workspace, config: dict, tags=["main", "single"], project=None) -> None:
+    try:
+        if project is None:
+            project = workspace.search_project(config["info"]["project_name"])[0]
         # create the summary panels
         create_summary_panels(config, tags, project)
 

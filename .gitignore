@@ -21,7 +21,10 @@ __pycache__/
 
 # Helper scripts
 test_snapshots.py
-test_api.py
+
+# API ingestion scripts
+db_api_ingestion.py
+ingestion_flow.py
 
 # Package manager lock files
 package-lock.json

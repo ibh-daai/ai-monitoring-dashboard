@@ -1,10 +1,14 @@
+"""
+Backend file for the monitoring dashboard. This file contains the API endpoints for the dashboard.
+"""
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import logging
-from scripts.workspace_manager import WorkspaceManager
+from src.dashboard.workspace_manager import WorkspaceManager
 from scripts.data_details import load_details
-from src.config_manager import load_config
-from scripts.create_project import update_panels
+from src.utils.config_manager import load_config
+from src.dashboard.create_project import update_panels
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

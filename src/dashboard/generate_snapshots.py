@@ -5,11 +5,11 @@ File to generate stratified reports and tests.
 import logging
 import pandas as pd
 import warnings
-from src.config_manager import load_config
-from src.metrics import generate_report
-from src.tests import generate_tests
-from src.etl import etl_pipeline
-from src.stratify import DataSplitter
+from src.utils.config_manager import load_config
+from src.monitoring.metrics import generate_report
+from src.monitoring.tests import generate_tests
+from src.data_preprocessing.etl import etl_pipeline
+from src.monitoring.stratify import DataSplitter
 from sklearn.exceptions import UndefinedMetricWarning
 from datetime import datetime
 from scripts.data_details import load_details
@@ -78,7 +78,10 @@ def generate_stratified_tests(
         raise
 
 
-if __name__ == "__main__":
+def generate_snapshots():
+    """
+    Generate stratified reports and tests for the data.
+    """
     warnings.simplefilter(action="ignore", category=FutureWarning)
     warnings.simplefilter(action="ignore", category=UndefinedMetricWarning)
     warnings.simplefilter(action="ignore", category=RuntimeWarning)
@@ -133,3 +136,7 @@ if __name__ == "__main__":
         )
     except Exception as e:
         logger.error(f"Failed to generate stratified tests: {e}")
+
+
+if __name__ == "__main__":
+    generate_snapshots()

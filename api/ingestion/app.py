@@ -10,7 +10,7 @@ import pandas as pd
 import logging
 from werkzeug.exceptions import RequestEntityTooLarge
 
-from src.config_manager import load_config
+from src.utils.config_manager import load_config
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
