@@ -112,7 +112,7 @@ platformdirs==4.2.2
 plotly==5.23.0
 pluggy==1.5.0
 polyfactory==2.16.2
-prefect==2.19.4
+prefect==2.10.18
 prompt_toolkit==3.0.47
 protobuf==4.25.4
 psutil==5.9.8
