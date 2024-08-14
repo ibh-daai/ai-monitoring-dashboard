@@ -9,6 +9,7 @@ import os
 import logging
 from evidently.test_suite import TestSuite
 from src.monitoring.metrics import setup_column_mapping
+from src.monitoring.alerts import check_test_results, AlertCollector
 
 
 logging.basicConfig(level=logging.INFO)
@@ -104,6 +105,7 @@ def data_tests(
     folder_path: str,
     timestamp: str,
     details: dict,
+    alert_collector: AlertCollector,
 ) -> None:
     """
     Generate data test results.
@@ -127,7 +129,14 @@ def data_tests(
             current_data=data,
             column_mapping=data_mapping,
         )
-        # will save to AWS S3 instead of local in the future
+
+        # Check for failures and send alerts
+        is_alert, failed_tests = check_test_results(data_test_suite, t)
+        if is_alert:
+            logger.info(f"Failed tests: {failed_tests}")
+            alert_collector.add_failed_tests("Data Tests", failed_tests)
+
+        # will save to Docker volums instead of local in the future
         data_test_suite.save(f"snapshots/{timestamp}/{folder_path}//data_test_suite.json")
     except Exception as e:
         logger.error(f"Error running data tests: {e}")
@@ -142,6 +151,7 @@ def regression_tests(
     folder_path: str,
     timestamp: str,
     details: dict,
+    alert_collector: AlertCollector,
 ) -> None:
     """
     Generate regression test results.
@@ -165,6 +175,12 @@ def regression_tests(
             current_data=data,
             column_mapping=regression_mapping,
         )
+
+        # Check for failures and send alerts
+        is_alert, failed_tests = check_test_results(regression_test_suite, t)
+        if is_alert:
+            alert_collector.add_failed_tests("Regression Tests", failed_tests)
+
         regression_test_suite.save(f"snapshots/{timestamp}/{folder_path}/regression_test_suite.json")
     except Exception as e:
         logger.error(f"Error running regression tests: {e}")
@@ -178,6 +194,7 @@ def classification_tests(
     folder_path: str,
     timestamp: str,
     details: dict,
+    alert_collector: AlertCollector,
 ) -> None:
     """
     Generate classification test results.
@@ -201,6 +218,12 @@ def classification_tests(
             current_data=data,
             column_mapping=classification_mapping,
         )
+
+        # Check for failures and send alerts
+        is_alert, failed_tests = check_test_results(classification_test_suite, t)
+        if is_alert:
+            alert_collector.add_failed_tests("Classification Tests", failed_tests)
+
         classification_test_suite.save(f"snapshots/{timestamp}/{folder_path}/classification_test_suite.json")
     except Exception as e:
         logger.error(f"Error running classification tests: {e}")
@@ -225,23 +248,32 @@ def generate_tests(
         logger.error(f"Error loading tests mapping: {e}")
         return
 
+    alert_collector = AlertCollector(config)
+
     # Generate the data tests
     try:
-        data_tests(data, reference_data, config, tests_mapping, folder_path, timestamp, details)
+        data_tests(data, reference_data, config, tests_mapping, folder_path, timestamp, details, alert_collector)
     except Exception as e:
         logger.error(f"Error running data tests: {e}")
 
     # Generate the regression tests
     if model_type["regression"]:
         try:
-            regression_tests(data, reference_data, config, tests_mapping, folder_path, timestamp, details)
+            regression_tests(
+                data, reference_data, config, tests_mapping, folder_path, timestamp, details, alert_collector
+            )
         except Exception as e:
             logger.error(f"Error running regression tests: {e}")
 
     # Generate the classification tests
     if model_type["binary_classification"]:
         try:
-            classification_tests(data, reference_data, config, tests_mapping, folder_path, timestamp, details)
+            classification_tests(
+                data, reference_data, config, tests_mapping, folder_path, timestamp, details, alert_collector
+            )
         except Exception as e:
             logger.error(f"Error running classification tests: {e}")
-        return
+
+    # Send alerts if necessary
+    if alert_collector.should_alert():
+        alert_collector.send_alert(config["alerts"]["emails"])

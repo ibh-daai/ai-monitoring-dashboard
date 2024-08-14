@@ -5,6 +5,10 @@ This script fetches data from the MongoDB database and stores it in a pandas Dat
 import pandas as pd
 from pymongo import MongoClient
 from api.ingestion.config import Config
+import logging
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 
 def get_db_connection(mongo_uri: str) -> MongoClient:
@@ -45,7 +49,7 @@ def process_duplicates(df: pd.DataFrame, config: dict) -> pd.DataFrame:
         df.sort_values(by=timestamp_col, ascending=False, inplace=True)
         df.drop_duplicates(subset=config["columns"]["study_id"], keep="first", inplace=True)
     except Exception as e:
-        print(f"Error processing duplicates: {e}")
+        logger.error(f"Error processing duplicates: {e}")
     return df
 
 
@@ -74,7 +78,7 @@ def move_matched_data(
             results.delete_many({config["columns"]["study_id"]: {"$in": matched_ids}})
             labels.delete_many({config["columns"]["study_id"]: {"$in": matched_ids}})
     except Exception as e:
-        print(f"Error moving matched data: {e}")
+        logger.error(f"Error moving matched data: {e}")
 
 
 def fetch_and_merge(config: dict) -> pd.DataFrame:
@@ -91,7 +95,7 @@ def fetch_and_merge(config: dict) -> pd.DataFrame:
 
     # check if the results or labels data is empty
     if results.empty or labels.empty:
-        print("Results or labels data is empty.")
+        logger.info("Results or Labels data is empty.")
         # return an empty DataFrame
         return pd.DataFrame()
 
