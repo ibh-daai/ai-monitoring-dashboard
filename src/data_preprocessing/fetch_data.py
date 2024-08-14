@@ -2,7 +2,6 @@
 This script fetches data from the MongoDB database and stores it in a pandas DataFrame.
 """
 
-from math import log
 import pandas as pd
 from pymongo import MongoClient
 from api.ingestion.config import Config
