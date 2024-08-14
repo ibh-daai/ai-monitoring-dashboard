@@ -219,12 +219,8 @@
     "disclaimer": "This model has not been evaluated to assess potential performance differentials across race and ethnicity. Socioeconomic factors are known to play a role in the development of children."
   },
   "alerts": {
-    "enable": true,
-    "alert_links": [
-      {
-        "type": "microsoft teams channel",
-        "url": "<TODO>"
-      }
+    "emails": [
+      "joel.mills@thp.ca"
     ]
   }
 }

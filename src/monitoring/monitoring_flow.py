@@ -7,15 +7,18 @@ from prefect.task_runners import SequentialTaskRunner
 import logging
 from datetime import datetime
 
+import warnings
+from sklearn.exceptions import UndefinedMetricWarning
+
 from src.utils.config_manager import load_config
-from scripts.data_details import load_details, data_details
+from scripts.data_details import load_details
 from src.data_preprocessing.etl import etl_pipeline
 from src.dashboard.generate_snapshots import generate_stratified_reports, generate_stratified_tests
 from src.monitoring.stratify import DataSplitter
 from src.dashboard.workspace_manager import WorkspaceManager
 from src.dashboard.create_project import create_or_update
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 
@@ -64,4 +67,9 @@ def monitoring_flow():
 
 
 if __name__ == "__main__":
+    warnings.simplefilter(action="ignore", category=FutureWarning)
+    warnings.simplefilter(action="ignore", category=UndefinedMetricWarning)
+    warnings.simplefilter(action="ignore", category=RuntimeWarning)
+    warnings.simplefilter(action="ignore", category=UserWarning)
+
     monitoring_flow()

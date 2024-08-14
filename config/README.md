@@ -491,19 +491,14 @@ Provides info about the model that will be displayed on the monitoring dashboard
 
 Configures alert settings for the monitoring system.
 
--   **enable** (`boolean`): Enable or disable alerts.
-
--   **alert_links** (`array` of `objects`): Configure alert methods and destinations, such as Microsoft Teams.
+-   **emails** (`array` of `string`): List of email addresses to receive alerts.
 
 #### Example
 ```json
 "alerts": {
-    "enable": true,
-    "alert_links": [
-        {
-            "type": "microsoft teams channel",
-            "url": "<TODO>"
-        }
+    "emails": [
+      "johndoe@gmail.com", 
+      "johndoesfriend@gmail.com"
     ]
 }
 ````
