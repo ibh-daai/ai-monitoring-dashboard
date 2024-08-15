@@ -306,52 +306,6 @@ def create_test_panels(config: dict, tags: list, project) -> None:
     # get the test functions
     test_functions = get_tests(config)
 
-    # data quality tests panel
-    data_quality_tests = test_functions["data_quality"]
-
-    project.dashboard.add_panel(
-        DashboardPanelTestSuite(
-            title="Data Quality Tests",
-            test_filters=[
-                TestFilter(
-                    test_id=test["test_id"],
-                    test_args=test["test_args"],
-                )
-                for test in data_quality_tests
-            ],
-            filter=ReportFilter(
-                metadata_values={},
-                tag_values=tags + ["data"],
-                include_test_suites=True,
-            ),
-            size=WidgetSize.FULL,
-            panel_type=TestSuitePanelType.DETAILED,
-        )
-    )
-
-    # data drift tests panel
-    data_drift_tests = test_functions["data_drift"]
-
-    project.dashboard.add_panel(
-        DashboardPanelTestSuite(
-            title="Data Drift Tests",
-            test_filters=[
-                TestFilter(
-                    test_id=test["test_id"],
-                    test_args=test["test_args"],
-                )
-                for test in data_drift_tests
-            ],
-            filter=ReportFilter(
-                metadata_values={},
-                tag_values=tags + ["data"],
-                include_test_suites=True,
-            ),
-            size=WidgetSize.FULL,
-            panel_type=TestSuitePanelType.DETAILED,
-        )
-    )
-
     if test_functions["regression"]:
         # regression tests panel
         regression_tests = test_functions["regression"]
@@ -399,6 +353,52 @@ def create_test_panels(config: dict, tags: list, project) -> None:
                 panel_type=TestSuitePanelType.DETAILED,
             )
         )
+
+    # data quality tests panel
+    data_quality_tests = test_functions["data_quality"]
+
+    project.dashboard.add_panel(
+        DashboardPanelTestSuite(
+            title="Data Quality Tests",
+            test_filters=[
+                TestFilter(
+                    test_id=test["test_id"],
+                    test_args=test["test_args"],
+                )
+                for test in data_quality_tests
+            ],
+            filter=ReportFilter(
+                metadata_values={},
+                tag_values=tags + ["data"],
+                include_test_suites=True,
+            ),
+            size=WidgetSize.FULL,
+            panel_type=TestSuitePanelType.DETAILED,
+        )
+    )
+
+    # data drift tests panel
+    data_drift_tests = test_functions["data_drift"]
+
+    project.dashboard.add_panel(
+        DashboardPanelTestSuite(
+            title="Data Drift Tests",
+            test_filters=[
+                TestFilter(
+                    test_id=test["test_id"],
+                    test_args=test["test_args"],
+                )
+                for test in data_drift_tests
+            ],
+            filter=ReportFilter(
+                metadata_values={},
+                tag_values=tags + ["data"],
+                include_test_suites=True,
+            ),
+            size=WidgetSize.FULL,
+            panel_type=TestSuitePanelType.DETAILED,
+        )
+    )
 
 
 def create_bottom_panels(config: dict, tags: list, project) -> None:
@@ -519,11 +519,11 @@ def update_panels(workspace, config: dict, tags=["main", "single"], project=None
         # create the summary panels
         create_summary_panels(config, tags, project)
 
-        # create the metric panels
-        create_metric_panels(config, tags, project)
-
         # create the test panels
         create_test_panels(config, tags, project)
+
+        # create the metric panels
+        create_metric_panels(config, tags, project)
 
         # create the bottom panels
         create_bottom_panels(config, tags, project)
