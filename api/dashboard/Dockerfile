@@ -12,12 +12,12 @@ COPY ./scripts /app/scripts
 COPY ./src /app/src
 COPY ./config /app/config
 
+
 RUN mkdir -p /app/workspace
 
-ENV FLASK_APP=api/dashboard/app.py
-ENV FLASK_RUN_HOST=0.0.0.0
 ENV PYTHONPATH=/app
+ENV FLASK_APP=/app/api/dashboard/app.py
 
 EXPOSE 5002
 
-CMD ["flask", "run", "--port=5002"]
+CMD ["flask", "run", "--host", "0.0.0.0", "--port", "5002"]

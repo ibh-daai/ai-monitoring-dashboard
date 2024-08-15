@@ -9,10 +9,9 @@ COPY ./api/ingestion /app/api/ingestion
 COPY ./src /app/src
 COPY ./config /app/config
 
-ENV FLASK_APP=api/ingestion/app.py
-ENV FLASK_RUN_HOST=0.0.0.0
 ENV PYTHONPATH=/app
+ENV FLASK_APP=/app/api/ingestion/app.py
 
 EXPOSE 5001
 
-CMD ["flask", "run", "--port=5001"]
+CMD ["flask", "run", "--host", "0.0.0.0", "--port", "5001"]

@@ -12,10 +12,10 @@ services:
       - ./config:/app/config
       - ./scripts:/app/scripts
       - ./workspace:/app/workspace
+    env_file:
+      - .env
     environment:
-      - MONGO_URI=${MONGO_URI}
-      - SECRET_KEY=${SECRET_KEY}
-      - EVIDENTLY_UI_URL=http://localhost:8000
+      - FLASK_APP=/app/api/dashboard/app.py
     depends_on:
       - mongodb
 
@@ -24,10 +24,9 @@ services:
       context: .
       dockerfile: frontend/dashboard/Dockerfile
     ports:
-      - "3000:3000"
-    environment:
-      - REACT_APP_API_URL=http://localhost:5002
-      - REACT_APP_DASHBOARD_URL=http://localhost:8000
+      - "${DASHBOARD_FRONTEND_PORT}:3000"
+    env_file:
+      - .env
 
   evidently_ui:
     build:
@@ -38,12 +37,10 @@ services:
     volumes:
       - ./workspace:/app/workspace
     command: ["evidently", "ui", "--host", "0.0.0.0"]
-    environment:
-      - EVIDENTLY_WORKSPACE=/app/workspace
-      - PYTHONUNBUFFERED=1
+    env_file:
+      - .env
 
-
-  data_ingestion_api: 
+  data_ingestion_api:
     build:
       context: .
       dockerfile: api/ingestion/Dockerfile
@@ -53,12 +50,10 @@ services:
       - ./api/ingestion:/app/api/ingestion
       - ./src:/app/src
       - ./config:/app/config
+    env_file:
+      - .env
     environment:
-      - MONGO_URI=${MONGO_URI}
-      - SECRET_KEY=${SECRET_KEY}
-      # - MODEL_CONFIG_PATH=/app/config/config.json
-      # - MAX_CONTENT_LENGTH=16777216
-      # - CORS_ORIGINS=http://localhost:3001
+      - FLASK_APP=/app/api/ingestion/app.py
     depends_on:
       - mongodb
 
@@ -67,23 +62,20 @@ services:
       context: .
       dockerfile: frontend/ingestion/Dockerfile
     ports:
-      - "3001:3001"
-    environment:
-      - REACT_APP_API_URL=http://localhost:5001
-      # - PORT=3001
+      - "${INGESTION_FRONTEND_PORT}:3001"
+    env_file:
+      - .env
 
   mongodb:
     image: mongo:latest
     ports:
-      - "27017:27017"
+      - "27017:27016"
     volumes:
-      - ./data:/data/db
+      - mongodb_data:/data/db
 
 volumes:
   mongodb_data:
 
 networks:
   default:
-      name: app_network
-
-      
+    name: monitoring-network

@@ -92,7 +92,7 @@ Defines the mapping of data columns to required schema properties. Only the valu
 ```
 
 ### Age Filtering (`age_filtering`)
-Specifies the age filtering settings for the monitoring system. The `filter_type` field should be set to one of `default` | `statistical` | `custom`. The `custom_ranges` field should be set to an array of objects, each containing the `min` and `max` values for the age range. *Notes: The `custom_ranges` field will only be used if the `filter_type` is set to `custom`. If an invalid `filter_type` is entered, `default` will be chosen*
+Specifies the age filtering settings for the monitoring system. The `filter_type` field should be set to one of `default` | `custom`. The `custom_ranges` field should be set to an array of objects, each containing the `min` and `max` values for the age range. *Notes: The `custom_ranges` field will only be used if the `filter_type` is set to `custom`. If an invalid `filter_type` is entered, `default` will be chosen*
 
 - **filter_type** (`string`): Type of age filtering to be applied.
 
@@ -100,8 +100,6 @@ Specifies the age filtering settings for the monitoring system. The `filter_type
     1. Under 18
     2. 18-65
     3. Over 65
-
-  - **`statistical`**: Age filtering based on statistical analysis: Split into 3 terciles based on the age distribution, i.e. 33% of the data in each group.
 
   - **`custom`**: Custom age filtering based on the `custom_ranges` field.
     1. { "min": x1, "max": y1 }
@@ -123,7 +121,12 @@ Specifies the age filtering settings for the monitoring system. The `filter_type
 
 ### Tests
 
-Enables specific tests for regression and classification. To add tests, include the name of the test in its corresponding category (and the params if desired/required), as seen below and in the example to follow. For more information on any test, please check [Evidently AI](https://docs.evidentlyai.com/reference/all-tests). ***Notes:*** *When doing a column specific test, use the exact name of the column in your Dataframe, NOT the generic config name.  If your model is either not regression or not classification, please still include the section titles (leave the lists empty)** The tests to choose from are:
+Enables specific tests for regression and classification. To add tests, include the name of the test in its corresponding category (and the params if desired/required), as seen below and in the example to follow. For more information on any test, please check [Evidently AI](https://docs.evidentlyai.com/reference/all-tests). 
+
+The generic thresholds for the tests are +-10% for regression and +-20% for classification. If you would like to set your own threshold for certain tests, you can use set the optional parameters of `gte` and `lte` to set the threshold, greater than or equal to and less than or equal to, respectively. Meaning, if you set the `gte` to 0.5, any value less than 0.5 will be flagged as an error. You set the success thresholds, and the system will infer the failure thresholds.
+
+***Notes:*** *When doing a column specific test, use the exact name of the column in your Dataframe, NOT the generic config name.  If your model is either not regression or not classification, please still include the section titles (leave the lists empty)** The tests to choose from are:
+
 #### Data Quality Tests
 -   **`num_rows`**: Checks the number of rows in the dataset against the reference data.
 
@@ -289,7 +292,14 @@ To add a test, include the name of the test in its corresponding category, and a
       { "name": "num_drifted_cols" },
       { "name": "share_drifted_cols" }
     ],
-    "regression_tests": [{ "name": "mae" }],
+    "regression_tests": [
+      { 
+        "name": "mae",
+        "params": {
+          "lte": 9.0 // SET YOUR OWN THRESHOLD
+        }
+      }
+    ],
     "classification_tests": [
       { "name": "accuracy" },
       { "name": "precision" },

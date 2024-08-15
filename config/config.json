@@ -31,11 +31,11 @@
     "timestamp": null
   },
   "age_filtering": {
-    "filter_type": "statistical",
+    "filter_type": "custom",
     "custom_ranges": [
-      { "min": 0, "max": 0 },
-      { "min": 0, "max": 0 },
-      { "min": 0, "max": 0 }
+      { "min": 0, "max": 120 },
+      { "min": 120, "max": 180 },
+      { "min": 180, "max": 300 }
     ]
   },
   "tests": {
@@ -131,7 +131,14 @@
       { "name": "num_drifted_cols" },
       { "name": "share_drifted_cols" }
     ],
-    "regression_tests": [{ "name": "mae" }],
+    "regression_tests": [
+      { 
+        "name": "mae",
+        "params": {
+          "lte": 9.0
+        }
+      }
+    ],
     "classification_tests": [
       { "name": "accuracy" },
       { "name": "precision" },

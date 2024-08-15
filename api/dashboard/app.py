@@ -47,11 +47,6 @@ def get_filters(config: dict) -> dict:
         custom_ranges = config["age_filtering"]["custom_ranges"]
         range_list = [f"[{range_['min']}-{range_['max']}]" for range_ in custom_ranges]
         strata_mapping["age"] = range_list
-    elif config["age_filtering"]["filter_type"] == "statistical":
-        strata_mapping["age"] = [
-            f'[{details["statistical_terciles"][i]["min"]}-{details["statistical_terciles"][i]["max"]}]'
-            for i in range(3)
-        ]
     else:
         strata_mapping["age"] = [
             "[0-18]",
