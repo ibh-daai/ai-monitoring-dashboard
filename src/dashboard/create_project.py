@@ -174,8 +174,8 @@ def create_metric_panels(config: dict, tags: list, project) -> None:
             }
         )
 
-    # sort the panel info by category
-    sorted_panel_info = sorted(panel_info, key=lambda x: x["category"])
+    # sort the panel info by category in reverse order
+    sorted_panel_info = sorted(panel_info, key=lambda x: x["category"], reverse=True)
 
     current_category = None
 
