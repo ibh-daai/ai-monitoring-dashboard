@@ -19,7 +19,6 @@ def load_details(file_path=DETAILS_FILE_PATH) -> dict:
     """
     default_content = {
         "num_rows": 0,
-        "statistical_terciles": [{"min": 0, "max": 0}, {"min": 0, "max": 0}, {"min": 0, "max": 0}],
         "hospital_unique_values": [],
         "sex_unique_values": [],
         "instrument_type_unique_values": [],
@@ -54,29 +53,12 @@ def update_details(data: pd.DataFrame, config: dict, details: dict) -> dict:
 
     if details["num_rows"] == 0:
         details["num_rows"] = len(data)
-        update_terciles(data, config, details)
 
     update_unique_values(data, config, details)
     set_categorical_columns(data, config, details)
 
     return details
 
-
-def update_terciles(data: pd.DataFrame, config: dict, details: dict) -> None:
-    """
-    Update the statistical terciles in the details dictionary.
-    """
-    if details["statistical_terciles"][0]["min"] == 0:
-        ages = data[config["columns"]["age"]].sort_values()
-        n = len(ages)
-        tercile_size = n // 3
-
-        details["statistical_terciles"][0]["min"] = int(ages.min())
-        details["statistical_terciles"][0]["max"] = int(ages.iloc[tercile_size - 1])
-        details["statistical_terciles"][1]["min"] = int(ages.iloc[tercile_size])
-        details["statistical_terciles"][1]["max"] = int(ages.iloc[2 * tercile_size - 1])
-        details["statistical_terciles"][2]["min"] = int(ages.iloc[2 * tercile_size])
-        details["statistical_terciles"][2]["max"] = int(ages.max())
 
 
 def update_unique_values(data: pd.DataFrame, config: dict, details: dict) -> None:

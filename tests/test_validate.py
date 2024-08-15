@@ -45,7 +45,6 @@ def mock_details():
     """
     return {
         "num_rows": 5,
-        "statistical_terciles": [{"min": 0, "max": 0}, {"min": 0, "max": 0}, {"min": 0, "max": 0}],
         "hospital_unique_values": ["hospital1", "hospital2"],
         "sex_unique_values": ["M", "F"],
         "instrument_type_unique_values": ["type1", "type2"],

@@ -70,7 +70,6 @@ def mock_config():
 def mock_details():
     return {
         "num_rows": 5,
-        "statistical_terciles": [{"min": 0, "max": 0}, {"min": 0, "max": 0}, {"min": 0, "max": 0}],
         "hospital_unique_values": ["clinic1", "clinic2", "clinic3"],
         "sex_unique_values": ["M", "F"],
         "instrument_type_unique_values": [],

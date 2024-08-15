@@ -28,28 +28,8 @@ class DataSplitter:
         filter_type = config["age_filtering"].get("filter_type", "default")
 
         try:
-            # split the data into three evenly sized terciles
-            if filter_type == "statistical":
-                filter_dict[
-                    f"[{details['statistical_terciles'][0]['min']}-{details['statistical_terciles'][0]['max']}]"
-                ] = data[
-                    (data[config["columns"]["age"]] >= data[config["columns"]["age"]].min())
-                    & (data[config["columns"]["age"]] <= details["statistical_terciles"][0]["max"])
-                ]
-                filter_dict[
-                    f"[{details['statistical_terciles'][1]['min']}-{details['statistical_terciles'][1]['max']}]"
-                ] = data[
-                    (data[config["columns"]["age"]] >= details["statistical_terciles"][1]["min"])
-                    & (data[config["columns"]["age"]] <= details["statistical_terciles"][1]["max"])
-                ]
-                filter_dict[
-                    f"[{details['statistical_terciles'][2]['min']}-{details['statistical_terciles'][2]['max']}]"
-                ] = data[
-                    (data[config["columns"]["age"]] >= details["statistical_terciles"][2]["min"])
-                    & (data[config["columns"]["age"]] <= data[config["columns"]["age"]].max())
-                ]
             # split the data into custom ranges
-            elif filter_type == "custom":
+            if filter_type == "custom":
                 custom_ranges = config["age_filtering"]["custom_ranges"]
 
                 # split the data into custom ranges specified in the config

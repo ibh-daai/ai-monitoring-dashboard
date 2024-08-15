@@ -15,7 +15,7 @@ services:
     environment:
       - MONGO_URI=${MONGO_URI}
       - SECRET_KEY=${SECRET_KEY}
-      - EVIDENTLY_UI_URL=http://localhost:8000
+      - EVIDENTLY_UI_URL=http://localhost:8000 # http://evidently_ui:8000 
     depends_on:
       - mongodb
 
@@ -34,7 +34,7 @@ services:
       context: .
       dockerfile: Dockerfile.evidently
     ports:
-      - "8000:8000"
+      - "8000:8000" # remove this mapping if you want to access the UI from the host
     volumes:
       - ./workspace:/app/workspace
     command: ["evidently", "ui", "--host", "0.0.0.0"]
@@ -84,6 +84,6 @@ volumes:
 
 networks:
   default:
-      name: app_network
+      name: app_network # more descriptive name for the network
 
       

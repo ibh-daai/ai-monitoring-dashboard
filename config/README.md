@@ -92,7 +92,7 @@ Defines the mapping of data columns to required schema properties. Only the valu
 ```
 
 ### Age Filtering (`age_filtering`)
-Specifies the age filtering settings for the monitoring system. The `filter_type` field should be set to one of `default` | `statistical` | `custom`. The `custom_ranges` field should be set to an array of objects, each containing the `min` and `max` values for the age range. *Notes: The `custom_ranges` field will only be used if the `filter_type` is set to `custom`. If an invalid `filter_type` is entered, `default` will be chosen*
+Specifies the age filtering settings for the monitoring system. The `filter_type` field should be set to one of `default` | `custom`. The `custom_ranges` field should be set to an array of objects, each containing the `min` and `max` values for the age range. *Notes: The `custom_ranges` field will only be used if the `filter_type` is set to `custom`. If an invalid `filter_type` is entered, `default` will be chosen*
 
 - **filter_type** (`string`): Type of age filtering to be applied.
 
@@ -100,8 +100,6 @@ Specifies the age filtering settings for the monitoring system. The `filter_type
     1. Under 18
     2. 18-65
     3. Over 65
-
-  - **`statistical`**: Age filtering based on statistical analysis: Split into 3 terciles based on the age distribution, i.e. 33% of the data in each group.
 
   - **`custom`**: Custom age filtering based on the `custom_ranges` field.
     1. { "min": x1, "max": y1 }

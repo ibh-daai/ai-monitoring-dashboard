@@ -54,7 +54,7 @@ def create_dashboard(config):
     create_or_update(workspace_instance.workspace, config)
 
 
-@flow(name="Monitoring Flow", task_runner=SequentialTaskRunner())
+@flow(name="Monitoring Flow", task_runner=SequentialTaskRunner()) # dont make it sequential
 def monitoring_flow():
     timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
     config = load_configuration()
