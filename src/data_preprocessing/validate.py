@@ -122,7 +122,8 @@ def validate_data(data: pd.DataFrame, config: dict) -> bool:
 
     # if the DataFrame is empty, raise an error
     if data.empty:
-        logger.warning("DataFrame is empty.")
+        logger.info("No new data available. Pipeline will exit normally.")
+        return False
 
     # call helper functions to extract mappings and columns
     mapping = config_mappings(config["columns"])

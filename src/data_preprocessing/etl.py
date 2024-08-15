@@ -20,12 +20,8 @@ def main_load_and_validate(config: dict) -> pd.DataFrame:
     data = fetch_and_merge(config)
 
     # Validate the data
-    try:
-        validate_data(data, config)
-    except ValueError as e:
-        logger.error(f"Data validation failed: {e}")
-        raise
-
+    if not validate_data(data, config):
+        return None
     return data
 
 
@@ -67,6 +63,9 @@ def etl_pipeline(config: dict) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
     logger.info("Starting ETL pipeline...")
     data = main_load_and_validate(config)
+    if data is None:
+        logger.info("No new data available. Pipeline will exit normally.")
+        return None, None
     logger.info("Data loaded and validated successfully.")
     reference_data = reference_load_and_validate(config, data)
     logger.info("Reference data loaded and validated successfully.")

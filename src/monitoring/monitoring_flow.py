@@ -54,15 +54,19 @@ def create_dashboard(config):
     create_or_update(workspace_instance.workspace, config)
 
 
-@flow(name="Monitoring Flow", task_runner=SequentialTaskRunner()) # dont make it sequential
+@flow(name="Monitoring Flow", task_runner=SequentialTaskRunner())  # dont make it sequential
 def monitoring_flow():
     timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
     config = load_configuration()
     details = load_data_details()
     data, reference_data = run_etl(config)
+
+    if data is None:
+        logger.info("No new data available. Monitoring flow completed successfully with no updates.")
+        return
+
     generate_snapshots(data, reference_data, config, timestamp, details)
     create_dashboard(config)
-
     logger.info("Monitoring flow completed successfully.")
 
 
