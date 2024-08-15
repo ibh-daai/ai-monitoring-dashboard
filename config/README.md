@@ -121,7 +121,12 @@ Specifies the age filtering settings for the monitoring system. The `filter_type
 
 ### Tests
 
-Enables specific tests for regression and classification. To add tests, include the name of the test in its corresponding category (and the params if desired/required), as seen below and in the example to follow. For more information on any test, please check [Evidently AI](https://docs.evidentlyai.com/reference/all-tests). ***Notes:*** *When doing a column specific test, use the exact name of the column in your Dataframe, NOT the generic config name.  If your model is either not regression or not classification, please still include the section titles (leave the lists empty)** The tests to choose from are:
+Enables specific tests for regression and classification. To add tests, include the name of the test in its corresponding category (and the params if desired/required), as seen below and in the example to follow. For more information on any test, please check [Evidently AI](https://docs.evidentlyai.com/reference/all-tests). 
+
+The generic thresholds for the tests are +-10% for regression and +-20% for classification. If you would like to set your own threshold for certain tests, you can use set the optional parameters of `gte` and `lte` to set the threshold, greater than or equal to and less than or equal to, respectively. Meaning, if you set the `gte` to 0.5, any value less than 0.5 will be flagged as an error. You set the success thresholds, and the system will infer the failure thresholds.
+
+***Notes:*** *When doing a column specific test, use the exact name of the column in your Dataframe, NOT the generic config name.  If your model is either not regression or not classification, please still include the section titles (leave the lists empty)** The tests to choose from are:
+
 #### Data Quality Tests
 -   **`num_rows`**: Checks the number of rows in the dataset against the reference data.
 
@@ -287,7 +292,14 @@ To add a test, include the name of the test in its corresponding category, and a
       { "name": "num_drifted_cols" },
       { "name": "share_drifted_cols" }
     ],
-    "regression_tests": [{ "name": "mae" }],
+    "regression_tests": [
+      { 
+        "name": "mae",
+        "params": {
+          "lte": 9.0 // SET YOUR OWN THRESHOLD
+        }
+      }
+    ],
     "classification_tests": [
       { "name": "accuracy" },
       { "name": "precision" },

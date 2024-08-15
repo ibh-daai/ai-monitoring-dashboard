@@ -32,21 +32,22 @@ class DataSplitter:
             if filter_type == "custom":
                 custom_ranges = config["age_filtering"]["custom_ranges"]
 
+                overall_min_age = min(custom_range["min"] for custom_range in custom_ranges)
+                overall_max_age = max(custom_range["max"] for custom_range in custom_ranges)
+
                 # split the data into custom ranges specified in the config
                 for custom_range in custom_ranges:
                     # log a warning if the custom range is less than the minimum age or greater than the maximum age
-                    if (
-                        custom_range["min"] < data[config["columns"]["age"]].min()
-                        or custom_range["max"] > data[config["columns"]["age"]].max()
-                    ):
+                    if custom_range["min"] < overall_min_age or custom_range["max"] > overall_max_age:
                         logger.warning(f"Age {custom_range} is outside the data age range.")
 
                     key = f"[{custom_range['min']}-{custom_range['max']}]"
                     filter_dict[key] = data[
-                        (data[config["columns"]["age"]] >= custom_range["min"])
+                        (data[config["columns"]["age"]] > custom_range["min"])
                         & (data[config["columns"]["age"]] <= custom_range["max"])
                     ]
                 # send a warning if the custom ranges do not cover all the data
+
                 if sum([len(filter_dict[key]) for key in filter_dict.keys()]) != len(data):
                     logger.warning("Custom age ranges do not cover all data. Consider adding more ranges.")
 
