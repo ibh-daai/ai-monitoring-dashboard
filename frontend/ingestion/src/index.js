@@ -6,13 +6,13 @@ import App from './App';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#02B3E6', // Customize with your primary color
+      main: '#02B3E6', 
     },
     secondary: {
-      main: '#9ACA3B', // Customize with your secondary color
+      main: '#9ACA3B',
     },
     tertiary: {
-      main: '#00599D', // Customize with your tertiary color
+      main: '#00599D',
     },
   },
   typography: {

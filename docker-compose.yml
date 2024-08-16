@@ -24,9 +24,9 @@ services:
       context: .
       dockerfile: frontend/dashboard/Dockerfile
     ports:
-      - "${DASHBOARD_FRONTEND_PORT}:3000"
-    env_file:
-      - .env
+      - "${DASHBOARD_FRONTEND_PORT}:80"
+    environment:
+      - REACT_APP_API_URL=${DASHBOARD_API_URL}
 
   evidently_ui:
     build:
@@ -62,9 +62,9 @@ services:
       context: .
       dockerfile: frontend/ingestion/Dockerfile
     ports:
-      - "${INGESTION_FRONTEND_PORT}:3001"
-    env_file:
-      - .env
+      - "${INGESTION_FRONTEND_PORT}:80"
+    environment:
+      - REACT_APP_API_URL=${INGESTION_API_URL}
 
   mongodb:
     image: mongo:latest

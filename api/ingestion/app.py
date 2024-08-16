@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 app.config.from_object("api.ingestion.config.Config")
 # app.secret_key = app.config["SECRET_KEY"]
+
 CORS(
     app,
     supports_credentials=True,
