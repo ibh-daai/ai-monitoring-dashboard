@@ -477,6 +477,8 @@ Provides info about the model that will be displayed on the monitoring dashboard
 
 -   **disclaimer** (`string`): Disclaimer for the model.
 
+-   **fact_card** (`string`): Name of the model fact card image file. Can be set to `null` if no fact card is available. The image file should be placed in the `frontend/dashboard/images` directory. The image must be a `.jpg`, `.jpeg`, or `.png` file. If the image is not found, the system will default to the disclaimer text above.
+
 
 #### Example
 ```json
@@ -492,7 +494,8 @@ Provides info about the model that will be displayed on the monitoring dashboard
         "url": "https://www.rsna.org/education/ai-resources-and-training/ai-image-challenge/rsna-pediatric-bone-age-challenge-2017"
       }
     ],
-    "disclaimer": "This model has not been evaluated to assess potential performance differentials across race and ethnicity. Socioeconomic factors are known to play a role in the development of children."
+    "disclaimer": "This model has not been evaluated to assess potential performance differentials across race and ethnicity. Socioeconomic factors are known to play a role in the development of children.",
+    "fact_card": "ModelFactCard.jpg"
   },
 ```
 

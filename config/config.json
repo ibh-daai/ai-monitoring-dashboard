@@ -132,7 +132,7 @@
       { "name": "share_drifted_cols" }
     ],
     "regression_tests": [
-      { 
+      {
         "name": "mae",
         "params": {
           "lte": 9.0
@@ -223,11 +223,10 @@
         "url": "https://www.rsna.org/education/ai-resources-and-training/ai-image-challenge/rsna-pediatric-bone-age-challenge-2017"
       }
     ],
-    "disclaimer": "This model has not been evaluated to assess potential performance differentials across race and ethnicity. Socioeconomic factors are known to play a role in the development of children."
+    "disclaimer": "This model has not been evaluated to assess potential performance differentials across race and ethnicity. Socioeconomic factors are known to play a role in the development of children.",
+    "fact_card": "ModelFactSheet.jpg"
   },
   "alerts": {
-    "emails": [
-      "joel.mills@thp.ca"
-    ]
+    "emails": ["joel.mills@thp.ca"]
   }
 }
