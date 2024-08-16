@@ -20,6 +20,7 @@ from evidently.renderers.html_widgets import WidgetSize
 from evidently import metrics
 from evidently.suite.base_suite import Snapshot
 import os
+import base64
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -40,6 +41,8 @@ THP Colors:
     - Blue: #00599D
     - Turquoise: #5AC3B3
 """
+
+MAX_URI_SIZE = 2 * 1024 * 1024
 
 
 def create_summary_panels(config: dict, tags: list, project) -> None:
@@ -429,12 +432,50 @@ def create_bottom_panels(config: dict, tags: list, project) -> None:
         )
     )
 
+    def image_to_data_uri(file_path):
+        with open(file_path, "rb") as image_file:
+            encoded_string = base64.b64encode(image_file.read()).decode("utf-8")
+            file_extension = os.path.splitext(file_path)[1].lower()
+            mime_type = {".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png"}.get(
+                file_extension, "application/octet-stream"
+            )
+            data_uri = f"data:{mime_type};base64,{encoded_string}"
+
+            if len(data_uri) > MAX_URI_SIZE:
+                raise ValueError(
+                    f"Data URI size ({len(data_uri)} bytes) exceeds the maximum allowed size ({MAX_URI_SIZE} bytes)"
+                )
+
+        return data_uri
+
     disclaimer = config["info"]["disclaimer"]
     disclaimer_text = f"""
     <div style='background-color: #f0f8ff; padding: 1px; border-radius: 5px;'>
         <p style='color: #00599D; font-size: 18px;'>{disclaimer}</p>
     </div>
     """
+
+    if config["info"]["fact_card"]:
+        # Check if the file exists in the public folder
+        full_path = os.path.join("frontend/dashboard/public/images/", config["info"]["fact_card"])
+        if os.path.exists(full_path):
+            # Check if the image is jpg, jpeg, or png
+            if full_path.lower().endswith((".jpg", ".jpeg", ".png")):
+                try:
+                    data_uri = image_to_data_uri(full_path)
+                    disclaimer_text = f"""
+                    <div style='background-color: #f0f8ff; padding: 1px; border-radius: 5px;'>
+                        <img src='{data_uri}' alt='disclaimer' style='width: 100%; height: auto;'>
+                    </div>
+                    """
+                except ValueError as e:
+                    logger.warning(f"Image data URI too large: {e}... using text disclaimer")
+                except Exception as e:
+                    logger.warning(f"Error converting image to data URI: {e}... using text disclaimer")
+            else:
+                logger.warning(f"Invalid image file type: {full_path}... using text disclaimer")
+        else:
+            logger.warning(f"Image file not found: {full_path}... using text disclaimer")
 
     project.dashboard.add_panel(
         DashboardPanelCounter(
@@ -452,7 +493,6 @@ def log_snapshots(project, workspace):
     Log the JSON snapshots to the workspace.
 
     Currently, the snapshots are stored in the snapshots directory.
-    In the future, they will be stored in AWS S3, and this function will be updated to load them from there.
     """
     snapshots_dir = os.path.abspath(os.path.join(__file__, "..", "../../snapshots"))
     for timestamp in os.listdir(snapshots_dir):
