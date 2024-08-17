@@ -105,7 +105,9 @@ def generate_snapshots():
         logger.error(f"Failed to load data: {e}")
         exit(1)
 
-    timestamp = datetime.now().strftime("%Y_%m_%d_%H_%M")
+    # timestamp = datetime.now().strftime("%Y_%m_%d_%H_%M")
+    # timestamp = "2024_01_01_00_00"
+
 
     splitter = DataSplitter()
 
