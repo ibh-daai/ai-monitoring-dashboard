@@ -14,10 +14,12 @@ __pycache__/
 *.ipynb
 
 # Data and snapshots
-/data
-/snapshots
-/test_data
-/workspace
+data/
+snapshots/
+test_data/
+workspace/
+real_data/
+bone_age_data/
 
 # Helper scripts
 

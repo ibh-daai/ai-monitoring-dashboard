@@ -41,7 +41,7 @@
   "tests": {
     "data_quality_tests": [
       { "name": "num_cols" },
-      { "name": "num_empty_rows" },
+      { "name": "num_rows" },
       { "name": "num_duplicated_rows" },
       { "name": "num_duplicated_cols" },
       { "name": "col_types" },
