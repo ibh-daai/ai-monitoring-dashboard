@@ -136,6 +136,11 @@
       "size": "half"
     },
     {
+      "name": "prediction_groundtruth_drift",
+      "type": "line",
+      "size": "full"
+    },
+    {
       "name": "mae",
       "type": "line",
       "size": "full"
