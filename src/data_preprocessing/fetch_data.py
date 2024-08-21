@@ -46,6 +46,12 @@ def process_duplicates(df: pd.DataFrame, config: dict) -> pd.DataFrame:
 
     try:
         timestamp_col = get_timestamp_col(config)
+        if timestamp_col not in df.columns:
+            timestamp_col = "timestamp"
+            if timestamp_col not in df.columns:
+                logger.error(f"Timestamp column not found in the DataFrame.")
+                df.drop_duplicates(inplace=True)
+                return df
         df.sort_values(by=timestamp_col, ascending=False, inplace=True)
         df.drop_duplicates(subset=config["columns"]["study_id"], keep="first", inplace=True)
     except Exception as e:
@@ -109,7 +115,14 @@ def fetch_and_merge(config: dict) -> pd.DataFrame:
 
     # Drop the timestamp column from the labels
     timestamp_col = get_timestamp_col(config)
-    labels.drop(columns=[timestamp_col], inplace=True)
+    if timestamp_col not in labels.columns:
+        timestamp_col = "timestamp"
+        if timestamp_col not in labels.columns:
+            logger.error(f"Timestamp column not found in the DataFrame.")
+        else:
+            labels.drop(columns=[timestamp_col], inplace=True)
+    else:
+        labels.drop(columns=[timestamp_col], inplace=True)
 
     # Merge results and labels data
     study_id_col = config["columns"]["study_id"]

@@ -386,6 +386,8 @@ Here are some sample images of the dashboard panels:
 
 - **`data_drift`**: Plots the dataset drift status over time.
 
+- **`prediction_groundtruth_drift`**: Plots the prediction and ground truth drift calculation over time.
+
 - **`r2`**: Plots the R2 score of the regression model over time.
 
 - **`rmse`**: Plots the Root Mean Squared Error (RMSE) of the regression model over time.

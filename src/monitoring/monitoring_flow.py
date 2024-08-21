@@ -56,7 +56,8 @@ def create_dashboard(config):
 
 @flow(name="Monitoring Flow", task_runner=SequentialTaskRunner())  # dont make it sequential
 def monitoring_flow():
-    timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+    # timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+    timestamp = "2024-07-01T00:00:00"
     config = load_configuration()
     details = load_data_details()
     data, reference_data = run_etl(config)

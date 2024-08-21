@@ -223,6 +223,37 @@ def create_metric_panels(config: dict, tags: list, project) -> None:
                     size=panel["size"],
                 )
             )
+        elif "ColumnDriftMetric" in panel["field_path"]:
+            # create the prediction and ground truth column drift panel
+            if config["model_config"]["model_type"]["regression"]:
+                prediction_column = config["columns"]["predictions"]["regression_prediction"]
+                label_column = config["columns"]["labels"]["regression_label"]
+            else:
+                prediction_column = config["columns"]["predictions"]["classification_prediction"]
+                label_column = config["columns"]["labels"]["classification_label"]
+
+            project.dashboard.add_panel(
+                DashboardPanelPlot(
+                    title=panel["panel_title"],
+                    filter=ReportFilter(metadata_values={}, tag_values=panel["tags"]),
+                    values=[
+                        PanelValue(
+                            metric_id=panel["metric_id"],
+                            metric_args={"column_name.name": prediction_column},
+                            field_path=eval(panel["field_path"]),
+                            legend="Prediction",
+                        ),
+                        PanelValue(
+                            metric_id=panel["metric_id"],
+                            metric_args={"column_name.name": label_column},
+                            field_path=eval(panel["field_path"]),
+                            legend="Ground Truth",
+                        ),
+                    ],
+                    plot_type=panel["plot_type"],
+                    size=panel["size"],
+                )
+            )
         else:
             # create the panel with only the current value
             project.dashboard.add_panel(

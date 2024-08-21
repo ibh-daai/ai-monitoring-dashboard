@@ -80,8 +80,8 @@ def apply_filters():
         logger.info("No filters applied")
         update_panels(ws, config)
 
-    dashboard_url = f"http://localhost:8000/projects/{project.id}"
-    return jsonify({"status": "updated"})
+    dashboard_url = f"http://localhost:3000/dashboard"
+    return jsonify({"status": "updated", "filtered_url": dashboard_url})
 
 
 @app.route("/get_dashboard_url", methods=["GET"])
