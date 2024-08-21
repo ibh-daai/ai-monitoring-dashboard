@@ -33,9 +33,28 @@ const FilterOverlay = ({ onApplyFilters, colors }) => {
     setFilters({ ...filters, [name]: value });
   };
 
+  // const handleApply = () => {
+  //   setLoading(true);
+  //   onApplyFilters(filters).finally(() => setLoading(false));
+  // };
+
   const handleApply = () => {
     setLoading(true);
-    onApplyFilters(filters).finally(() => setLoading(false));
+    fetch('http://localhost:5002/apply_filters', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(filters),
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.filtered_url) {
+          window.open(data.filtered_url, '_blank');
+        }
+      })
+      .catch(error => console.error('Error:', error))
+      .finally(() => setLoading(false));
   };
 
   const formatCategory = (category) => {
