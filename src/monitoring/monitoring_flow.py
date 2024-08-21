@@ -1,20 +1,20 @@
 """
-Prefect flow for monitoring dashboard pipeline.
+Prefect flow for monitoring dashboard pipeline with parallel snapshot generation.
 """
 
 from prefect import flow, task
-from prefect.task_runners import SequentialTaskRunner
+from prefect.task_runners import ConcurrentTaskRunner
 import logging
 from datetime import datetime
-
 import warnings
 from sklearn.exceptions import UndefinedMetricWarning
 
 from src.utils.config_manager import load_config
 from scripts.data_details import load_details
 from src.data_preprocessing.etl import etl_pipeline
-from src.dashboard.generate_snapshots import generate_stratified_reports, generate_stratified_tests
 from src.monitoring.stratify import DataSplitter
+from src.monitoring.metrics import generate_report
+from src.monitoring.tests import generate_tests
 from src.dashboard.workspace_manager import WorkspaceManager
 from src.dashboard.create_project import create_or_update
 
@@ -38,13 +38,38 @@ def run_etl(config):
 
 
 @task
-def generate_snapshots(data, reference_data, config, timestamp, details):
+def split_data(data, config, details, operation):
     splitter = DataSplitter()
-    generate_stratified_reports(
-        data, reference_data, config, config["model_config"]["model_type"], timestamp, splitter, details
+    return splitter.split_data(data, config, details, operation)
+
+
+@task
+def generate_report_for_stratification(
+    data_stratification, reference_data, config, model_type, key, timestamp, details
+):
+    logger.info(f"Generating reports for {key}")
+    generate_report(
+        data_stratification,
+        reference_data,
+        config,
+        model_type,
+        folder_path=f"/reports/{key}",
+        timestamp=timestamp,
+        details=details,
     )
-    generate_stratified_tests(
-        data, reference_data, config, config["model_config"]["model_type"], timestamp, splitter, details
+
+
+@task
+def generate_test_for_stratification(data_stratification, reference_data, config, model_type, key, timestamp, details):
+    logger.info(f"Generating tests for {key}")
+    generate_tests(
+        data_stratification,
+        reference_data,
+        config,
+        model_type,
+        folder_path=f"/tests/{key}",
+        timestamp=timestamp,
+        details=details,
     )
 
 
@@ -54,10 +79,9 @@ def create_dashboard(config):
     create_or_update(workspace_instance.workspace, config)
 
 
-@flow(name="Monitoring Flow", task_runner=SequentialTaskRunner())  # dont make it sequential
+@flow(name="Monitoring Flow", task_runner=ConcurrentTaskRunner())
 def monitoring_flow():
-    # timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-    timestamp = "2024-07-01T00:00:00"
+    timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
     config = load_configuration()
     details = load_data_details()
     data, reference_data = run_etl(config)
@@ -66,7 +90,35 @@ def monitoring_flow():
         logger.info("No new data available. Monitoring flow completed successfully with no updates.")
         return
 
-    generate_snapshots(data, reference_data, config, timestamp, details)
+    # Split data for reports and tests concurrently
+    report_stratifications_future = split_data.submit(data, config, details, "report")
+    test_stratifications_future = split_data.submit(data, config, details, "test")
+
+    # Generate reports and tests concurrently
+    report_tasks = []
+    test_tasks = []
+
+    for stratifications_future, generation_task, task_list in [
+        (report_stratifications_future, generate_report_for_stratification, report_tasks),
+        (test_stratifications_future, generate_test_for_stratification, test_tasks),
+    ]:
+        stratifications = stratifications_future.result()
+        for key, data_stratification in stratifications.items():
+            task = generation_task.submit(
+                data_stratification,
+                reference_data,
+                config,
+                config["model_config"]["model_type"],
+                key,
+                timestamp,
+                details,
+            )
+            task_list.append(task)
+
+    # Wait for all tasks to complete
+    for task in report_tasks + test_tasks:
+        task.result()
+
     create_dashboard(config)
     logger.info("Monitoring flow completed successfully.")
 

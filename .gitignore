@@ -21,7 +21,6 @@ workspace/
 real_data/
 bone_age_data/
 
-
 # Helper scripts
 
 # API ingestion scripts
