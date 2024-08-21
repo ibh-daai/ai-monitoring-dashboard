@@ -122,6 +122,9 @@ def ingest_results():
 
         df = pd.read_csv(file)
 
+        if config["columns"]["timestamp"] and config["columns"]["timestamp"] in df.columns:
+            df[config["columns"]["timestamp"]] = pd.to_datetime(df[config["columns"]["timestamp"]])
+
         columns = get_column_mapping()
         model_config = get_model_config()
 
@@ -215,6 +218,10 @@ def ingest_labels():
             return jsonify({"message": "Invalid file."}), 400
 
         df = pd.read_csv(file)
+
+        if config["columns"]["timestamp"] and config["columns"]["timestamp"] in df.columns:
+            df[config["columns"]["timestamp"]] = pd.to_datetime(df[config["columns"]["timestamp"]])
+            
         columns = get_column_mapping()
         model_config = get_model_config()
 

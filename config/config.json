@@ -28,14 +28,19 @@
     "filter_type": "custom",
     "custom_ranges": [
       { "min": 0, "max": 75 },
-      { "min": 175, "max": 150 },
+      { "min": 75, "max": 150 },
       { "min": 150, "max": 300 }
     ]
   },
   "tests": {
     "data_quality_tests": [
       { "name": "num_cols" },
-      { "name": "num_empty_rows" },
+      {
+        "name": "num_rows",
+        "params": {
+          "gte": 10
+        }
+      },
       { "name": "num_duplicated_rows" },
       { "name": "num_duplicated_cols" },
       { "name": "col_types" },
@@ -81,12 +86,42 @@
     ],
     "classification_tests": [
       { "name": "accuracy" },
-      { "name": "precision" },
-      { "name": "recall" },
-      { "name": "f1" },
-      { "name": "tnr" },
-      { "name": "fpr" },
-      { "name": "fnr" }
+      {
+        "name": "precision",
+        "params": {
+          "gte": 0.7
+        }
+      },
+      {
+        "name": "recall",
+        "params": {
+          "gte": 0.7
+        }
+      },
+      {
+        "name": "f1",
+        "params": {
+          "gte": 0.6
+        }
+      },
+      {
+        "name": "tnr",
+        "params": {
+          "gte": 0.7
+        }
+      },
+      {
+        "name": "fpr",
+        "params": {
+          "lte": 0.3
+        }
+      },
+      {
+        "name": "fnr",
+        "params": {
+          "lte": 0.4
+        }
+      }
     ]
   },
   "dashboard_panels": [
@@ -98,11 +133,6 @@
     {
       "name": "num_rows",
       "type": "bar",
-      "size": "half"
-    },
-    {
-      "name": "num_drifted_cols",
-      "type": "line",
       "size": "half"
     },
     {

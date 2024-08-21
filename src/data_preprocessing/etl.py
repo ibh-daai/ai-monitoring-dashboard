@@ -33,7 +33,10 @@ def reference_load_and_validate(config: dict, data: pd.DataFrame) -> pd.DataFram
 
     reference_path = "data/reference_data.csv"
     if os.path.exists(reference_path):
-        reference_data = pd.read_csv(reference_path)
+        if config["columns"]["timestamp"]:
+            reference_data = pd.read_csv(reference_path, parse_dates=[config["columns"]["timestamp"]])
+        else:
+            reference_data = pd.read_csv(reference_path)
 
         # If the reference data is smaller than 50 rows, log a warning
         if len(reference_data) < 50:
