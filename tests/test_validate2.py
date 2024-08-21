@@ -1,6 +1,6 @@
 import pytest
 import pandas as pd
-from src.validate import validate_data
+from src.data_preprocessing.validate import validate_data
 
 
 @pytest.fixture
@@ -9,12 +9,9 @@ def mock_config():
     Fixture to mock the configuration file
     """
     return {
-        "model_config": {
-            "model_type": {"regression": False, "binary_classification": True}
-        },
+        "model_config": {"model_type": {"regression": False, "binary_classification": True}},
         "columns": {
             "study_id": "StudyID",
-            "model_id": "ModelID",
             "sex": "sex",
             "hospital": "hospital",
             "age": "age",
@@ -50,6 +47,21 @@ def mock_config():
 
 
 @pytest.fixture
+def mock_details():
+    """
+    Fixture to mock the details file
+    """
+    return {
+        "num_rows": 3,
+        "hospital_unique_values": ["hospital1", "hospital2"],
+        "sex_unique_values": ["M", "F"],
+        "instrument_type_unique_values": ["type1", "type2"],
+        "patient_class_unique_values": ["IP", "OP"],
+        "categorical_columns": ["sex", "hospital", "instrument_type", "patient_category", "ethnicity"],
+    }
+
+
+@pytest.fixture
 def correct_data():
     """
     Fixture to generate correct data for testing
@@ -57,7 +69,6 @@ def correct_data():
     return pd.DataFrame(
         {
             "StudyID": ["001", "002", "003"],
-            "ModelID": ["Model1", "Model1", "Model1"],
             "sex": ["M", "F", "M"],
             "hospital": ["hospital1", "hospital2", "hospital1"],
             "age": [9, 11, 34],
@@ -84,7 +95,6 @@ def including_regression():
     return pd.DataFrame(
         {
             "StudyID": ["001", "002", "003"],
-            "ModelID": ["Model1", "Model1", "Model1"],
             "sex": ["M", "F", "M"],
             "age": [9, 11, 34],
             "instrument_type": ["type1", "type2", "type1"],

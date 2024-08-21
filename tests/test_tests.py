@@ -1,6 +1,6 @@
 import pytest
 import pandas as pd
-from src.tests import generate_tests
+from src.monitoring.tests import generate_tests
 from unittest.mock import patch
 
 
@@ -10,12 +10,9 @@ def mock_config():
     Fixture to mock the configuration file
     """
     config = {
-        "model_config": {
-            "model_type": {"regression": False, "binary_classification": True}
-        },
+        "model_config": {"model_type": {"regression": False, "binary_classification": True}},
         "columns": {
             "study_id": "StudyID",
-            "model_id": "ModelID",
             "sex": "gender",
             "hospital": "clinic",
             "patient_class": "patient_category",
@@ -30,11 +27,6 @@ def mock_config():
             },
             "features": ["weight", "height", "blood_pressure"],
             "timestamp": "date",
-        },
-        "categorical_validation_rules": {
-            "gender": ["M", "F"],
-            "clinic": ["clinic1", "clinic2", "clinic3"],
-            "patient_category": ["IP", "OP"],
         },
         "tests": {
             "data_quality_tests": [
@@ -75,6 +67,18 @@ def mock_config():
 
 
 @pytest.fixture
+def mock_details():
+    return {
+        "num_rows": 5,
+        "hospital_unique_values": ["clinic1", "clinic2", "clinic3"],
+        "sex_unique_values": ["M", "F"],
+        "instrument_type_unique_values": [],
+        "patient_class_unique_values": ["IP", "OP"],
+        "categorical_columns": ["gender", "clinic", "patient_category"],
+    }
+
+
+@pytest.fixture
 def mock_data():
     """
     Fixture to generate mock data for testing
@@ -82,7 +86,6 @@ def mock_data():
     return pd.DataFrame(
         {
             "StudyID": [101, 102, 103, 104, 105],
-            "ModelID": [201, 202, 203, 204, 205],
             "gender": ["M", "F", "M", "F", "M"],
             "clinic": ["clinic1", "clinic2", "clinic1", "clinic2", "clinic1"],
             "patient_category": ["IP", "OP", "IP", "OP", "IP"],
@@ -104,7 +107,6 @@ def mock_reference_data():
     return pd.DataFrame(
         {
             "StudyID": [101, 102, 103, 104, 105],
-            "ModelID": [201, 202, 203, 204, 205],
             "gender": ["M", "F", "M", "F", "M"],
             "clinic": ["clinic1", "clinic2", "clinic1", "clinic2", "clinic1"],
             "patient_category": ["IP", "OP", "IP", "OP", "IP"],
@@ -119,13 +121,9 @@ def mock_reference_data():
 
 
 def test_generate_tests(mock_config, mock_data, mock_reference_data):
-    with patch("src.tests.data_tests") as mock_data_tests, patch(
-        "src.tests.classification_tests"
-    ) as mock_class_tests, patch(
-        "src.tests.regression_tests"
-    ) as mock_regression_tests, patch(
-        "builtins.open"
-    ), patch(
+    with patch("src.monitoring.tests.data_tests") as mock_data_tests, patch(
+        "src.monitoring.tests.classification_tests"
+    ) as mock_class_tests, patch("src.monitoring.tests.regression_tests") as mock_regression_tests, patch("builtins.open"), patch(
         "json.load",
         return_value={
             "data_quality": {
@@ -181,6 +179,7 @@ def test_generate_tests(mock_config, mock_data, mock_reference_data):
             model_type,
             "tests",
             "timestamp",
+            mock_details,
         )
 
         # Check that data tests and classification tests are called

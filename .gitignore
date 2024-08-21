@@ -1,14 +1,43 @@
+# Python virtual environment
 venv/
 
-.ds_store
+# macOS system files
+.DS_Store
 
-/data
-
-simulate_data.py
-test_report.ipynb
-
+# Python cache files
 __pycache__/
-/snapshots
-/workspace
-/data_generator.ipynb
-add_panels.py
+
+# Environment variables
+.env
+
+# Jupyter notebooks
+*.ipynb
+
+# Data and snapshots
+data/
+snapshots/
+test_data/
+workspace/
+real_data/
+bone_age_data/
+
+
+# Helper scripts
+
+# API ingestion scripts
+db_api_ingestion.py
+ingestion_flow.py
+
+# Package manager lock files
+package-lock.json
+
+# Node modules and build files
+frontend/node_modules
+frontend/build
+
+# Dependency lock files (
+frontend/package-lock.json
+
+# Data Details
+details.json
+

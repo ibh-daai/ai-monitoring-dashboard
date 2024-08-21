@@ -1,51 +1,46 @@
 {
   "model_config": {
-    "model_id": "bone_age_01",
+    "model_id": "bone_age",
     "model_type": {
       "regression": true,
-      "binary_classification": true,
-      "provide_reference": false
+      "binary_classification": true
     }
   },
   "columns": {
     "study_id": "StudyID",
-    "model_id": "ModelID",
-    "sex": "sex",
-    "hospital": "hospital",
-    "age": "chronological_age",
-    "instrument_type": "machine_type",
-    "patient_class": "patient_classification",
+    "sex": "PatientSex",
+    "hospital": "Hospital",
+    "age": "Chronological Age",
+    "instrument_type": null,
+    "patient_class": null,
     "predictions": {
-      "regression_prediction": "predicted_age",
-      "classification_prediction": "classification"
+      "regression_prediction": "Prediction",
+      "classification_prediction": "Classification Prediction"
     },
     "labels": {
-      "regression_label": "label",
-      "classification_label": "classification_label"
+      "regression_label": "Label",
+      "classification_label": "Classification Label"
     },
-    "features": [
-      "standard_deviation",
-      "two_standard_deviations",
-      "upper_limit",
-      "lower_limit",
-      "closest_age"
-    ],
-    "timestamp": null
+    "features": ["Upper Limit", "Lower Limit"],
+    "timestamp": "createdAt"
   },
-  "categorical_validation_rules": {
-    "sex": ["M", "F"],
-    "hospital": [
-      "Credit Valley Hospital",
-      "Mississauga Hospital",
-      "Queensway Hospital"
-    ],
-    "machine_type": ["machine1", "machine2"],
-    "patient_classifications": ["IP", "OP", "ED", "ICU"]
+  "age_filtering": {
+    "filter_type": "custom",
+    "custom_ranges": [
+      { "min": 0, "max": 75 },
+      { "min": 75, "max": 150 },
+      { "min": 150, "max": 300 }
+    ]
   },
   "tests": {
     "data_quality_tests": [
       { "name": "num_cols" },
-      { "name": "num_empty_rows" },
+      {
+        "name": "num_rows",
+        "params": {
+          "gte": 10
+        }
+      },
       { "name": "num_duplicated_rows" },
       { "name": "num_duplicated_cols" },
       { "name": "col_types" },
@@ -53,14 +48,14 @@
       {
         "name": "test_col_list",
         "params": {
-          "column_name": "sex",
+          "column_name": "PatientSex",
           "values": ["M", "F"]
         }
       },
       {
         "name": "test_col_list",
         "params": {
-          "column_name": "hospital",
+          "column_name": "Hospital",
           "values": [
             "Credit Valley Hospital",
             "Mississauga Hospital",
@@ -69,65 +64,11 @@
         }
       },
       {
-        "name": "test_col_list",
-        "params": {
-          "column_name": "patient_classification",
-          "values": ["IP", "OP", "ED", "ICU"]
-        }
-      },
-      {
         "name": "test_col_range",
         "params": {
-          "column_name": "chronological_age",
+          "column_name": "Chronological Age",
           "left": 0,
           "right": 400
-        }
-      },
-      {
-        "name": "test_col_list",
-        "params": {
-          "column_name": "machine_type",
-          "values": ["machine1", "machine2"]
-        }
-      },
-      {
-        "name": "test_col_range",
-        "params": {
-          "column_name": "standard_deviation",
-          "left": 0,
-          "right": 13.05
-        }
-      },
-      {
-        "name": "test_col_range",
-        "params": {
-          "column_name": "two_standard_deviations",
-          "left": 0,
-          "right": 26.1
-        }
-      },
-      {
-        "name": "test_col_range",
-        "params": {
-          "column_name": "upper_limit",
-          "left": 0,
-          "right": 300
-        }
-      },
-      {
-        "name": "test_col_range",
-        "params": {
-          "column_name": "lower_limit",
-          "left": 0,
-          "right": 300
-        }
-      },
-      {
-        "name": "test_col_range",
-        "params": {
-          "column_name": "closest_age",
-          "left": 0,
-          "right": 216
         }
       }
     ],
@@ -135,15 +76,52 @@
       { "name": "num_drifted_cols" },
       { "name": "share_drifted_cols" }
     ],
-    "regression_tests": [{ "name": "mae" }],
+    "regression_tests": [
+      {
+        "name": "mae",
+        "params": {
+          "lte": 9.0
+        }
+      }
+    ],
     "classification_tests": [
       { "name": "accuracy" },
-      { "name": "precision" },
-      { "name": "recall" },
-      { "name": "f1" },
-      { "name": "tnr" },
-      { "name": "fpr" },
-      { "name": "fnr" }
+      {
+        "name": "precision",
+        "params": {
+          "gte": 0.7
+        }
+      },
+      {
+        "name": "recall",
+        "params": {
+          "gte": 0.7
+        }
+      },
+      {
+        "name": "f1",
+        "params": {
+          "gte": 0.6
+        }
+      },
+      {
+        "name": "tnr",
+        "params": {
+          "gte": 0.7
+        }
+      },
+      {
+        "name": "fpr",
+        "params": {
+          "lte": 0.3
+        }
+      },
+      {
+        "name": "fnr",
+        "params": {
+          "lte": 0.4
+        }
+      }
     ]
   },
   "dashboard_panels": [
@@ -153,23 +131,8 @@
       "size": "half"
     },
     {
-      "name": "num_missing_values",
-      "type": "line",
-      "size": "half"
-    },
-    {
-      "name": "num_empty_rows",
-      "type": "line",
-      "size": "half"
-    },
-    {
-      "name": "num_drifted_cols",
-      "type": "line",
-      "size": "half"
-    },
-    {
-      "name": "data_drift",
-      "type": "line",
+      "name": "num_rows",
+      "type": "bar",
       "size": "half"
     },
     {
@@ -208,28 +171,22 @@
       "size": "half"
     }
   ],
-  "age_filtering": {
-    "filter_type": "statistical",
-    "custom_ranges": [
-      { "min": 0, "max": 0 },
-      { "min": 0, "max": 0 },
-      { "min": 0, "max": 0 }
-    ]
-  },
   "info": {
-    "project_name": "Bone Age Prediction",
-    "project_description": "Bone Age Prediction project",
+    "project_name": "Bone Age Assessment Tool",
+    "project_description": "This model takes a paediatric bone age hand x-rays as input and estimates the patient’s skeletal age. The two and four closest references images are shown alongside the patient’s x-ray to facilitate radiologist reporting. The reference categories were selected from the Brush Foundation data. Results of the model can be used to populate the radiologist report. ",
     "model_developer": "Trillium Health Partners",
-    "contact_name": "John Smith",
-    "contact_email": "johnsmith@thp.ca"
+    "contact_name": "Dr Benjamin Fine",
+    "contact_email": "aidelab@thp.ca ",
+    "references": [
+      {
+        "name": "RSNA Pediatric Bone Age Challenge 2017",
+        "url": "https://www.rsna.org/education/ai-resources-and-training/ai-image-challenge/rsna-pediatric-bone-age-challenge-2017"
+      }
+    ],
+    "disclaimer": "This model has not been evaluated to assess potential performance differentials across race and ethnicity. Socioeconomic factors are known to play a role in the development of children.",
+    "fact_card": "ModelFactSheet.jpg"
   },
   "alerts": {
-    "enable": true,
-    "alert_links": [
-      {
-        "type": "microsoft teams channel",
-        "url": "<TODO>"
-      }
-    ]
+    "emails": ["joel.mills@thp.ca"]
   }
 }

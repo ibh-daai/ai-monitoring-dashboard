@@ -8,7 +8,8 @@ import importlib
 import os
 import logging
 from evidently.test_suite import TestSuite
-from src.metrics import setup_column_mapping
+from src.monitoring.metrics import setup_column_mapping
+from src.monitoring.alerts import check_test_results, AlertCollector
 
 
 logging.basicConfig(level=logging.INFO)
@@ -103,13 +104,15 @@ def data_tests(
     tests_mapping: dict,
     folder_path: str,
     timestamp: str,
+    details: dict,
+    alert_collector: AlertCollector,
 ) -> None:
     """
     Generate data test results.
     """
     ensure_directory(f"snapshots/{timestamp}/{folder_path}")
     try:
-        data_mapping = setup_column_mapping(config, "data")
+        data_mapping = setup_column_mapping(config, "data", details)
     except Exception as e:
         logger.error(f"Error setting up column mapping: {e}")
         return
@@ -126,9 +129,15 @@ def data_tests(
             current_data=data,
             column_mapping=data_mapping,
         )
-        data_test_suite.save(
-            f"snapshots/{timestamp}/{folder_path}//data_test_suite.json"
-        )
+
+        # Check for failures and send alerts
+        is_alert, failed_tests = check_test_results(data_test_suite, t)
+        if is_alert:
+            logger.info(f"Failed tests: {failed_tests}")
+            alert_collector.add_failed_tests("Data Tests", failed_tests)
+
+        # will save to Docker volums instead of local in the future
+        data_test_suite.save(f"snapshots/{timestamp}/{folder_path}//data_test_suite.json")
     except Exception as e:
         logger.error(f"Error running data tests: {e}")
         return
@@ -141,13 +150,15 @@ def regression_tests(
     tests_mapping: dict,
     folder_path: str,
     timestamp: str,
+    details: dict,
+    alert_collector: AlertCollector,
 ) -> None:
     """
     Generate regression test results.
     """
     ensure_directory(f"snapshots/{timestamp}/{folder_path}")
     try:
-        regression_mapping = setup_column_mapping(config, "regression")
+        regression_mapping = setup_column_mapping(config, "regression", details)
     except Exception as e:
         logger.error(f"Error setting up column mapping: {e}")
         return
@@ -158,17 +169,19 @@ def regression_tests(
         if len(t) == 1:
             t.append("single")
         t.append("regression")
-        regression_test_suite = TestSuite(
-            tests=test_functions, tags=t, timestamp=timestamp
-        )
+        regression_test_suite = TestSuite(tests=test_functions, tags=t, timestamp=timestamp)
         regression_test_suite.run(
             reference_data=reference_data,
             current_data=data,
             column_mapping=regression_mapping,
         )
-        regression_test_suite.save(
-            f"snapshots/{timestamp}/{folder_path}/regression_test_suite.json"
-        )
+
+        # Check for failures and send alerts
+        is_alert, failed_tests = check_test_results(regression_test_suite, t)
+        if is_alert:
+            alert_collector.add_failed_tests("Regression Tests", failed_tests)
+
+        regression_test_suite.save(f"snapshots/{timestamp}/{folder_path}/regression_test_suite.json")
     except Exception as e:
         logger.error(f"Error running regression tests: {e}")
 
@@ -180,13 +193,15 @@ def classification_tests(
     tests_mapping: dict,
     folder_path: str,
     timestamp: str,
+    details: dict,
+    alert_collector: AlertCollector,
 ) -> None:
     """
     Generate classification test results.
     """
     ensure_directory(f"snapshots/{timestamp}/{folder_path}")
     try:
-        classification_mapping = setup_column_mapping(config, "classification")
+        classification_mapping = setup_column_mapping(config, "classification", details)
     except Exception as e:
         logger.error(f"Error setting up column mapping: {e}")
         return
@@ -197,17 +212,19 @@ def classification_tests(
         if len(t) == 1:
             t.append("single")
         t.append("classification")
-        classification_test_suite = TestSuite(
-            tests=test_functions, tags=t, timestamp=timestamp
-        )
+        classification_test_suite = TestSuite(tests=test_functions, tags=t, timestamp=timestamp)
         classification_test_suite.run(
             reference_data=reference_data,
             current_data=data,
             column_mapping=classification_mapping,
         )
-        classification_test_suite.save(
-            f"snapshots/{timestamp}/{folder_path}/classification_test_suite.json"
-        )
+
+        # Check for failures and send alerts
+        is_alert, failed_tests = check_test_results(classification_test_suite, t)
+        if is_alert:
+            alert_collector.add_failed_tests("Classification Tests", failed_tests)
+
+        classification_test_suite.save(f"snapshots/{timestamp}/{folder_path}/classification_test_suite.json")
     except Exception as e:
         logger.error(f"Error running classification tests: {e}")
         return
@@ -220,6 +237,7 @@ def generate_tests(
     model_type: dict,
     folder_path: str,
     timestamp: str,
+    details: dict,
 ) -> None:
     """
     Generate the test suite based on the model type.
@@ -230,9 +248,11 @@ def generate_tests(
         logger.error(f"Error loading tests mapping: {e}")
         return
 
+    alert_collector = AlertCollector(config)
+
     # Generate the data tests
     try:
-        data_tests(data, reference_data, config, tests_mapping, folder_path, timestamp)
+        data_tests(data, reference_data, config, tests_mapping, folder_path, timestamp, details, alert_collector)
     except Exception as e:
         logger.error(f"Error running data tests: {e}")
 
@@ -240,7 +260,7 @@ def generate_tests(
     if model_type["regression"]:
         try:
             regression_tests(
-                data, reference_data, config, tests_mapping, folder_path, timestamp
+                data, reference_data, config, tests_mapping, folder_path, timestamp, details, alert_collector
             )
         except Exception as e:
             logger.error(f"Error running regression tests: {e}")
@@ -249,8 +269,11 @@ def generate_tests(
     if model_type["binary_classification"]:
         try:
             classification_tests(
-                data, reference_data, config, tests_mapping, folder_path, timestamp
+                data, reference_data, config, tests_mapping, folder_path, timestamp, details, alert_collector
             )
         except Exception as e:
             logger.error(f"Error running classification tests: {e}")
-        return
+
+    # Send alerts if necessary
+    if alert_collector.should_alert():
+        alert_collector.send_alert(config["alerts"]["emails"])

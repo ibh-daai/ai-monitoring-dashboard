@@ -7,11 +7,11 @@ This documentation is designed to assist users in configuring the AI Model Monit
 
 ## Configuration Sections
 
-The configuration file is structured into several key sections: `model_config`, `columns`, `categorical_validation_rules`, `tests`, `dashboard_panels`, `info`, and `alerts`. Each section plays a crucial role in setting up the monitoring system accurately.
+The configuration file is structured into several key sections: `model_config`, `columns`, `age_filtering`, `tests`, `dashboard_panels`, `info`, and `alerts`. Each section plays a crucial role in setting up the monitoring system accurately.
 
 ### Model Configuration (`model_config`)
 
-This section defines the basic settings of the model. Only the values should be changed, not the keys. The `model_id` should be unique for each model, and the `model_type` should be set to `true` for the corresponding model type. The `provide_reference` field should be set to `false` if the system is expected to automatically use the initial dataset for reference purposes.
+This section defines the basic settings of the model. Only the values should be changed, not the keys. The `model_id` should be unique for each model, and the `model_type` should be set to `true` for the corresponding model type. 
 
 - **model_id** (`string`): Unique identifier for the model.
 
@@ -21,28 +21,23 @@ This section defines the basic settings of the model. Only the values should be 
 
   - **binary_classification** (`boolean`): Enable if the model includes binary classification metrics.
 
-- **provide_reference** (`boolean`): Should be set to `false` if the system is expected to automatically split the initial dataset for reference purposes.
-
 #### Example
 
 ```json
 {
   "model_config": {
-    "model_id": "bone_age_01",
+    "model_id": "bone_age",
     "model_type": {
       "regression": true,
       "binary_classification": true
-    },
-    "provide_reference": false
+    }
   }
 }
 ```
 ### Columns
 
-Defines the mapping of data columns to required schema properties. Only the values should be changed, not the keys. The `timestamp` field is optional and should be set to `null` if not applicable. The `predictions` and `labels` objects should contain the column names for the predicted values and labels, respectively. The `features` array should contain the names of the additional columns in the model. *Notes: The features must be either categorical or numerical (i.e. no timestamp).*
+Defines the mapping of data columns to required schema properties. Only the values should be changed, not the keys. The `timestamp`, `instrument_type`, and `patient_class` fields are optional and should be set to `null` if they do not exist as columns. The `predictions` and `labels` objects should contain the column names for the predicted values and labels, respectively. The `features` array should contain the names of the additional columns in the model. *Notes: The features must be either categorical or numerical (i.e. no timestamp).*
 -   **study_id** (`string`): Identifier for the study.
-
--   **model_id** (`string`): Identifier for the model.
 
 -   **sex** (`string`): Patient's sex.
 
@@ -50,9 +45,9 @@ Defines the mapping of data columns to required schema properties. Only the valu
 
 -   **age** (`string`): Patient's age.
 
--   **instrument_type** (`string`): Type of instrument used to make the prediction.
+-   **instrument_type** (`string` or `null`): Type of instrument used to make the prediction.
 
--   **patient_class** (`string`): Class of the patient. Common values are `IP` (Inpatient), `OP` (Outpatient), `ED` (Emergency Department), or `ICU` (Intensive Care Unit).
+-   **patient_class** (`string` or `null`): Class of the patient. Common values are `IP` (Inpatient), `OP` (Outpatient), `ED` (Emergency Department), or `ICU` (Intensive Care Unit).
 
 -   **predictions** (`object`):
     -   **regression_prediction** (`string`): Column for predicted regression values.
@@ -71,7 +66,6 @@ Defines the mapping of data columns to required schema properties. Only the valu
 {
   "columns": {
     "study_id": "StudyID",
-    "model_id": "ModelID",
     "sex": "sex",
     "hospital": "hospital",
     "age": "chronological_age",
@@ -98,7 +92,7 @@ Defines the mapping of data columns to required schema properties. Only the valu
 ```
 
 ### Age Filtering (`age_filtering`)
-Specifies the age filtering settings for the monitoring system. The `filter_type` field should be set to one of `default` | `statistical` | `custom`. The `custom_ranges` field should be set to an array of objects, each containing the `min` and `max` values for the age range. *Notes: The `custom_ranges` field will only be used if the `filter_type` is set to `custom`. If an invalid `filter_type` is entered, `default` will be chosen*
+Specifies the age filtering settings for the monitoring system. The `filter_type` field should be set to one of `default` | `custom`. The `custom_ranges` field should be set to an array of objects, each containing the `min` and `max` values for the age range. *Notes: The `custom_ranges` field will only be used if the `filter_type` is set to `custom`. If an invalid `filter_type` is entered, `default` will be chosen*
 
 - **filter_type** (`string`): Type of age filtering to be applied.
 
@@ -106,8 +100,6 @@ Specifies the age filtering settings for the monitoring system. The `filter_type
     1. Under 18
     2. 18-65
     3. Over 65
-
-  - **`statistical`**: Age filtering based on statistical analysis: Split into 3 terciles based on the age distribution, i.e. 33% of the data in each group.
 
   - **`custom`**: Custom age filtering based on the `custom_ranges` field.
     1. { "min": x1, "max": y1 }
@@ -127,30 +119,14 @@ Specifies the age filtering settings for the monitoring system. The `filter_type
   },
 ```
 
-### Validation Rules (`categorical_validation_rules`)
-
-Specifies rules for validating the categorical data to ensure accuracy and consistency. The rules are defined only for categorical features, and it is assumed that any feature not present in the rules is numerical (e.g. timestamp should be not be in features.). The user must input both the keys and values, the key must match the specific column name in your Dataframe. These rules are used to determine which features are categorical vs numerical, and to define the unique values for the data stratification. These rules will not be used for data validation, that will be done with the Evidence AI tests in the next section. The only parts that should be changed are the objects within the `categorical` object. ***Note:*** *Validation rules must be provided for the required categorical columns, `sex`, `hospital`, `instrument_type`, and `patient_class`*
-
-
-
-#### Example
-```json
-{
-  "categorical_validation_rules": {
-      "sex": ["M", "F"],
-      "hospital": [
-        "Credit Valley Hospital",
-        "Mississauga Hospital",
-        "Queensway Hospital"
-      ],
-      "machine_type": ["machine1", "machine2"],
-      "patient_classification": ["IP", "OP", "ED", "ICU"]
-  },
-}
-```
 ### Tests
 
-Enables specific tests for regression and classification. To add tests, include the name of the test in its corresponding category (and the params if desired/required), as seen below and in the example to follow. For more information on any test, please check [Evidently AI](https://docs.evidentlyai.com/reference/all-tests). ***Notes:*** *When doing a column specific test, use the exact name of the column in your Dataframe, NOT the generic config name.  If your model is either not regression or not classification, please still include the section titles (leave the lists empty)** The tests to choose from are:
+Enables specific tests for regression and classification. To add tests, include the name of the test in its corresponding category (and the params if desired/required), as seen below and in the example to follow. For more information on any test, please check [Evidently AI](https://docs.evidentlyai.com/reference/all-tests). 
+
+The generic thresholds for the tests are +-10% for regression and +-20% for classification. If you would like to set your own threshold for certain tests, you can use set the optional parameters of `gte` and `lte` to set the threshold, greater than or equal to and less than or equal to, respectively. Meaning, if you set the `gte` to 0.5, any value less than 0.5 will be flagged as an error. You set the success thresholds, and the system will infer the failure thresholds.
+
+***Notes:*** *When doing a column specific test, use the exact name of the column in your Dataframe, NOT the generic config name.  If your model is either not regression or not classification, please still include the section titles (leave the lists empty)** The tests to choose from are:
+
 #### Data Quality Tests
 -   **`num_rows`**: Checks the number of rows in the dataset against the reference data.
 
@@ -316,7 +292,14 @@ To add a test, include the name of the test in its corresponding category, and a
       { "name": "num_drifted_cols" },
       { "name": "share_drifted_cols" }
     ],
-    "regression_tests": [{ "name": "mae" }],
+    "regression_tests": [
+      { 
+        "name": "mae",
+        "params": {
+          "lte": 9.0 // SET YOUR OWN THRESHOLD
+        }
+      }
+    ],
     "classification_tests": [
       { "name": "accuracy" },
       { "name": "precision" },
@@ -486,6 +469,16 @@ Provides info about the model that will be displayed on the monitoring dashboard
 
 -   **contact_email** (`string`): Email of the contact person.
 
+-   **references** (`array` of `objects`): List of references for the model.
+
+    -   **name** (`string`): Name of the reference.
+
+    -   **url** (`string`): URL of the reference.
+
+-   **disclaimer** (`string`): Disclaimer for the model.
+
+-   **fact_card** (`string`): Name of the model fact card image file. Can be set to `null` if no fact card is available. The image file should be placed in the `frontend/dashboard/images` directory. The image must be a `.jpg`, `.jpeg`, or `.png` file. If the image is not found, the system will default to the disclaimer text above.
+
 
 #### Example
 ```json
@@ -494,7 +487,15 @@ Provides info about the model that will be displayed on the monitoring dashboard
     "project_description": "Bone Age Prediction project",
     "model_developer": "Trillium Health Partners",
     "contact_name": "John Smith",
-    "contact_email": "johnsmith@thp.ca"
+    "contact_email": "johnsmith@thp.ca",
+    "references": [
+      {
+        "name": "RSNA Pediatric Bone Age Challenge 2017",
+        "url": "https://www.rsna.org/education/ai-resources-and-training/ai-image-challenge/rsna-pediatric-bone-age-challenge-2017"
+      }
+    ],
+    "disclaimer": "This model has not been evaluated to assess potential performance differentials across race and ethnicity. Socioeconomic factors are known to play a role in the development of children.",
+    "fact_card": "ModelFactCard.jpg"
   },
 ```
 
@@ -503,19 +504,14 @@ Provides info about the model that will be displayed on the monitoring dashboard
 
 Configures alert settings for the monitoring system.
 
--   **enable** (`boolean`): Enable or disable alerts.
-
--   **alert_links** (`array` of `objects`): Configure alert methods and destinations, such as Microsoft Teams.
+-   **emails** (`array` of `string`): List of email addresses to receive alerts.
 
 #### Example
 ```json
 "alerts": {
-    "enable": true,
-    "alert_links": [
-        {
-            "type": "microsoft teams channel",
-            "url": "<TODO>"
-        }
+    "emails": [
+      "johndoe@gmail.com", 
+      "johndoesfriend@gmail.com"
     ]
 }
 ````
