@@ -525,7 +525,15 @@ def log_snapshots(project, workspace):
 
     Currently, the snapshots are stored in the snapshots directory.
     """
-    snapshots_dir = os.path.abspath(os.path.join(__file__, "..", "../../snapshots"))
+    docker_snapshots_dir = "/app/snapshots"
+    local_snapshots_dir = os.path.abspath(os.path.join(__file__, "..", "../../snapshots"))
+
+    # Determine which directory to use
+    if os.path.exists(docker_snapshots_dir):
+        snapshots_dir = docker_snapshots_dir
+    else:
+        snapshots_dir = local_snapshots_dir
+
     for timestamp in os.listdir(snapshots_dir):
         if timestamp.startswith("."):
             continue
@@ -539,10 +547,17 @@ def log_snapshots(project, workspace):
                     continue
                 strata_path = os.path.join(operation_path, strata)
                 for output_file in os.listdir(strata_path):
-                    if output_file.startswith("."):
+                    if output_file.startswith(".") or not output_file.endswith(".json"):
                         continue
                     output_path = os.path.join(strata_path, output_file)
-                    workspace.add_snapshot(project.id, Snapshot.load(output_path))
+                    try:
+                        with open(output_path, "r") as f:
+                            snapshot_data = json.load(f)
+                        snapshot = Snapshot(**snapshot_data)
+                        workspace.add_snapshot(project.id, snapshot)
+                    except Exception as e:
+                        logger.error(f"Error loading snapshot: {e}")
+                        continue
 
 
 def create_project(workspace, config: dict) -> None:

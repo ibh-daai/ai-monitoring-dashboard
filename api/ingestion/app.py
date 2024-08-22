@@ -6,6 +6,7 @@ from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 from pymongo.mongo_client import MongoClient
 from datetime import datetime, timezone
+import os
 import pandas as pd
 import logging
 from werkzeug.exceptions import RequestEntityTooLarge
@@ -20,15 +21,23 @@ app = Flask(__name__)
 app.config.from_object("api.ingestion.config.Config")
 # app.secret_key = app.config["SECRET_KEY"]
 
+ingestion_frontend_url = os.environ.get("INGESTION_FRONTEND_URL", "http://localhost:3001")
+
 CORS(
     app,
     supports_credentials=True,
-    resources={r"/*": {"origins": ["http://localhost:3001"]}},  # TODO Update URL in production
+    resources={r"/*": {"origins": ingestion_frontend_url}},  # TODO Update URL in production
 )
 
 # Load the database
-mongo_uri = app.config["MONGO_URI"]
+mongo_uri = os.getenv("MONGO_URI")
+db_name = os.getenv("MONGO_DB_NAME", "data_ingestion")
+
+ingestion_api_port = int(os.getenv("INGESTION_API_PORT", 5001))
+
+
 client = MongoClient(mongo_uri)
+db = client[db_name]
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16 MB limit
 
 # Send a ping to confirm a successful connection
@@ -221,7 +230,7 @@ def ingest_labels():
 
         if config["columns"]["timestamp"] and config["columns"]["timestamp"] in df.columns:
             df[config["columns"]["timestamp"]] = pd.to_datetime(df[config["columns"]["timestamp"]])
-            
+
         columns = get_column_mapping()
         model_config = get_model_config()
 
@@ -330,4 +339,4 @@ def authenticate():
 
 
 if __name__ == "__main__":
-    app.run(port=5001, debug=True)
+    app.run(debug=True, host="0.0.0.0", port=ingestion_api_port)

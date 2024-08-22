@@ -9,6 +9,7 @@ from src.dashboard.workspace_manager import WorkspaceManager
 from scripts.data_details import load_details
 from src.utils.config_manager import load_config
 from src.dashboard.create_project import update_panels
+import os
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -20,6 +21,9 @@ config = load_config()
 details = load_details()
 workspace_instance = WorkspaceManager.get_instance()
 ws = workspace_instance.workspace
+
+dashboard_url = os.environ.get("DASHBOARD_URL", "http://localhost:3000")
+evidently_url = os.environ.get("EVIDENTLY_URL", "http://localhost:8000")
 
 
 def get_filters(config: dict) -> dict:
@@ -80,16 +84,17 @@ def apply_filters():
         logger.info("No filters applied")
         update_panels(ws, config)
 
-    dashboard_url = f"http://localhost:3000/dashboard"
+    dashboard_url = f"{dashboard_url}/dashboard"
     return jsonify({"status": "updated", "filtered_url": dashboard_url})
 
 
 @app.route("/get_dashboard_url", methods=["GET"])
 def get_dashboard_url():
     project = ws.search_project(config["info"]["project_name"])[0]
-    dashboard_url = f"http://localhost:8000/projects/{project.id}"
+    dashboard_url = f"{evidently_url}/projects/{project.id}"
     return jsonify({"dashboard_url": dashboard_url})
 
 
 if __name__ == "__main__":
-    app.run(port=5002, debug=True)
+    port = int(os.environ.get("DASHBOARD_API_PORT", 5002))
+    app.run(host="0.0.0.0", port=port, debug=True)
