@@ -464,6 +464,9 @@ def create_bottom_panels(config: dict, tags: list, project) -> None:
     )
 
     def image_to_data_uri(file_path):
+        """
+        Convert an image to a data URI.
+        """
         with open(file_path, "rb") as image_file:
             encoded_string = base64.b64encode(image_file.read()).decode("utf-8")
             file_extension = os.path.splitext(file_path)[1].lower()
@@ -488,7 +491,7 @@ def create_bottom_panels(config: dict, tags: list, project) -> None:
 
     if config["info"]["fact_card"]:
         # Check if the file exists in the public folder
-        full_path = os.path.join("frontend/dashboard/public/images/", config["info"]["fact_card"])
+        full_path = os.path.join("/app/frontend/dashboard/public/images/", config["info"]["fact_card"])
         if os.path.exists(full_path):
             # Check if the image is jpg, jpeg, or png
             if full_path.lower().endswith((".jpg", ".jpeg", ".png")):
@@ -522,8 +525,6 @@ def create_bottom_panels(config: dict, tags: list, project) -> None:
 def log_snapshots(project, workspace):
     """
     Log the JSON snapshots to the workspace.
-
-    Currently, the snapshots are stored in the snapshots directory.
     """
     docker_snapshots_dir = "/app/snapshots"
     local_snapshots_dir = os.path.abspath(os.path.join(__file__, "..", "../../snapshots"))
@@ -533,9 +534,6 @@ def log_snapshots(project, workspace):
         snapshots_dir = docker_snapshots_dir
     else:
         snapshots_dir = local_snapshots_dir
-
-    print(f"Snapshots directory: {snapshots_dir}")
-    print(f"Directory contents: {os.listdir(snapshots_dir)}")
 
     for timestamp in os.listdir(snapshots_dir):
         if timestamp.startswith("."):
@@ -564,6 +562,9 @@ def log_snapshots(project, workspace):
 
 
 def create_project(workspace, config: dict) -> None:
+    """
+    Create a new Evidently AI project in the workspace.
+    """
     try:
         project = workspace.create_project(config["info"]["project_name"])
         project.description = config["info"]["project_description"]
@@ -578,6 +579,9 @@ def create_project(workspace, config: dict) -> None:
 
 
 def update_project(workspace, config: dict) -> None:
+    """
+    Update an existing Evidently AI project in the workspace.
+    """
     try:
         project = workspace.search_project(config["info"]["project_name"])[0]
         project.description = config["info"]["project_description"]
@@ -590,6 +594,9 @@ def update_project(workspace, config: dict) -> None:
 
 
 def create_or_update(workspace, config: dict) -> None:
+    """
+    Determine if the project should be created or updated.
+    """
     try:
         project = workspace.search_project(config["info"]["project_name"])
         if not project:
@@ -602,6 +609,9 @@ def create_or_update(workspace, config: dict) -> None:
 
 
 def update_panels(workspace, config: dict, tags=["main", "single"], project=None) -> None:
+    """
+    Update the panels for the Evidently AI dashboard.
+    """
     try:
         project = workspace.search_project(config["info"]["project_name"])[0]
         # create the summary panels

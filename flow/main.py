@@ -26,21 +26,33 @@ logger = logging.getLogger(__name__)
 
 @task
 def load_configuration():
+    """
+    Load the configuration file.
+    """
     return load_config()
 
 
 @task
 def load_data_details():
+    """
+    Load the data details.
+    """
     return load_details()
 
 
 @task
 def run_etl(config):
+    """
+    Run the ETL pipeline.
+    """
     return etl_pipeline(config)
 
 
 @task
 def split_data(data, config, details, operation):
+    """
+    Split the data for reports and tests.
+    """
     splitter = DataSplitter()
     return splitter.split_data(data, config, details, operation)
 
@@ -49,8 +61,9 @@ def split_data(data, config, details, operation):
 def generate_report_for_stratification(
     data_stratification, reference_data, config, model_type, key, timestamp, details
 ):
-    folder_path = f"/app/snapshots/{timestamp}/reports/{key}"
-    print(f"Generating report in folder: {folder_path}")
+    """
+    Generate a report for a data stratum.
+    """
     generate_report(
         data_stratification,
         reference_data,
@@ -60,11 +73,13 @@ def generate_report_for_stratification(
         timestamp=timestamp,
         details=details,
     )
-    print(f"Contents of {folder_path}: {os.listdir(folder_path)}")
 
 
 @task
 def generate_test_for_stratification(data_stratification, reference_data, config, model_type, key, timestamp, details):
+    """
+    Generate tests for a data stratum.
+    """
     generate_tests(
         data_stratification,
         reference_data,
@@ -78,22 +93,19 @@ def generate_test_for_stratification(data_stratification, reference_data, config
 
 @task
 def create_dashboard(config):
+    """
+    Create the dashboard.
+    """
     workspace_instance = WorkspaceManager.get_instance()
     create_or_update(workspace_instance.workspace, config)
     time.sleep(0.5)
 
 
-@task
-def check_directories(timestamp):
-    directories = [f"/app/snapshots/{timestamp}/reports", f"/app/snapshots/{timestamp}/tests", "/app/workspace"]
-    for directory in directories:
-        print(
-            f"Contents of {directory}: {os.listdir(directory) if os.path.exists(directory) else 'Directory does not exist'}"
-        )
-
-
 @flow(name="Monitoring Flow", task_runner=ConcurrentTaskRunner())
 def monitoring_flow():
+    """
+    Monitoring flow for the dashboard pipeline.
+    """
     warnings.simplefilter(action="ignore", category=FutureWarning)
     warnings.simplefilter(action="ignore", category=UndefinedMetricWarning)
     warnings.simplefilter(action="ignore", category=RuntimeWarning)
@@ -138,7 +150,6 @@ def monitoring_flow():
         task.result()
 
     create_dashboard(config)
-    check_directories(timestamp)
     logger.info("Monitoring flow completed successfully.")
 
 

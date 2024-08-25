@@ -12,6 +12,8 @@ COPY ./scripts /app/scripts
 COPY ./src/dashboard /app/src/dashboard
 COPY ./src/utils /app/src/utils
 COPY ./config /app/config
+COPY ./frontend/dashboard/public/images /app/frontend/dashboard/public/images
+
 
 
 RUN mkdir -p /app/workspace

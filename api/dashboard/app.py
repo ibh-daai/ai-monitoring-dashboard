@@ -40,6 +40,9 @@ evidently_url = os.environ.get("EVIDENTLY_URL", "http://localhost:8000")
 
 
 def get_filters(config: dict) -> dict:
+    """
+    Get the filter options for the dashboard.
+    """
     cols = config["columns"]
     strata_mapping = {
         "hospital": details["hospital_unique_values"],
@@ -75,11 +78,17 @@ def get_filters(config: dict) -> dict:
 
 @app.route("/get_filter_options", methods=["GET"])
 def get_filter_options():
+    """
+    Get the filter options for the dashboard.
+    """
     return jsonify(get_filters(config))
 
 
 @app.route("/apply_filters", methods=["POST"])
 def apply_filters():
+    """
+    Apply the selected filters to the dashboard.
+    """
     filters = request.json
     tags = [v for k, v in filters.items() if v]
 
@@ -106,6 +115,9 @@ def apply_filters():
 
 @app.route("/get_dashboard_url", methods=["GET"])
 def get_dashboard_url():
+    """
+    Get the URL for the Evidently dashboard.
+    """
     try:
         workspace_instance = WorkspaceManager.get_instance()
         workspace_instance.reload_workspace()

@@ -73,11 +73,17 @@ def allowed_file(filename):
 
 @app.errorhandler(RequestEntityTooLarge)
 def handle_request_entity_too_large(error):
+    """
+    Handle the request entity too large error.
+    """
     return jsonify({"message": "File size too large. Maximum size is 16MB."}), 413
 
 
 @app.errorhandler(Exception)
 def handle_exception(e):
+    """
+    Handle all exceptions.
+    """
     # Log the full exception for debugging
     logger.error(f"An error occurred: {str(e)}", exc_info=True)
     # Return a generic error message to the client
@@ -86,6 +92,9 @@ def handle_exception(e):
 
 @app.route("/")
 def index():
+    """
+    Render the index page.
+    """
     return render_template("upload.html")
 
 

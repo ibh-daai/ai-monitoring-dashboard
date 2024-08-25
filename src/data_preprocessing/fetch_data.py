@@ -16,7 +16,6 @@ def get_db_connection(mongo_uri: str) -> MongoClient:
     """
     Get a connection to the MongoDB database.
     """
-    print(f"Connecting to MongoDB: {mongo_uri}")
     client = MongoClient(mongo_uri)
     db_name = "data_ingestion"
     if db_name not in client.list_database_names():

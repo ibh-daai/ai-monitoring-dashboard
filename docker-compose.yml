@@ -6,6 +6,7 @@ services:
     volumes:
       - ./snapshots:/app/snapshots
       - ./workspace:/app/workspace
+      - ./frontend/dashboard/public/images:/app/frontend/dashboard/public/images
     env_file:
       - .env
     environment:
@@ -85,6 +86,7 @@ services:
     environment:
       - PREFECT_API_URL=http://host.docker.internal:4200/api
       - MONGO_URI=${MONGO_URI}
+      - MAILGUN_API_KEY=${MAILGUN_API_KEY}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     command: sh -c "chmod -R 777 /app/snapshots /app/workspace && /app/flow/start.sh"

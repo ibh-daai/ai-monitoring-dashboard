@@ -12,6 +12,7 @@ COPY ./src /app/src
 COPY ./config /app/config
 COPY ./scripts /app/scripts
 COPY ./api /app/api
+COPY ./frontend/dashboard/public/images /app/frontend/dashboard/public/images
 
 ENV PREFECT_API_URL=http://192.168.2.210:4200/api
 
