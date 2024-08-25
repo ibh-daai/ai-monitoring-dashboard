@@ -110,7 +110,10 @@ def data_tests(
     """
     Generate data test results.
     """
-    ensure_directory(f"snapshots/{timestamp}/{folder_path}")
+    if os.path.exists("/app"):
+        ensure_directory(f"/app/snapshots/{timestamp}/{folder_path}")
+    else:
+        ensure_directory(f"snapshots/{timestamp}/{folder_path}")
     try:
         data_mapping = setup_column_mapping(config, "data", details)
     except Exception as e:
@@ -136,8 +139,11 @@ def data_tests(
             logger.info(f"Failed tests: {failed_tests}")
             alert_collector.add_failed_tests("Data Tests", failed_tests)
 
-        # will save to Docker volums instead of local in the future
-        data_test_suite.save(f"snapshots/{timestamp}/{folder_path}//data_test_suite.json")
+        # check if in docker environment
+        if os.path.exists("/app"):
+            data_test_suite.save(f"/app/snapshots/{timestamp}/{folder_path}/data_test_suite.json")
+        else:
+            data_test_suite.save(f"snapshots/{timestamp}/{folder_path}/data_test_suite.json")
     except Exception as e:
         logger.error(f"Error running data tests: {e}")
         return
@@ -156,7 +162,10 @@ def regression_tests(
     """
     Generate regression test results.
     """
-    ensure_directory(f"snapshots/{timestamp}/{folder_path}")
+    if os.path.exists("/app"):
+        ensure_directory(f"/app/snapshots/{timestamp}/{folder_path}")
+    else:
+        ensure_directory(f"snapshots/{timestamp}/{folder_path}")
     try:
         regression_mapping = setup_column_mapping(config, "regression", details)
     except Exception as e:
@@ -181,7 +190,11 @@ def regression_tests(
         if is_alert:
             alert_collector.add_failed_tests("Regression Tests", failed_tests)
 
-        regression_test_suite.save(f"snapshots/{timestamp}/{folder_path}/regression_test_suite.json")
+        # check if in docker environment
+        if os.path.exists("/app"):
+            regression_test_suite.save(f"/app/snapshots/{timestamp}/{folder_path}/regression_test_suite.json")
+        else:
+            regression_test_suite.save(f"snapshots/{timestamp}/{folder_path}/regression_test_suite.json")
     except Exception as e:
         logger.error(f"Error running regression tests: {e}")
 
@@ -199,7 +212,10 @@ def classification_tests(
     """
     Generate classification test results.
     """
-    ensure_directory(f"snapshots/{timestamp}/{folder_path}")
+    if os.path.exists("/app"):
+        ensure_directory(f"/app/snapshots/{timestamp}/{folder_path}")
+    else:
+        ensure_directory(f"snapshots/{timestamp}/{folder_path}")
     try:
         classification_mapping = setup_column_mapping(config, "classification", details)
     except Exception as e:
@@ -224,7 +240,11 @@ def classification_tests(
         if is_alert:
             alert_collector.add_failed_tests("Classification Tests", failed_tests)
 
-        classification_test_suite.save(f"snapshots/{timestamp}/{folder_path}/classification_test_suite.json")
+        # check if in docker environment
+        if os.path.exists("/app"):
+            classification_test_suite.save(f"/app/snapshots/{timestamp}/{folder_path}/classification_test_suite.json")
+        else:
+            classification_test_suite.save(f"snapshots/{timestamp}/{folder_path}/classification_test_suite.json")
     except Exception as e:
         logger.error(f"Error running classification tests: {e}")
         return

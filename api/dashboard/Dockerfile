@@ -9,7 +9,8 @@ RUN pip install --no-cache-dir -r requirements.txt && pip install git+https://gi
 
 COPY ./api/dashboard /app/api/dashboard
 COPY ./scripts /app/scripts
-COPY ./src /app/src
+COPY ./src/dashboard /app/src/dashboard
+COPY ./src/utils /app/src/utils
 COPY ./config /app/config
 
 

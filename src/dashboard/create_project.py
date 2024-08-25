@@ -534,6 +534,9 @@ def log_snapshots(project, workspace):
     else:
         snapshots_dir = local_snapshots_dir
 
+    print(f"Snapshots directory: {snapshots_dir}")
+    print(f"Directory contents: {os.listdir(snapshots_dir)}")
+
     for timestamp in os.listdir(snapshots_dir):
         if timestamp.startswith("."):
             continue
@@ -600,8 +603,7 @@ def create_or_update(workspace, config: dict) -> None:
 
 def update_panels(workspace, config: dict, tags=["main", "single"], project=None) -> None:
     try:
-        if project is None:
-            project = workspace.search_project(config["info"]["project_name"])[0]
+        project = workspace.search_project(config["info"]["project_name"])[0]
         # create the summary panels
         create_summary_panels(config, tags, project)
 

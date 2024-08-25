@@ -15,7 +15,20 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS
+allowed_origins = [
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "http://dashboard_frontend:3000",
+    os.environ.get("DASHBOARD_FRONTEND_URL", ""),
+]
+
+allowed_origins = list(filter(None, allowed_origins))
+
+CORS(
+    app,
+    supports_credentials=True,
+    resources={r"/*": {"origins": allowed_origins}},
+)
 
 config = load_config()
 details = load_details()
@@ -74,9 +87,12 @@ def apply_filters():
     if len(tags) == 1:
         tags.append("single")
 
-    project = ws.search_project(config["info"]["project_name"])[0]
-
     logger.debug("tags: %s", tags)
+
+    workspace_instance = WorkspaceManager.get_instance()
+    workspace_instance.reload_workspace()
+    ws = workspace_instance.workspace
+
     if tags:
         logger.info("Applying filters: %s", tags)
         update_panels(ws, config, tags)
@@ -84,15 +100,25 @@ def apply_filters():
         logger.info("No filters applied")
         update_panels(ws, config)
 
-    dashboard_url = f"{dashboard_url}/dashboard"
-    return jsonify({"status": "updated", "filtered_url": dashboard_url})
+    filtered_url = f"{dashboard_url}/dashboard"
+    return jsonify({"status": "updated", "filtered_url": filtered_url})
 
 
 @app.route("/get_dashboard_url", methods=["GET"])
 def get_dashboard_url():
-    project = ws.search_project(config["info"]["project_name"])[0]
-    dashboard_url = f"{evidently_url}/projects/{project.id}"
-    return jsonify({"dashboard_url": dashboard_url})
+    try:
+        workspace_instance = WorkspaceManager.get_instance()
+        workspace_instance.reload_workspace()
+        ws = workspace_instance.workspace
+        project = ws.search_project(config["info"]["project_name"])[0]
+        if not evidently_url:
+            return jsonify({"status": "error", "message": "Evidently URL not configured"}), 500
+        dashboard_url = f"{evidently_url}/projects/{project.id}"
+        return jsonify({"dashboard_url": dashboard_url})
+    except IndexError:
+        return jsonify({"status": "error", "message": "Project not found, please create the project."}), 404
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 
 if __name__ == "__main__":

@@ -2,12 +2,14 @@
 Prefect flow for monitoring dashboard pipeline with parallel snapshot generation.
 """
 
+import time
 from prefect import flow, task
 from prefect.task_runners import ConcurrentTaskRunner
 import logging
 from datetime import datetime
 import warnings
 from sklearn.exceptions import UndefinedMetricWarning
+import os
 
 from src.utils.config_manager import load_config
 from scripts.data_details import load_details
@@ -47,7 +49,8 @@ def split_data(data, config, details, operation):
 def generate_report_for_stratification(
     data_stratification, reference_data, config, model_type, key, timestamp, details
 ):
-    logger.info(f"Generating reports for {key}")
+    folder_path = f"/app/snapshots/{timestamp}/reports/{key}"
+    print(f"Generating report in folder: {folder_path}")
     generate_report(
         data_stratification,
         reference_data,
@@ -57,11 +60,11 @@ def generate_report_for_stratification(
         timestamp=timestamp,
         details=details,
     )
+    print(f"Contents of {folder_path}: {os.listdir(folder_path)}")
 
 
 @task
 def generate_test_for_stratification(data_stratification, reference_data, config, model_type, key, timestamp, details):
-    logger.info(f"Generating tests for {key}")
     generate_tests(
         data_stratification,
         reference_data,
@@ -77,10 +80,25 @@ def generate_test_for_stratification(data_stratification, reference_data, config
 def create_dashboard(config):
     workspace_instance = WorkspaceManager.get_instance()
     create_or_update(workspace_instance.workspace, config)
+    time.sleep(0.5)
+
+
+@task
+def check_directories(timestamp):
+    directories = [f"/app/snapshots/{timestamp}/reports", f"/app/snapshots/{timestamp}/tests", "/app/workspace"]
+    for directory in directories:
+        print(
+            f"Contents of {directory}: {os.listdir(directory) if os.path.exists(directory) else 'Directory does not exist'}"
+        )
 
 
 @flow(name="Monitoring Flow", task_runner=ConcurrentTaskRunner())
 def monitoring_flow():
+    warnings.simplefilter(action="ignore", category=FutureWarning)
+    warnings.simplefilter(action="ignore", category=UndefinedMetricWarning)
+    warnings.simplefilter(action="ignore", category=RuntimeWarning)
+    warnings.simplefilter(action="ignore", category=UserWarning)
+
     timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
     config = load_configuration()
     details = load_data_details()
@@ -120,6 +138,7 @@ def monitoring_flow():
         task.result()
 
     create_dashboard(config)
+    check_directories(timestamp)
     logger.info("Monitoring flow completed successfully.")
 
 

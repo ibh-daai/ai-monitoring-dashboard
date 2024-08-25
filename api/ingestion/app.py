@@ -19,16 +19,23 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 app.config.from_object("api.ingestion.config.Config")
-# app.secret_key = app.config["SECRET_KEY"]
 
 ingestion_frontend_url = os.environ.get("INGESTION_FRONTEND_URL", "http://localhost:3001")
+
+allowed_origins = [
+    "http://localhost:3001", 
+    "http://localhost:3000",
+    "http://ingestion_frontend:3001", 
+    os.environ.get("INGESTION_FRONTEND_URL", ""),
+]
+
+allowed_origins = list(filter(None, allowed_origins))
 
 CORS(
     app,
     supports_credentials=True,
-    resources={r"/*": {"origins": ingestion_frontend_url}},  # TODO Update URL in production
+    resources={r"/*": {"origins": allowed_origins}},
 )
-
 # Load the database
 mongo_uri = os.getenv("MONGO_URI")
 db_name = os.getenv("MONGO_DB_NAME", "data_ingestion")

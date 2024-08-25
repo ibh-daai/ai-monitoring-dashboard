@@ -4,8 +4,9 @@ This script fetches data from the MongoDB database and stores it in a pandas Dat
 
 import pandas as pd
 from pymongo import MongoClient
-from api.ingestion.config import Config
+from pymongo.errors import OperationFailure
 import logging
+import os
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -15,9 +16,14 @@ def get_db_connection(mongo_uri: str) -> MongoClient:
     """
     Get a connection to the MongoDB database.
     """
+    print(f"Connecting to MongoDB: {mongo_uri}")
     client = MongoClient(mongo_uri)
-    db = client["data_ingestion"]
-    return db
+    db_name = "data_ingestion"
+    if db_name not in client.list_database_names():
+        db = client[db_name]
+        db.create_collection("dummy")
+        db.drop_collection("dummy")
+    return client[db_name]
 
 
 def fetch_data(db: MongoClient, collection: str) -> pd.DataFrame:
@@ -91,13 +97,26 @@ def fetch_and_merge(config: dict) -> pd.DataFrame:
     """
     Fetch data from the MongoDB database and merge it into a single DataFrame.
     """
-    db = get_db_connection(Config.MONGO_URI)
+    mongo_uri = os.getenv("MONGO_URI")
+    if not mongo_uri:
+        raise ValueError("MONGO_URI environment variable is not set")
+
+    db = get_db_connection(mongo_uri)
 
     model_id = config["model_config"]["model_id"]
 
+    collections_to_create = [f"{model_id}_results", f"{model_id}_labels", f"{model_id}_matched"]
+    for collection_name in collections_to_create:
+        if collection_name not in db.list_collection_names():
+            db.create_collection(collection_name)
+
     # Fetch results and labels data
-    results = fetch_data(db, f"{model_id}_results")
-    labels = fetch_data(db, f"{model_id}_labels")
+    try:
+        results = fetch_data(db, f"{model_id}_results")
+        labels = fetch_data(db, f"{model_id}_labels")
+    except OperationFailure as e:
+        logger.error(f"Error fetching data: {e}")
+        return pd.DataFrame()
 
     # check if the results or labels data is empty
     if results.empty or labels.empty:
