@@ -119,7 +119,10 @@ def data_report(
     """
     Generate data quality metrics report.
     """
-    ensure_directory(f"snapshots/{timestamp}/{folder_path}")
+    if os.path.exists("/app"):
+        ensure_directory(f"/app/snapshots/{timestamp}/{folder_path}")
+    else:
+        ensure_directory(f"snapshots/{timestamp}/{folder_path}")
     try:
         data_mapping = setup_column_mapping(config, "data", details)
     except Exception as e:
@@ -152,7 +155,11 @@ def data_report(
         current_data=data,
         column_mapping=data_mapping,
     )
-    data_quality_report.save(f"snapshots/{timestamp}/{folder_path}/data_quality_report.json")
+    # check if in docker environment
+    if os.path.exists("/app"):
+        data_quality_report.save(f"/app/snapshots/{timestamp}/{folder_path}/data_quality_report.json")
+    else:
+        data_quality_report.save(f"snapshots/{timestamp}/{folder_path}/data_quality_report.json")
 
 
 def regression_report(
@@ -161,7 +168,10 @@ def regression_report(
     """
     Generate regression metrics report.
     """
-    ensure_directory(f"snapshots/{timestamp}/{folder_path}")
+    if os.path.exists("/app"):
+        ensure_directory(f"/app/snapshots/{timestamp}/{folder_path}")
+    else:
+        ensure_directory(f"snapshots/{timestamp}/{folder_path}")
     try:
         regression_mapping = setup_column_mapping(config, "regression", details)
     except Exception as e:
@@ -193,7 +203,11 @@ def regression_report(
         current_data=data,
         column_mapping=regression_mapping,
     )
-    regression_report.save(f"snapshots/{timestamp}/{folder_path}/regression_report.json")
+    # check if in docker environment
+    if os.path.exists("/app"):
+        regression_report.save(f"/app/snapshots/{timestamp}/{folder_path}/regression_report.json")
+    else:
+        regression_report.save(f"snapshots/{timestamp}/{folder_path}/regression_report.json")
 
 
 def classification_report(
@@ -202,7 +216,10 @@ def classification_report(
     """
     Generate classification metrics report.
     """
-    ensure_directory(f"snapshots/{timestamp}/{folder_path}")
+    if os.path.exists("/app"):
+        ensure_directory(f"/app/snapshots/{timestamp}/{folder_path}")
+    else:
+        ensure_directory(f"snapshots/{timestamp}/{folder_path}")
     try:
         classification_mapping = setup_column_mapping(config, "classification", details)
     except Exception as e:
@@ -231,7 +248,11 @@ def classification_report(
         current_data=data,
         column_mapping=classification_mapping,
     )
-    classification_report.save(f"snapshots/{timestamp}/{folder_path}/classification_report.json")
+    # check if in docker environment
+    if os.path.exists("/app"):
+        classification_report.save(f"/app/snapshots/{timestamp}/{folder_path}/classification_report.json")
+    else:
+        classification_report.save(f"snapshots/{timestamp}/{folder_path}/classification_report.json")
 
 
 def generate_report(

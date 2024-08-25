@@ -1,19 +1,39 @@
+# Python
 venv/
+__pycache__
+*.pyc
+.pytest_cache
+
+# Version control
+.git
+.gitignore
+
+# Project-specific
 test_data/
 data/
 snapshots/
 
-__pycache__
-*.pyc
-.pytest_cache
-.git.
-.gitignore
-README.md
+# OS-specific
 .DS_Store
 
+# Node.js
 node_modules
-!frontend/ingestion/node_modules
-!frontend/dashboard/node_modules
+npm-debug.log
+yarn-error.log
 
+# Temporary files
+*.log
+*.tmp
+
+# Editor-specific
+.vscode/
+.idea/
+
+# Keep necessary Node.js files
+!frontend/ingestion/package*.json
+!frontend/dashboard/package*.json
+
+# Specific files to ignore
 ingestion_flow.py
 db_api_ingestion.py
+README.md

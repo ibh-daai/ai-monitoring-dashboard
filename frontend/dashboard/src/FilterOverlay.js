@@ -10,9 +10,10 @@ const FilterOverlay = ({ onApplyFilters, colors }) => {
   const [optionToCategory, setOptionToCategory] = useState({});
   const [loading, setLoading] = useState(false);
 
+  const dashboard_url = process.env.REACT_APP_DASHBOARD_API_URL || 'http://localhost:5002';
 
   useEffect(() => {
-    fetch('http://localhost:5002/get_filter_options')
+    fetch(`${dashboard_url}/get_filter_options`)
       .then(response => response.json())
       .then(data => {
         setFilterOptions(data);
@@ -40,7 +41,7 @@ const FilterOverlay = ({ onApplyFilters, colors }) => {
 
   const handleApply = () => {
     setLoading(true);
-    fetch('http://localhost:5002/apply_filters', {
+    fetch(`${dashboard_url}/apply_filters`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

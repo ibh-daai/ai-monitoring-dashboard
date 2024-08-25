@@ -3,6 +3,8 @@ ETL pipeline script. This script is responsible for loading, validating, and spl
 """
 
 import os
+
+from pendulum import local
 from src.data_preprocessing.fetch_data import fetch_and_merge
 from src.data_preprocessing.validate import validate_data
 from scripts.data_details import data_details
@@ -30,8 +32,15 @@ def reference_load_and_validate(config: dict, data: pd.DataFrame) -> pd.DataFram
     Load and validate reference data from the database or the provided data.
     """
     reference_data = None
+    docker_reference_path = "/app/data/reference_data.csv"
+    local_reference_path = "data/reference_data.csv"
+    if os.path.exists(docker_reference_path):
+        reference_path = docker_reference_path
+    else:
+        reference_path = local_reference_path
 
-    reference_path = "data/reference_data.csv"
+    os.makedirs(os.path.dirname(reference_path), exist_ok=True)
+
     if os.path.exists(reference_path):
         if config["columns"]["timestamp"]:
             reference_data = pd.read_csv(reference_path, parse_dates=[config["columns"]["timestamp"]])

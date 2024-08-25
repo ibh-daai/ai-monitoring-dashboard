@@ -2,12 +2,14 @@
 Prefect flow for monitoring dashboard pipeline with parallel snapshot generation.
 """
 
+import time
 from prefect import flow, task
 from prefect.task_runners import ConcurrentTaskRunner
 import logging
 from datetime import datetime
 import warnings
 from sklearn.exceptions import UndefinedMetricWarning
+import os
 
 from src.utils.config_manager import load_config
 from scripts.data_details import load_details
@@ -24,21 +26,33 @@ logger = logging.getLogger(__name__)
 
 @task
 def load_configuration():
+    """
+    Load the configuration file.
+    """
     return load_config()
 
 
 @task
 def load_data_details():
+    """
+    Load the data details.
+    """
     return load_details()
 
 
 @task
 def run_etl(config):
+    """
+    Run the ETL pipeline.
+    """
     return etl_pipeline(config)
 
 
 @task
 def split_data(data, config, details, operation):
+    """
+    Split the data for reports and tests.
+    """
     splitter = DataSplitter()
     return splitter.split_data(data, config, details, operation)
 
@@ -47,7 +61,9 @@ def split_data(data, config, details, operation):
 def generate_report_for_stratification(
     data_stratification, reference_data, config, model_type, key, timestamp, details
 ):
-    logger.info(f"Generating reports for {key}")
+    """
+    Generate a report for a data stratum.
+    """
     generate_report(
         data_stratification,
         reference_data,
@@ -61,7 +77,9 @@ def generate_report_for_stratification(
 
 @task
 def generate_test_for_stratification(data_stratification, reference_data, config, model_type, key, timestamp, details):
-    logger.info(f"Generating tests for {key}")
+    """
+    Generate tests for a data stratum.
+    """
     generate_tests(
         data_stratification,
         reference_data,
@@ -75,12 +93,24 @@ def generate_test_for_stratification(data_stratification, reference_data, config
 
 @task
 def create_dashboard(config):
+    """
+    Create the dashboard.
+    """
     workspace_instance = WorkspaceManager.get_instance()
     create_or_update(workspace_instance.workspace, config)
+    time.sleep(0.5)
 
 
 @flow(name="Monitoring Flow", task_runner=ConcurrentTaskRunner())
 def monitoring_flow():
+    """
+    Monitoring flow for the dashboard pipeline.
+    """
+    warnings.simplefilter(action="ignore", category=FutureWarning)
+    warnings.simplefilter(action="ignore", category=UndefinedMetricWarning)
+    warnings.simplefilter(action="ignore", category=RuntimeWarning)
+    warnings.simplefilter(action="ignore", category=UserWarning)
+
     timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
     config = load_configuration()
     details = load_data_details()
