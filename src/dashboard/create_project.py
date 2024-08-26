@@ -223,6 +223,37 @@ def create_metric_panels(config: dict, tags: list, project) -> None:
                     size=panel["size"],
                 )
             )
+        elif "ColumnDriftMetric" in panel["field_path"]:
+            # create the prediction and ground truth column drift panel
+            if config["model_config"]["model_type"]["regression"]:
+                prediction_column = config["columns"]["predictions"]["regression_prediction"]
+                label_column = config["columns"]["labels"]["regression_label"]
+            else:
+                prediction_column = config["columns"]["predictions"]["classification_prediction"]
+                label_column = config["columns"]["labels"]["classification_label"]
+
+            project.dashboard.add_panel(
+                DashboardPanelPlot(
+                    title=panel["panel_title"],
+                    filter=ReportFilter(metadata_values={}, tag_values=panel["tags"]),
+                    values=[
+                        PanelValue(
+                            metric_id=panel["metric_id"],
+                            metric_args={"column_name.name": prediction_column},
+                            field_path=eval(panel["field_path"]),
+                            legend="Prediction",
+                        ),
+                        PanelValue(
+                            metric_id=panel["metric_id"],
+                            metric_args={"column_name.name": label_column},
+                            field_path=eval(panel["field_path"]),
+                            legend="Ground Truth",
+                        ),
+                    ],
+                    plot_type=panel["plot_type"],
+                    size=panel["size"],
+                )
+            )
         else:
             # create the panel with only the current value
             project.dashboard.add_panel(
@@ -433,6 +464,9 @@ def create_bottom_panels(config: dict, tags: list, project) -> None:
     )
 
     def image_to_data_uri(file_path):
+        """
+        Convert an image to a data URI.
+        """
         with open(file_path, "rb") as image_file:
             encoded_string = base64.b64encode(image_file.read()).decode("utf-8")
             file_extension = os.path.splitext(file_path)[1].lower()
@@ -457,7 +491,7 @@ def create_bottom_panels(config: dict, tags: list, project) -> None:
 
     if config["info"]["fact_card"]:
         # Check if the file exists in the public folder
-        full_path = os.path.join("frontend/dashboard/public/images/", config["info"]["fact_card"])
+        full_path = os.path.join("/app/frontend/dashboard/public/images/", config["info"]["fact_card"])
         if os.path.exists(full_path):
             # Check if the image is jpg, jpeg, or png
             if full_path.lower().endswith((".jpg", ".jpeg", ".png")):
@@ -491,10 +525,16 @@ def create_bottom_panels(config: dict, tags: list, project) -> None:
 def log_snapshots(project, workspace):
     """
     Log the JSON snapshots to the workspace.
-
-    Currently, the snapshots are stored in the snapshots directory.
     """
-    snapshots_dir = os.path.abspath(os.path.join(__file__, "..", "../../snapshots"))
+    docker_snapshots_dir = "/app/snapshots"
+    local_snapshots_dir = os.path.abspath(os.path.join(__file__, "..", "../../snapshots"))
+
+    # Determine which directory to use
+    if os.path.exists(docker_snapshots_dir):
+        snapshots_dir = docker_snapshots_dir
+    else:
+        snapshots_dir = local_snapshots_dir
+
     for timestamp in os.listdir(snapshots_dir):
         if timestamp.startswith("."):
             continue
@@ -508,13 +548,23 @@ def log_snapshots(project, workspace):
                     continue
                 strata_path = os.path.join(operation_path, strata)
                 for output_file in os.listdir(strata_path):
-                    if output_file.startswith("."):
+                    if output_file.startswith(".") or not output_file.endswith(".json"):
                         continue
                     output_path = os.path.join(strata_path, output_file)
-                    workspace.add_snapshot(project.id, Snapshot.load(output_path))
+                    try:
+                        with open(output_path, "r") as f:
+                            snapshot_data = json.load(f)
+                        snapshot = Snapshot(**snapshot_data)
+                        workspace.add_snapshot(project.id, snapshot)
+                    except Exception as e:
+                        logger.error(f"Error loading snapshot: {e}")
+                        continue
 
 
 def create_project(workspace, config: dict) -> None:
+    """
+    Create a new Evidently AI project in the workspace.
+    """
     try:
         project = workspace.create_project(config["info"]["project_name"])
         project.description = config["info"]["project_description"]
@@ -529,6 +579,9 @@ def create_project(workspace, config: dict) -> None:
 
 
 def update_project(workspace, config: dict) -> None:
+    """
+    Update an existing Evidently AI project in the workspace.
+    """
     try:
         project = workspace.search_project(config["info"]["project_name"])[0]
         project.description = config["info"]["project_description"]
@@ -541,6 +594,9 @@ def update_project(workspace, config: dict) -> None:
 
 
 def create_or_update(workspace, config: dict) -> None:
+    """
+    Determine if the project should be created or updated.
+    """
     try:
         project = workspace.search_project(config["info"]["project_name"])
         if not project:
@@ -553,9 +609,11 @@ def create_or_update(workspace, config: dict) -> None:
 
 
 def update_panels(workspace, config: dict, tags=["main", "single"], project=None) -> None:
+    """
+    Update the panels for the Evidently AI dashboard.
+    """
     try:
-        if project is None:
-            project = workspace.search_project(config["info"]["project_name"])[0]
+        project = workspace.search_project(config["info"]["project_name"])[0]
         # create the summary panels
         create_summary_panels(config, tags, project)
 

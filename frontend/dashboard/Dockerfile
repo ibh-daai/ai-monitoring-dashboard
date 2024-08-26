@@ -1,13 +1,18 @@
 # Build stage
-FROM node:14 as build
+FROM node:14
 WORKDIR /app
-COPY package*.json ./
+COPY ./frontend/dashboard/package*.json ./frontend/dashboard/
+
+ARG REACT_APP_DASHBOARD_API_URL
+ENV REACT_APP_DASHBOARD_API_URL=$REACT_APP_DASHBOARD_API_URL
+
+WORKDIR /app/frontend/dashboard
 RUN npm install
-COPY . .
+COPY ./frontend/dashboard ./
 RUN npm run build
 
 # Production stage
-FROM nginx:alpine
-COPY --from=build /app/build /usr/share/nginx/html
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+RUN npm install -g serve
+EXPOSE 3000
+
+CMD ["serve", "-s", "build", "-l", "3000"]

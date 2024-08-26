@@ -12,6 +12,8 @@ function App() {
   const [success, setSuccess] = useState(false);
   const [modelId, setModelId] = useState(localStorage.getItem('modelId') || '');
 
+  const ingestion_url = process.env.REACT_APP_INGESTION_API_URL || 'http://localhost:5001';
+
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
     setError(null);
@@ -43,7 +45,7 @@ function App() {
       setLoading(true);
       setError(null);
       setSuccess(false);
-      const response = await axios.post(`http://localhost:5001/${endpoint}`, formData, {
+      const response = await axios.post(`${ingestion_url}/${endpoint}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

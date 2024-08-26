@@ -184,31 +184,3 @@ class DataSplitter:
         Reset the filter_dict to None.
         """
         self.filter_dict = None
-
-
-if __name__ == "__main__":
-    warnings.simplefilter(action="ignore", category=FutureWarning)
-    warnings.simplefilter(action="ignore", category=UndefinedMetricWarning)
-    warnings.simplefilter(action="ignore", category=RuntimeWarning)
-    warnings.simplefilter(action="ignore", category=UserWarning)
-
-    try:
-        config = load_config()
-    except Exception as e:
-        logger.error(f"Failed to load config: {e}")
-        exit(1)
-
-    try:
-        details = load_details()
-    except Exception as e:
-        logger.error(f"Failed to load details: {e}")
-        exit(1)
-
-    try:
-        data, reference_data = etl_pipeline(config)
-    except Exception as e:
-        logger.error(f"Failed to load data: {e}")
-        exit(1)
-
-    splitter = DataSplitter()
-    filter_product_dict = splitter.split_data(data, config, details)

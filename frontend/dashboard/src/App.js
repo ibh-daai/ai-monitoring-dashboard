@@ -16,11 +16,14 @@ const AppContent = () => {
     text: '#02B3E6'
   };
 
+  const dashboard_url = process.env.REACT_APP_DASHBOARD_API_URL || 'http://localhost:5002';
+
+
   // Fetch the initial dashboard URL when the component mounts
   useEffect(() => {
     const fetchDashboardUrl = async () => {
       try {
-        const response = await fetch('http://localhost:5002/get_dashboard_url');
+        const response = await fetch(`${dashboard_url}/get_dashboard_url`);
         if (response.ok) {
           const data = await response.json();
           setDashboardUrl(data.dashboard_url);
@@ -40,7 +43,7 @@ const AppContent = () => {
   const handleApplyFilters = async (filters) => {
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:5002/apply_filters', {
+      const response = await fetch(`${dashboard_url}/apply_filters`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(filters)

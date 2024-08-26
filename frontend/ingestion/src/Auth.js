@@ -8,6 +8,8 @@ function Auth({ setModelId }) {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 
+  const ingestion_url = process.env.REACT_APP_INGESTION_API_URL || 'http://localhost:5001';
+
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!modelId) {
@@ -17,7 +19,7 @@ function Auth({ setModelId }) {
 
     try {
       setError(null);
-      const response = await axios.post('http://localhost:5001/authenticate', { model_id: modelId, action: 'login' }, { withCredentials: true });
+      const response = await axios.post(`${ingestion_url}/authenticate`, { model_id: modelId, action: 'login' }, { withCredentials: true });
       setModelId(modelId);
       localStorage.setItem('modelId', modelId);
       setSuccess(true);
@@ -36,9 +38,9 @@ function Auth({ setModelId }) {
 
     try {
       setError(null);
-      const checkResponse = await axios.post('http://localhost:5001/check_model_id', { model_id: modelId });
+      const checkResponse = await axios.post(`${ingestion_url}/check_model_id`, { model_id: modelId });
       if (checkResponse.status === 200) {
-        const response = await axios.post('http://localhost:5001/authenticate', { model_id: modelId, action: 'signup' }, { withCredentials: true });
+        const response = await axios.post(`${ingestion_url}/authenticate`, { model_id: modelId, action: 'signup' }, { withCredentials: true });
         setModelId(modelId);
         localStorage.setItem('modelId', modelId);
         setSuccess(true);

@@ -6,7 +6,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY ./api/ingestion /app/api/ingestion
-COPY ./src /app/src
+COPY ./src/utils /app/src/utils
 COPY ./config /app/config
 
 ENV PYTHONPATH=/app

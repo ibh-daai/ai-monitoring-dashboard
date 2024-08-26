@@ -6,6 +6,7 @@ from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 from pymongo.mongo_client import MongoClient
 from datetime import datetime, timezone
+import os
 import pandas as pd
 import logging
 from werkzeug.exceptions import RequestEntityTooLarge
@@ -18,17 +19,32 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 app.config.from_object("api.ingestion.config.Config")
-# app.secret_key = app.config["SECRET_KEY"]
+
+ingestion_frontend_url = os.environ.get("INGESTION_FRONTEND_URL", "http://localhost:3001")
+
+allowed_origins = [
+    "http://localhost:3001", 
+    "http://localhost:3000",
+    "http://ingestion_frontend:3001", 
+    os.environ.get("INGESTION_FRONTEND_URL", ""),
+]
+
+allowed_origins = list(filter(None, allowed_origins))
 
 CORS(
     app,
     supports_credentials=True,
-    resources={r"/*": {"origins": ["http://localhost:3001"]}},  # TODO Update URL in production
+    resources={r"/*": {"origins": allowed_origins}},
 )
-
 # Load the database
-mongo_uri = app.config["MONGO_URI"]
+mongo_uri = os.getenv("MONGO_URI")
+db_name = os.getenv("MONGO_DB_NAME", "data_ingestion")
+
+ingestion_api_port = int(os.getenv("INGESTION_API_PORT", 5001))
+
+
 client = MongoClient(mongo_uri)
+db = client[db_name]
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16 MB limit
 
 # Send a ping to confirm a successful connection
@@ -57,11 +73,17 @@ def allowed_file(filename):
 
 @app.errorhandler(RequestEntityTooLarge)
 def handle_request_entity_too_large(error):
+    """
+    Handle the request entity too large error.
+    """
     return jsonify({"message": "File size too large. Maximum size is 16MB."}), 413
 
 
 @app.errorhandler(Exception)
 def handle_exception(e):
+    """
+    Handle all exceptions.
+    """
     # Log the full exception for debugging
     logger.error(f"An error occurred: {str(e)}", exc_info=True)
     # Return a generic error message to the client
@@ -70,6 +92,9 @@ def handle_exception(e):
 
 @app.route("/")
 def index():
+    """
+    Render the index page.
+    """
     return render_template("upload.html")
 
 
@@ -221,7 +246,7 @@ def ingest_labels():
 
         if config["columns"]["timestamp"] and config["columns"]["timestamp"] in df.columns:
             df[config["columns"]["timestamp"]] = pd.to_datetime(df[config["columns"]["timestamp"]])
-            
+
         columns = get_column_mapping()
         model_config = get_model_config()
 
@@ -330,4 +355,4 @@ def authenticate():
 
 
 if __name__ == "__main__":
-    app.run(port=5001, debug=True)
+    app.run(debug=True, host="0.0.0.0", port=ingestion_api_port)

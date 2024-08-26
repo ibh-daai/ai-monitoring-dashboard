@@ -1,13 +1,18 @@
 # Build stage
-FROM node:14 as build
+FROM node:14
 WORKDIR /app
-COPY package*.json ./
+COPY ./frontend/ingestion/package*.json ./frontend/ingestion/
+
+ARG REACT_APP_INGESTION_API_URL
+ENV REACT_APP_INGESTION_API_URL=$REACT_APP_INGESTION_API_URL
+
+WORKDIR /app/frontend/ingestion
 RUN npm install
-COPY . .
+COPY ./frontend/ingestion ./
 RUN npm run build
 
 # Production stage
-FROM nginx:alpine
-COPY --from=build /app/build /usr/share/nginx/html
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+RUN npm install -g serve
+EXPOSE 3001
+
+CMD ["serve", "-s", "build", "-l", "3001"]

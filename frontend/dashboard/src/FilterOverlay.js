@@ -10,9 +10,10 @@ const FilterOverlay = ({ onApplyFilters, colors }) => {
   const [optionToCategory, setOptionToCategory] = useState({});
   const [loading, setLoading] = useState(false);
 
+  const dashboard_url = process.env.REACT_APP_DASHBOARD_API_URL || 'http://localhost:5002';
 
   useEffect(() => {
-    fetch('http://localhost:5002/get_filter_options')
+    fetch(`${dashboard_url}/get_filter_options`)
       .then(response => response.json())
       .then(data => {
         setFilterOptions(data);
@@ -33,9 +34,28 @@ const FilterOverlay = ({ onApplyFilters, colors }) => {
     setFilters({ ...filters, [name]: value });
   };
 
+  // const handleApply = () => {
+  //   setLoading(true);
+  //   onApplyFilters(filters).finally(() => setLoading(false));
+  // };
+
   const handleApply = () => {
     setLoading(true);
-    onApplyFilters(filters).finally(() => setLoading(false));
+    fetch(`${dashboard_url}/apply_filters`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(filters),
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.filtered_url) {
+          window.open(data.filtered_url, '_blank');
+        }
+      })
+      .catch(error => console.error('Error:', error))
+      .finally(() => setLoading(false));
   };
 
   const formatCategory = (category) => {

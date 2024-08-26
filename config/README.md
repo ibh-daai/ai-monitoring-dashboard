@@ -386,6 +386,8 @@ Here are some sample images of the dashboard panels:
 
 - **`data_drift`**: Plots the dataset drift status over time.
 
+- **`prediction_groundtruth_drift`**: Plots the prediction and ground truth drift calculation over time.
+
 - **`r2`**: Plots the R2 score of the regression model over time.
 
 - **`rmse`**: Plots the Root Mean Squared Error (RMSE) of the regression model over time.
@@ -477,7 +479,7 @@ Provides info about the model that will be displayed on the monitoring dashboard
 
 -   **disclaimer** (`string`): Disclaimer for the model.
 
--   **fact_card** (`string`): Name of the model fact card image file. Can be set to `null` if no fact card is available. The image file should be placed in the `frontend/dashboard/images` directory. The image must be a `.jpg`, `.jpeg`, or `.png` file. If the image is not found, the system will default to the disclaimer text above.
+-   **fact_card** (`string`): Name of the model fact card image file. Can be set to `null` if no fact card is available. ***The image file must be placed in the `frontend/dashboard/public/images` directory, or it will not be rendered.*** The image must be a `.jpg`, `.jpeg`, or `.png` file. If the image is not found, the system will default to the disclaimer text above.
 
 
 #### Example
@@ -502,7 +504,7 @@ Provides info about the model that will be displayed on the monitoring dashboard
 
 ### Alerts (`alerts`)
 
-Configures alert settings for the monitoring system.
+Configures alert settings for the monitoring system. Alerts are sent when the model performance falls below the specified thresholds, i.e. a test falls below or above the specified threshold.
 
 -   **emails** (`array` of `string`): List of email addresses to receive alerts.
 

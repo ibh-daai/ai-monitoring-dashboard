@@ -1,0 +1,24 @@
+FROM python:3.10
+
+WORKDIR /app
+
+# Copy requirements and install dependencies
+COPY requirements.txt ./
+RUN pip install -r requirements.txt
+
+# Copy the entire project
+COPY ./flow /app/flow
+COPY ./src /app/src
+COPY ./config /app/config
+COPY ./scripts /app/scripts
+COPY ./api /app/api
+COPY ./frontend/dashboard/public/images /app/frontend/dashboard/public/images
+
+ENV PREFECT_API_URL=http://192.168.2.210:4200/api
+
+# Make the start script executable
+RUN chmod +x flow/start.sh
+
+# Set the entrypoint to the start script
+ENTRYPOINT ["/app/flow/start.sh"]
+

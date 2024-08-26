@@ -89,6 +89,12 @@
     "field_path": "metrics.DataDriftTable.fields.dataset_drift",
     "category": "data"
   },
+  "prediction_groundtruth_drift": {
+    "title": "Prediction and Ground Truth Drift (P-value of Kolmogorov–Smirnov Test, Drift < 0.05)",
+    "metric_id": "ColumnDriftMetric",
+    "field_path": "metrics.ColumnDriftMetric.fields.drift_score",
+    "category": "data"
+  },
   "r2": {
     "title": "R2 Score",
     "metric_id": "RegressionQualityMetric",
