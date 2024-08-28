@@ -80,11 +80,8 @@ Defines the mapping of data columns to required schema properties. Only the valu
       "classification_label": "classification_label"
     },
     "features": [
-      "standard_deviation",
-      "two_standard_deviations",
       "upper_limit",
       "lower_limit",
-      "closest_age"
     ],
     "timestamp": null
   }
@@ -513,7 +510,7 @@ Configures alert settings for the monitoring system. Alerts are sent when the mo
 "alerts": {
     "emails": [
       "johndoe@gmail.com", 
-      "johndoesfriend@gmail.com"
+      "friendofjohndoe@gmail.com"
     ]
 }
 ````
