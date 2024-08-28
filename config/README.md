@@ -25,12 +25,12 @@ This section defines the basic settings of the model. Only the values should be 
 
 ```json
 "model_config": {
-  "model_id": "bone_age",
-  "model_type": {
-    "regression": true,
-    "binary_classification": true
-  }
-}
+    "model_id": "bone_age",
+    "model_type": {
+      "regression": true,
+      "binary_classification": true
+    }
+  },
 ```
 ### Columns
 
@@ -62,26 +62,26 @@ Defines the mapping of data columns to required schema properties. Only the valu
 #### Example
 ```json
 "columns": {
-  "study_id": "StudyID",
-  "sex": "sex",
-  "hospital": "hospital",
-  "age": "chronological_age",
-  "instrument_type": "machine_type",
-  "patient_class": "patient_classification",
-  "predictions": {
-    "regression_prediction": "predicted_age",
-    "classification_prediction": "classification"
-  },
-  "labels": {
-    "regression_label": "label",
-    "classification_label": "classification_label"
-  },
-  "features": [
-    "upper_limit",
-    "lower_limit",
-  ],
-  "timestamp": null
-}
+    "study_id": "StudyID",
+    "sex": "sex",
+    "hospital": "hospital",
+    "age": "chronological_age",
+    "instrument_type": "machine_type",
+    "patient_class": "patient_classification",
+    "predictions": {
+      "regression_prediction": "predicted_age",
+      "classification_prediction": "classification"
+    },
+    "labels": {
+      "regression_label": "label",
+      "classification_label": "classification_label"
+    },
+    "features": [
+      "upper_limit",
+      "lower_limit",
+    ],
+    "timestamp": null
+  },
 ```
 
 ### Age Filtering (`age_filtering`)
