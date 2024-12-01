@@ -10,7 +10,7 @@ import json
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-DETAILS_FILE_PATH = "src/utils/details.json"
+DETAILS_FILE_PATH = "/app/src/utils/details.json"
 
 
 def load_details(file_path=DETAILS_FILE_PATH) -> dict:
@@ -58,7 +58,6 @@ def update_details(data: pd.DataFrame, config: dict, details: dict) -> dict:
     set_categorical_columns(data, config, details)
 
     return details
-
 
 
 def update_unique_values(data: pd.DataFrame, config: dict, details: dict) -> None:

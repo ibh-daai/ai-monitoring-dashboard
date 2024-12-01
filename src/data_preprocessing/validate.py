@@ -102,7 +102,7 @@ def validate_schema(data: pd.DataFrame, mapping: dict) -> bool:
     Validate the data in a dataframe against the JSON schema
     """
     # load the JSON schema file
-    with open("config/schema.json", "r") as f:
+    with open("/app/config/schema.json", "r") as f:
         schema = json.load(f)
 
     # validate each row of the DataFrame

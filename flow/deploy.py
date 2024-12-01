@@ -4,11 +4,11 @@ from pathlib import Path
 
 if __name__ == "__main__":
 
-    source = str(Path(__file__).parent.parent)
+    source = str(Path(__file__).parent.parent.parent)
 
     monitoring_flow.from_source(
         source=source,
-        entrypoint="/flow/main.py:monitoring_flow",
+        entrypoint="/app/flow/main.py:monitoring_flow",
     ).deploy(
         name="monitoring-flow",
         work_pool_name="monitoring-pool",

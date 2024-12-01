@@ -118,6 +118,8 @@ def fetch_and_merge(config: dict) -> pd.DataFrame:
         return pd.DataFrame()
 
     # check if the results or labels data is empty
+    logger.info(f"Results data: {results.head()}")
+    logger.info(f"Labels data: {labels.head()}")
     if results.empty or labels.empty:
         logger.info("Results or Labels data is empty.")
         # return an empty DataFrame

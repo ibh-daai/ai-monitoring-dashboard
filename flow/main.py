@@ -10,6 +10,11 @@ from datetime import datetime
 import warnings
 from sklearn.exceptions import UndefinedMetricWarning
 import os
+import sys
+import os
+
+# Add the parent directory to the system path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from src.utils.config_manager import load_config
 from scripts.data_details import load_details
